@@ -10,6 +10,12 @@ from .base import DirectClient
 from .base import FetchResult
 from .base import make_content_hash
 from .base import utcnow
+from .quality import average_field_coverage
+from .quality import compute_quality
+from .quality import field_coverage
+from .quality import ghost_rate
+from .quality import is_ghost_or_stale
+from .quality import parse_rate
 
 __all__ = [
     "Connector",
@@ -24,4 +30,10 @@ __all__ = [
     "FetchResult",
     "make_content_hash",
     "utcnow",
+    "average_field_coverage",
+    "compute_quality",
+    "field_coverage",
+    "ghost_rate",
+    "is_ghost_or_stale",
+    "parse_rate",
 ]
