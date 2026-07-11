@@ -100,4 +100,3 @@ def compute_quality(
         ghost_rate=gr,
         quality=quality,
     )
-

@@ -1,3 +1,10 @@
+"""Connector package exports.
+
+This branch (feat/greenhouse-connector) ships the Greenhouse Tier-1 connector.
+The Ashby connector lives on draft/ashby-connector and is intentionally NOT
+imported here to keep this PR scoped to one source per the plan's PR strategy.
+"""
+
 from .base import Connector
 from .base import ConnectorAuthError
 from .base import ConnectorEmptyResponseError
@@ -10,6 +17,7 @@ from .base import DirectClient
 from .base import FetchResult
 from .base import make_content_hash
 from .base import utcnow
+from .greenhouse import GreenhouseConnector
 from .quality import average_field_coverage
 from .quality import compute_quality
 from .quality import field_coverage
@@ -18,6 +26,7 @@ from .quality import is_ghost_or_stale
 from .quality import parse_rate
 
 __all__ = [
+    "GreenhouseConnector",
     "Connector",
     "ConnectorAuthError",
     "ConnectorEmptyResponseError",
