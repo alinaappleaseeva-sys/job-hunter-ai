@@ -1,8 +1,9 @@
 """Backward-compatible re-export layer for common data models.
 
-This module exists so early code can keep importing from
-``job_hunter_ai.common.types`` while the canonical implementations live in
-``job_hunter_ai.common.models``.
+New code should import shared models from ``job_hunter_ai.common.models``.
+
+This module exists only to keep early imports working while the codebase
+migrates to the canonical import path.
 """
 
 from .models import CanonicalJob
@@ -20,4 +21,3 @@ __all__ = [
     "RawSourceRecord",
     "SourceRunResult",
 ]
-

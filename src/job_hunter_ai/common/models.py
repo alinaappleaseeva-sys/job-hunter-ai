@@ -1,8 +1,10 @@
 """Shared dataclasses for core pipeline entities.
 
-These models intentionally stay lightweight. They represent the agreed shapes
-from the specs and give the rest of the codebase one stable import location
-for the first implementation wave.
+This module is the canonical import location for shared pipeline models.
+
+The dataclasses intentionally stay lightweight. They represent the agreed
+shapes from the specs and give the rest of the codebase one stable import
+surface for the first implementation wave.
 """
 
 from __future__ import annotations
