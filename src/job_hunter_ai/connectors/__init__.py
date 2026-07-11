@@ -4,6 +4,7 @@ Exports shared connector contracts plus source-specific implementations.
 Each source connector typically lands in its own PR to keep review scoped.
 """
 
+from .ashby import AshbyConnector
 from .base import Connector
 from .base import ConnectorAuthError
 from .base import ConnectorEmptyResponseError
@@ -26,6 +27,7 @@ from .quality import is_ghost_or_stale
 from .quality import parse_rate
 
 __all__ = [
+    "AshbyConnector",
     "GreenhouseConnector",
     "LeverConnector",
     "Connector",
