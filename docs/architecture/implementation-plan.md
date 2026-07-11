@@ -25,8 +25,10 @@ The MVP should prove four things:
 
 ### In scope
 
-- ATS connectors: Greenhouse, Lever, Ashby
-- Job boards: hh.ru, Wellfound, Remote OK, Habr Career, Solana Jobs
+- ATS connectors and easier boards prioritized by effort-to-value, not by surface popularity
+- first-wave sources: Greenhouse, Lever, Wellfound, Remote OK, Solana Jobs, selected Telegram channels
+- second-wave sources: Ashby, Habr Career
+- later or research-heavy sources: hh.ru, LinkedIn and other sources with meaningful anti-bot or third-party access constraints
 - Telegram: a small first batch of channels
 - Canonical job schema
 - Posting-to-canonical dedup
@@ -43,6 +45,46 @@ The MVP should prove four things:
 - autonomous agent generation frameworks
 - advanced self-improving orchestration
 - full company crawling across the open web
+- hard-access sources that require disproportionate anti-bot, heavy proxying, or expensive third-party enrichment before we validate easier coverage
+
+## 3.1 Source Reality And Prioritization
+
+Not all sources are equal.
+
+For the MVP we should explicitly prioritize by `expected value / integration effort`, not by brand recognition.
+
+### Source constraints we already know
+
+- `hh.ru` is strategically important but operationally hard because anti-bot pressure can make ingestion expensive and brittle.
+- `Ashby` is valuable but rate limits can make naive connector rollout misleadingly painful.
+- `LinkedIn` has major access constraints and often requires third-party enrichment or infrastructure such as Proxycurl rather than a simple direct connector.
+
+### Priority tiers
+
+#### Tier 1: Fastest path to useful coverage
+- Greenhouse
+- Lever
+- Wellfound
+- Remote OK
+- Solana Jobs
+- selected Telegram channels
+
+#### Tier 2: Important but somewhat harder or noisier
+- Ashby
+- Habr Career
+- We Work Remotely
+- Arc.dev
+
+#### Tier 3: High-value but operationally expensive
+- hh.ru
+- LinkedIn
+- Indeed
+
+### Rule for rollout
+
+Before we add a hard source, we should first confirm that the easier source set does **not** already give us enough coverage and candidate-quality signal for MVP learning.
+
+The point is to get the first 80 percent of usable value from the easiest 20 percent of connector work.
 
 ## 4. Workstreams
 
@@ -78,6 +120,7 @@ The implementation should run in parallel across six workstreams.
 - rubrics
 - suite runners
 - regression comparison flow
+- runnable quality formulas and scorecards
 
 ### F. Operations
 - source failure handling
@@ -168,6 +211,7 @@ The implementation should run in parallel across six workstreams.
   - records persisted
   - source health outcome
 - no connector is accepted without at least one fixture or smoke sample
+- every connector should produce a runnable quality score, not only logs
 
 ## Phase 3: First ATS Connectors
 
@@ -225,6 +269,31 @@ The implementation should run in parallel across six workstreams.
   - remote mode
   - salary presence or absence
 - gate: no source rollout without acceptable field extraction quality
+
+### Runnable connector quality formula
+
+For source and parsing quality, start with a simple executable metric:
+
+`quality = parse_rate × field_coverage × (1 - ghost_rate)`
+
+Where:
+- `parse_rate` = normalized_postings / raw_records
+- `field_coverage` = weighted completeness score for critical fields
+- `ghost_rate` = proportion of source output currently classified as ghost-like or stale above threshold
+
+This is not the only metric we will ever need, but it is good enough to run on every connector iteration and spot whether a source is producing real value or mostly noise.
+
+### Suggested field coverage formula
+
+Use weighted field completeness for the normalized posting:
+
+`field_coverage = 0.20*title + 0.15*company + 0.15*description + 0.15*posted_at + 0.10*location + 0.10*remote_mode + 0.10*source_url + 0.05*employment_type`
+
+Each field is scored as:
+- `1` if correctly present
+- `0` if missing or clearly broken
+
+Later we can replace binary scoring with graded field accuracy, but the first version should stay simple and runnable.
 
 ## Phase 5: Dedup and Canonical Jobs
 
@@ -288,6 +357,14 @@ The implementation should run in parallel across six workstreams.
 - evaluate top-k precision, not just subjective ranking feel
 - compare against a simple baseline like chronological feed + filters
 - gate: do not ship ranking changes that degrade top-of-feed quality
+
+### Ranking metric note
+
+`top-k precision` still matters for the ranking layer, but it should sit next to the source quality formula above rather than replace it.
+
+The source quality formula answers: “is this connector producing worthwhile normalized data?”
+
+Ranking precision answers: “given worthwhile data, are we surfacing the right jobs first?”
 
 ## Phase 7: Ghost-Job Detector v1
 
@@ -477,4 +554,3 @@ The MVP is done when:
 4. Ghost scoring exists and affects visibility policy.
 5. We have data-backed eval suites for ingestion, normalization, dedup, ranking, and ghosting.
 6. We have enough review confidence to tell whether a change improved or degraded system quality.
-
