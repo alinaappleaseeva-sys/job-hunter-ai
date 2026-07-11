@@ -81,7 +81,12 @@ def make_content_hash(value: str | bytes | None) -> str | None:
 
 @dataclass(slots=True)
 class FetchResult:
-    """Container for one connector execution outcome before persistence."""
+    """Container for one connector execution outcome before persistence.
+
+    The connector contract stops at fetch-time output. Persistence happens in a
+    later pipeline step, so this object intentionally carries records and cursor
+    progression, not storage-side counters.
+    """
 
     records: list[RawSourceRecord]
     cursor_after: str | None = None
@@ -117,7 +122,13 @@ class Connector(ABC):
         cursor_value: str | None = None,
         limit: int | None = None,
     ) -> tuple[FetchResult, SourceRunResult]:
-        """Run the connector and produce both records and run telemetry."""
+        """Run the connector and produce both records and run telemetry.
+
+        This is intentionally thin orchestration for the first implementation
+        wave. It wraps ``fetch()``, timestamps the run, and prepares a
+        ``SourceRunResult`` without taking ownership of persistence or retry
+        policy.
+        """
 
         started_at = utcnow()
         try:
@@ -130,6 +141,8 @@ class Connector(ABC):
                 success=True,
                 records_fetched=len(fetch_result.records),
                 records_emitted=len(fetch_result.records),
+                # Persistence is owned by a later pipeline stage, so this base
+                # connector contract always reports zero at fetch time.
                 records_persisted=0,
                 cursor_before=cursor_value,
                 cursor_after=fetch_result.cursor_after,
@@ -153,4 +166,3 @@ class Connector(ABC):
                 run_metadata={},
             )
             raise
-
