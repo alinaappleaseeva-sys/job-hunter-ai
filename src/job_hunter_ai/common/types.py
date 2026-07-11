@@ -1,18 +1,23 @@
-"""Shared type definitions for the repository.
+"""Backward-compatible re-export layer for common data models.
 
-These are intentionally minimal placeholders so early documents and code can
-agree on import locations before the implementation settles.
+This module exists so early code can keep importing from
+``job_hunter_ai.common.types`` while the canonical implementations live in
+``job_hunter_ai.common.models``.
 """
 
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any
+from .models import CanonicalJob
+from .models import CanonicalMergeEvent
+from .models import ConnectorQuality
+from .models import NormalizedJobPosting
+from .models import RawSourceRecord
+from .models import SourceRunResult
 
-
-@dataclass(slots=True)
-class SourceRecord:
-    source_name: str
-    source_type: str
-    fetched_at: datetime
-    payload: dict[str, Any]
+__all__ = [
+    "CanonicalJob",
+    "CanonicalMergeEvent",
+    "ConnectorQuality",
+    "NormalizedJobPosting",
+    "RawSourceRecord",
+    "SourceRunResult",
+]
 
