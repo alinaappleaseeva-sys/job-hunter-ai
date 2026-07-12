@@ -1,0 +1,55 @@
+# Ranking topk evaluation suite
+# Phase 6 exit gate — see evals/rubrics/ranking_topk.md
+
+name: ranking_topk
+version: "1.0"
+phase: 6
+description: >
+  Top-k precision and explainability checks for CandidateProfile → ranked CanonicalJob feed.
+  Runs against evals/datasets/ranking_topk/examples.jsonl.
+  Heuristics must beat or match simple chronological baseline.
+
+dataset:
+  path: evals/datasets/ranking_topk/examples.jsonl
+  format: jsonl
+
+harness:
+  module: evals.harness.ranking
+  entrypoint: run_suite
+  # Stub until harness implemented; use pytest tests/unit/test_ranking.py for now
+
+providers_under_test:
+  - v1-heuristics
+
+gates:
+  precision_at_3:
+    min: 0.60
+    metric: "precision@3 (highly_relevant or relevant in top 3)"
+  explanation_coverage:
+    min: 0.80
+    metric: "fraction of scored components with non-empty reason strings in top 3"
+  baseline_improvement:
+    require_gte_baseline: true
+    description: "new ranker precision@3 must be >= chrono baseline precision@3 on same labeled set"
+
+tracked_diagnostics:
+  - role_fit
+  - seniority_fit
+  - location_remote_fit
+  - salary_fit
+  - market_fit
+  - average_score_highly_relevant
+  - average_score_irrelevant
+
+reporting:
+  output_dir: evals/reports/ranking_topk
+  formats:
+    - json
+    - markdown
+  include_per_example_failures: true
+  include_baseline: true
+
+ci:
+  pytest_path: tests/unit/test_ranking.py
+  blocking: true
+  k: 3
