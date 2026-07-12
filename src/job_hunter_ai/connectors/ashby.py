@@ -40,26 +40,23 @@ import json
 from datetime import datetime
 from typing import Any
 
-import httpx
-
 from job_hunter_ai.common.models import RawSourceRecord
 from job_hunter_ai.connectors.base import (
     Connector,
     ConnectorEmptyResponseError,
-    ConnectorNetworkError,
-    ConnectorRateLimitError,
     ConnectorSchemaError,
     DirectClient,
     FetchResult,
     make_content_hash,
     utcnow,
 )
+from job_hunter_ai.connectors.http_client import DEFAULT_TIMEOUT
+from job_hunter_ai.connectors.http_client import HttpxDirectClient
 
 _BASE_URL = "https://api.ashbyhq.com/posting-api/job-board"
 _SOURCE_TYPE = "ats"
 _RECORD_TYPE = "job_posting"
 _PROVIDER = "ashby"
-_DEFAULT_TIMEOUT = 30.0
 
 
 def _parse_published_at(value: Any) -> datetime | None:
@@ -88,52 +85,6 @@ def _remote_mode(job: dict[str, Any]) -> str | bool | None:
     return None
 
 
-class HttpxDirectClient:
-    """HTTP client for Ashby posting API requests.
-
-    Performs a single GET with no automatic retries so rate-limit backoff stays
-    in the scheduler layer.
-    """
-
-    def __init__(self, *, timeout: float = _DEFAULT_TIMEOUT) -> None:
-        self._client = httpx.Client(timeout=timeout)
-
-    def get(self, url: str, **kwargs: Any) -> dict[str, Any]:
-        headers = kwargs.get("headers")
-        try:
-            response = self._client.get(url, headers=headers, follow_redirects=True)
-        except httpx.NetworkError as exc:
-            raise ConnectorNetworkError(f"Network error reaching {url}: {exc}") from exc
-        except httpx.TimeoutException as exc:
-            raise ConnectorNetworkError(f"Timeout reaching {url}: {exc}") from exc
-
-        if response.status_code == 429:
-            retry_after = response.headers.get("retry-after", "unknown")
-            raise ConnectorRateLimitError(
-                f"Rate limited by {url} (retry-after={retry_after})"
-            )
-
-        response.raise_for_status()
-
-        try:
-            payload = response.json()
-        except json.JSONDecodeError as exc:
-            raise ConnectorSchemaError(f"Non-JSON response from {url}: {exc}") from exc
-
-        if not isinstance(payload, dict):
-            raise ConnectorSchemaError(f"Expected JSON object from {url}")
-        return payload
-
-    def close(self) -> None:
-        self._client.close()
-
-    def __enter__(self) -> HttpxDirectClient:
-        return self
-
-    def __exit__(self, *args: object) -> None:
-        self.close()
-
-
 class AshbyConnector(Connector):
     """Connector for a single Ashby job board (one client/company).
 
@@ -155,7 +106,7 @@ class AshbyConnector(Connector):
         *,
         client: DirectClient | None = None,
         include_compensation: bool = True,
-        request_timeout: float = _DEFAULT_TIMEOUT,
+        request_timeout: float = DEFAULT_TIMEOUT,
     ) -> None:
         if not client_name or not client_name.strip():
             raise ValueError("client_name must be a non-empty Ashby board slug")
@@ -195,6 +146,9 @@ class AshbyConnector(Connector):
         finally:
             if owns_client and hasattr(client, "close"):
                 client.close()
+
+        if not isinstance(payload, dict):
+            raise ConnectorSchemaError(f"Expected JSON object from {self.url}")
 
         if "jobs" not in payload:
             raise ConnectorSchemaError("Ashby response missing 'jobs' key")

@@ -15,6 +15,7 @@ from .base import ConnectorRateLimitError
 from .base import ConnectorSchemaError
 from .base import DirectClient
 from .base import FetchResult
+from .http_client import HttpxDirectClient
 from .base import make_content_hash
 from .base import utcnow
 from .greenhouse import GreenhouseConnector
@@ -40,6 +41,7 @@ __all__ = [
     "ConnectorSchemaError",
     "DirectClient",
     "FetchResult",
+    "HttpxDirectClient",
     "make_content_hash",
     "utcnow",
     "average_field_coverage",

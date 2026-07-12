@@ -21,20 +21,17 @@ import json
 from datetime import UTC, datetime
 from typing import Any
 
-import httpx
-
 from job_hunter_ai.common.models import RawSourceRecord
 from job_hunter_ai.connectors.base import (
     Connector,
     ConnectorEmptyResponseError,
-    ConnectorNetworkError,
-    ConnectorRateLimitError,
     ConnectorSchemaError,
     DirectClient,
     FetchResult,
     make_content_hash,
     utcnow,
 )
+from job_hunter_ai.connectors.http_client import HttpxDirectClient
 
 _BASE_URL = "https://api.lever.co/v0/postings"
 _SOURCE_TYPE = "ats"
@@ -79,44 +76,6 @@ def _extract_jobs(payload: Any) -> list[dict[str, Any]]:
         raise ConnectorSchemaError("Lever response missing postings list")
 
     raise ConnectorSchemaError("Lever response is not a JSON array or object")
-
-
-class HttpxDirectClient:
-    """HTTP client for Lever Postings API requests."""
-
-    def __init__(self, *, timeout: float = 30.0) -> None:
-        self._client = httpx.Client(timeout=timeout)
-
-    def get(self, url: str, **kwargs: Any) -> Any:
-        headers = kwargs.get("headers")
-        try:
-            response = self._client.get(url, headers=headers, follow_redirects=True)
-        except httpx.NetworkError as exc:
-            raise ConnectorNetworkError(f"Network error reaching {url}: {exc}") from exc
-        except httpx.TimeoutException as exc:
-            raise ConnectorNetworkError(f"Timeout reaching {url}: {exc}") from exc
-
-        if response.status_code == 429:
-            retry_after = response.headers.get("retry-after", "unknown")
-            raise ConnectorRateLimitError(
-                f"Rate limited by {url} (retry-after={retry_after})"
-            )
-
-        response.raise_for_status()
-
-        try:
-            return response.json()
-        except json.JSONDecodeError as exc:
-            raise ConnectorSchemaError(f"Non-JSON response from {url}: {exc}") from exc
-
-    def close(self) -> None:
-        self._client.close()
-
-    def __enter__(self) -> HttpxDirectClient:
-        return self
-
-    def __exit__(self, *args: object) -> None:
-        self.close()
 
 
 class LeverConnector(Connector):
