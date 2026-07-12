@@ -30,7 +30,11 @@ normalize_postings(records, store=?)
 | `pipeline.py` | `normalize_postings()`, `normalize_record()` entrypoints |
 | `registry.py` | `source_name` → provider mapper lookup |
 | `mappers/base.py` | `BaseMapper` ABC |
-| `mappers/` | Provider implementations (Greenhouse, Lever, Ashby — Step 4.4) |
+| `mappers/` | Provider implementations (Greenhouse, Lever, Ashby) |
+| `mappers/greenhouse.py` | `GreenhouseMapper` — Board API payload |
+| `mappers/lever.py` | `LeverMapper` — Postings API payload |
+| `mappers/ashby.py` | `AshbyMapper` — posting API payload |
+| `mappers/_helpers.py` | Shared parse-status + provenance helpers |
 | `fields/` | Shared field normalizers (Step 4.3) — see table below |
 | `types.py` | `NormalizationRunResult`, `ParseDiagnostics` |
 
@@ -57,7 +61,7 @@ Reusable helpers consumed by provider mappers (Step 4.4). Each function is unit-
 | `partial` | Usable posting with documented missing fields |
 | `failed` | No mapper, mapper error, or unusable record |
 
-**Step 4.2** ships the skeleton only — no ATS mappers registered yet. All records return `failed` + `unsupported_provider` until Step 4.4.
+Call `register_default_mappers()` (from `normalization.mappers`) to wire Greenhouse, Lever, and Ashby. Without registration, records return `failed` + `unsupported_provider`.
 
 ## Storage lineage
 
@@ -80,7 +84,7 @@ result = normalize_postings(records, store=MemoryJobStorage())
 ## Tests
 
 ```bash
-pytest tests/unit/test_normalization_pipeline.py tests/unit/test_normalization_fields.py -q
+pytest tests/unit/test_normalization_pipeline.py tests/unit/test_normalization_fields.py tests/unit/test_normalization_mappers.py -q
 ```
 
 ## Eval gate
