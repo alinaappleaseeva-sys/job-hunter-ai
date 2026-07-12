@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from uuid import uuid4
 
 import pytest
 
+from job_hunter_ai.common.models import CanonicalJob
+from job_hunter_ai.common.models import CanonicalMergeEvent
 from job_hunter_ai.common.models import NormalizedJobPosting
 from job_hunter_ai.common.models import RawSourceRecord
 from job_hunter_ai.storage import MemoryJobStorage
@@ -142,3 +145,78 @@ def test_clear_resets_store() -> None:
     store.clear()
     assert store.get_raw(raw_id) is None
     assert store.list_unlinked_raw() == []
+
+
+# --- Phase 5 canonical / dedup storage tests ---
+
+
+def _canonical(**overrides: object) -> CanonicalJob:
+    base = dict(
+        canonical_job_id=str(uuid4()),
+        primary_posting_id="p-1",
+        company_name="TestCo",
+        company_domain="test.co",
+        title_normalized="engineer",
+        role_family=None,
+        seniority=None,
+        market=None,
+        remote_mode="remote",
+        employment_type=None,
+        location_country=None,
+        location_region=None,
+        location_city=None,
+        compensation_min=None,
+        compensation_max=None,
+        compensation_currency=None,
+        canonical_posted_at=NOW,
+        first_seen_at=NOW,
+        last_seen_at=NOW,
+        active_posting_count=1,
+        source_count=1,
+        ghost_score=None,
+        canonical_status="active",
+        merge_confidence=0.9,
+        merge_reasons=["exact_title_company"],
+    )
+    base.update(overrides)
+    return CanonicalJob(**base)  # type: ignore[arg-type]
+
+
+def test_save_and_link_canonical_roundtrip() -> None:
+    store = MemoryJobStorage()
+    raw_id = store.save_raw(_raw_record())
+    pid = store.save_normalized(_normalized_posting(posting_id="p-1"), raw_record_id=raw_id)
+
+    can = _canonical(primary_posting_id=pid)
+    cid = store.save_canonical(can)
+    store.link_posting_to_canonical(canonical_job_id=cid, posting_id=pid)
+
+    loaded = store.get_canonical(cid)
+    assert loaded is not None
+    assert loaded.canonical_job_id == cid
+    assert loaded.canonical.title_normalized == "engineer"
+
+    linked = store.list_postings_for_canonical(cid)
+    assert len(linked) == 1
+    assert linked[0].posting_id == pid
+
+    assert store.get_canonical_for_posting(pid) == cid
+
+
+def test_save_merge_event_and_list() -> None:
+    store = MemoryJobStorage()
+    can = _canonical()
+    cid = store.save_canonical(can)
+
+    ev = CanonicalMergeEvent(
+        canonical_job_id=cid,
+        posting_id="p-1",
+        merged_at=NOW,
+        merge_confidence=0.95,
+        merge_reasons=["exact_title_company"],
+    )
+    store.save_merge_event(ev)
+
+    events = store.list_merge_events_for_canonical(cid)
+    assert len(events) == 1
+    assert events[0].posting_id == "p-1"
