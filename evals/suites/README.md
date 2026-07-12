@@ -3,9 +3,9 @@
 This directory will hold runnable evaluation definitions.
 
 Recommended first suite files:
+
 - `ingestion_smoke.yaml`
 - `normalization_v1.yaml` ✅ (Phase 4)
 - `dedup_regression.yaml`
-- `ranking_topk.yaml`
+- `ranking_topk.yaml` ✅ (Phase 6 scaffold + dataset)
 - `ghosting_precision.yaml`
-
