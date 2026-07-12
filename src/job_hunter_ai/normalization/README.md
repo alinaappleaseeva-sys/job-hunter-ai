@@ -31,8 +31,23 @@ normalize_postings(records, store=?)
 | `registry.py` | `source_name` → provider mapper lookup |
 | `mappers/base.py` | `BaseMapper` ABC |
 | `mappers/` | Provider implementations (Greenhouse, Lever, Ashby — Step 4.4) |
-| `fields/` | Shared field normalizers (Step 4.3) |
+| `fields/` | Shared field normalizers (Step 4.3) — see table below |
 | `types.py` | `NormalizationRunResult`, `ParseDiagnostics` |
+
+## Field normalizers (`fields/`)
+
+Reusable helpers consumed by provider mappers (Step 4.4). Each function is unit-tested against `normalization_gold` labels where applicable.
+
+| Module | Functions | Purpose |
+|---|---|---|
+| `title.py` | `normalize_title()` | Trim + lowercase title for dedup/ranking |
+| `description.py` | `html_to_text()`, `pick_description()` | HTML → plain text; choose best description candidate |
+| `employment.py` | `normalize_employment_type()` | Map provider strings (`FullTime`, `Regular Full Time`) → canonical enum |
+| `company.py` | `extract_company_domain()` | Hostname from job/company URL |
+| `location.py` | `parse_location_string()` | City/state/country parsing + `ParsedLocation` dataclass |
+| `remote.py` | `normalize_remote_mode()` | Infer `remote` / `hybrid` / `onsite` / `unknown` from workplace + location signals |
+| `compensation.py` | `parse_ashby_compensation()`, `parse_salary_summary_text()` | Salary range extraction |
+| `enrichment.py` | `infer_seniority()`, `infer_role_family()`, `infer_market()` | Title/company heuristics for diagnostic fields |
 
 ## Parse status rules
 
@@ -65,7 +80,7 @@ result = normalize_postings(records, store=MemoryJobStorage())
 ## Tests
 
 ```bash
-pytest tests/unit/test_normalization_pipeline.py -q
+pytest tests/unit/test_normalization_pipeline.py tests/unit/test_normalization_fields.py -q
 ```
 
 ## Eval gate

@@ -1,0 +1,56 @@
+"""Title/company enrichment heuristics (seniority, role family, market)."""
+
+from __future__ import annotations
+
+import re
+
+_SENIORITY_RULES: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\b(?:head|vp|vice president)\b", re.I), "head"),
+    (re.compile(r"\b(?:director|manager|mgr)\b", re.I), "lead"),
+    (re.compile(r"\b(?:staff|principal|distinguished)\b", re.I), "senior"),
+    (re.compile(r"\bsenior\b", re.I), "senior"),
+    (re.compile(r"\blead\b", re.I), "lead"),
+    (re.compile(r"\b(?:junior|jr)\b", re.I), "junior"),
+    (re.compile(r"\b(?:intern|internship)\b", re.I), "junior"),
+]
+
+_ROLE_FAMILY_RULES: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\b(?:engineer|engineering|developer|swe|sde)\b", re.I), "engineering"),
+    (re.compile(r"\b(?:designer|design)\b", re.I), "design"),
+    (re.compile(r"\b(?:product manager|product owner|product)\b", re.I), "product"),
+    (re.compile(r"\b(?:account executive|sales|account director|ae)\b", re.I), "sales"),
+    (re.compile(r"\b(?:data scientist|analytics|data)\b", re.I), "data"),
+    (re.compile(r"\b(?:growth|marketing)\b", re.I), "growth"),
+    (re.compile(r"\b(?:operations|ops)\b", re.I), "operations"),
+]
+
+_COMPANY_MARKET: dict[str, str] = {
+    "stripe": "fintech",
+    "ashby": "saas",
+    "lever": "saas",
+}
+
+
+def infer_seniority(title: str | None) -> str | None:
+    if not title:
+        return None
+    for pattern, label in _SENIORITY_RULES:
+        if pattern.search(title):
+            return label
+    return None
+
+
+def infer_role_family(title: str | None, *, department: str | None = None) -> str | None:
+    haystacks = [title or "", department or ""]
+    for text in haystacks:
+        for pattern, label in _ROLE_FAMILY_RULES:
+            if pattern.search(text):
+                return label
+    return None
+
+
+def infer_market(company_name: str | None, *, title: str | None = None) -> str | None:
+    _ = title
+    if not company_name:
+        return None
+    return _COMPANY_MARKET.get(company_name.strip().lower())
