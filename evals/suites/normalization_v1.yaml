@@ -1,0 +1,73 @@
+# Normalization v1 evaluation suite
+# Phase 4 exit gate — see evals/rubrics/normalization_field_checks.md
+
+name: normalization_v1
+version: "1.0"
+phase: 4
+description: >
+  Field-level accuracy checks for RawSourceRecord → NormalizedJobPosting.
+  Runs against evals/datasets/normalization_gold/examples.jsonl.
+
+dataset:
+  path: evals/datasets/normalization_gold/examples.jsonl
+  format: jsonl
+
+harness:
+  module: evals.harness.normalization
+  entrypoint: run_suite
+  # Implemented in Step 4.5; until then use pytest stub.
+
+providers_under_test:
+  - greenhouse
+  - lever
+  - ashby
+
+gates:
+  # Block release when any gate fails (fraction of examples passing).
+  title_normalized:
+    min_accuracy: 0.90
+    grading_mode: exact
+  company_name:
+    min_accuracy: 0.90
+    grading_mode: exact
+  location_raw:
+    min_accuracy: 0.85
+    grading_modes: [exact, contains]
+  remote_mode:
+    min_accuracy: 0.80
+    grading_mode: enum
+  employment_type:
+    min_accuracy: 0.75
+    grading_modes: [exact, absent]
+    # Only scored on examples where label is non-null OR grading is absent.
+    skip_when: unlabeled
+  parse_status:
+    min_accuracy: 0.95
+    grading_mode: exact
+  source_url:
+    min_accuracy: 0.95
+    grading_mode: present
+
+synthetic_controls:
+  - example_id: norm-syn-001
+    require:
+      parse_status: failed
+
+tracked_diagnostics:
+  - seniority
+  - role_family
+  - market
+  - location_country
+  - compensation_min
+  - parse_warnings
+
+reporting:
+  output_dir: evals/reports/normalization_v1
+  formats:
+    - json
+    - markdown
+  include_per_example_failures: true
+
+ci:
+  pytest_path: tests/unit/test_normalization_gold.py
+  blocking: true
