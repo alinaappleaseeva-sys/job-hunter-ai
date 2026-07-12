@@ -13,7 +13,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-
 JsonDict = dict[str, Any]
 StringList = list[str]
 
@@ -145,3 +144,57 @@ class CanonicalMergeEvent:
     merge_confidence: float | None
     merge_reasons: StringList = field(default_factory=list)
     reviewer_override: bool = False
+
+
+# === Phase 6: Candidate Profile and Ranking models (explainable heuristics v1) ===
+
+@dataclass(slots=True)
+class CandidateProfile:
+    """Target persona used for personalized ranking.
+
+    Defines the Jobs the candidate wants to perform (role + context).
+    Keep lightweight and serializable.
+    """
+
+    profile_id: str
+    target_role_families: StringList = field(default_factory=list)
+    target_seniorities: StringList = field(default_factory=list)
+    target_title_keywords: StringList = field(default_factory=list)
+    remote_preference: str | None = None  # "remote" | "hybrid" | "onsite" | "any"
+    preferred_locations: StringList = field(default_factory=list)
+    min_compensation: float | None = None
+    compensation_currency: str | None = None
+    preferred_markets: StringList = field(default_factory=list)
+    notes: str | None = None
+
+
+@dataclass(slots=True)
+class ScoreExplanation:
+    """Single explainable component of a score for auditability."""
+
+    component: str
+    score: float
+    reasons: StringList = field(default_factory=list)
+    signals: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
+class JobScoreBreakdown:
+    """Transparent per-component scores + total for one job vs one profile."""
+
+    role_fit: float = 0.0
+    seniority_fit: float = 0.0
+    location_remote_fit: float = 0.0
+    salary_fit: float = 0.0
+    market_fit: float = 0.0
+    total_score: float = 0.0
+    explanations: list[ScoreExplanation] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class RankedJob:
+    """Canonical job wrapped with its ranking result for a given profile."""
+
+    canonical_job: CanonicalJob
+    score_breakdown: JobScoreBreakdown
+    rank: int | None = None
