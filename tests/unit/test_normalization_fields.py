@@ -222,6 +222,18 @@ class TestCompanyDomain:
             == "stripe.com"
         )
         assert extract_company_domain("https://www.ashbyhq.com/jobs") == "ashbyhq.com"
+        assert (
+            extract_company_domain(
+                "https://jobs.lever.co/leverdemo/33538a2f-d27d-4a96-8f05-fa4b0e4d940e"
+            )
+            == "lever.co"
+        )
+        assert (
+            extract_company_domain(
+                "https://jobs.ashbyhq.com/Ashby/7458d4e9-da2e-47bd-98cb-adfda43d42b2"
+            )
+            == "ashbyhq.com"
+        )
 
     def test_missing_url(self) -> None:
         assert extract_company_domain(None) is None
