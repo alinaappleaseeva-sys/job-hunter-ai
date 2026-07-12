@@ -4,6 +4,7 @@ Exports shared connector contracts plus source-specific implementations.
 Each source connector typically lands in its own PR to keep review scoped.
 """
 
+from .ashby import AshbyConnector
 from .base import Connector
 from .base import ConnectorAuthError
 from .base import ConnectorEmptyResponseError
@@ -14,6 +15,7 @@ from .base import ConnectorRateLimitError
 from .base import ConnectorSchemaError
 from .base import DirectClient
 from .base import FetchResult
+from .http_client import HttpxDirectClient
 from .base import make_content_hash
 from .base import utcnow
 from .greenhouse import GreenhouseConnector
@@ -26,6 +28,7 @@ from .quality import is_ghost_or_stale
 from .quality import parse_rate
 
 __all__ = [
+    "AshbyConnector",
     "GreenhouseConnector",
     "LeverConnector",
     "Connector",
@@ -38,6 +41,7 @@ __all__ = [
     "ConnectorSchemaError",
     "DirectClient",
     "FetchResult",
+    "HttpxDirectClient",
     "make_content_hash",
     "utcnow",
     "average_field_coverage",

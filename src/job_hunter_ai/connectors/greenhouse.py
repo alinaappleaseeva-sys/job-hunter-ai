@@ -29,20 +29,17 @@ import json
 from datetime import datetime
 from typing import Any
 
-import httpx
-
 from job_hunter_ai.common.models import RawSourceRecord
 from job_hunter_ai.connectors.base import (
     Connector,
     ConnectorEmptyResponseError,
-    ConnectorNetworkError,
-    ConnectorRateLimitError,
     ConnectorSchemaError,
     DirectClient,
     FetchResult,
     make_content_hash,
     utcnow,
 )
+from job_hunter_ai.connectors.http_client import HttpxDirectClient
 
 _BASE_URL = "https://boards-api.greenhouse.io/v1/boards"
 _SOURCE_TYPE = "ats"
@@ -68,48 +65,6 @@ def _parse_timestamp(value: Any) -> datetime | None:
 def _hash_payload(payload: dict[str, Any]) -> str | None:
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return make_content_hash(canonical)
-
-
-class HttpxDirectClient:
-    """HTTP client for Greenhouse Job Board API requests."""
-
-    def __init__(self, *, timeout: float = 30.0) -> None:
-        self._client = httpx.Client(timeout=timeout)
-
-    def get(self, url: str, **kwargs: Any) -> dict[str, Any]:
-        headers = kwargs.get("headers")
-        try:
-            response = self._client.get(url, headers=headers, follow_redirects=True)
-        except httpx.NetworkError as exc:
-            raise ConnectorNetworkError(f"Network error reaching {url}: {exc}") from exc
-        except httpx.TimeoutException as exc:
-            raise ConnectorNetworkError(f"Timeout reaching {url}: {exc}") from exc
-
-        if response.status_code == 429:
-            retry_after = response.headers.get("retry-after", "unknown")
-            raise ConnectorRateLimitError(
-                f"Rate limited by {url} (retry-after={retry_after})"
-            )
-
-        response.raise_for_status()
-
-        try:
-            payload = response.json()
-        except json.JSONDecodeError as exc:
-            raise ConnectorSchemaError(f"Non-JSON response from {url}: {exc}") from exc
-
-        if not isinstance(payload, dict):
-            raise ConnectorSchemaError(f"Expected JSON object from {url}")
-        return payload
-
-    def close(self) -> None:
-        self._client.close()
-
-    def __enter__(self) -> HttpxDirectClient:
-        return self
-
-    def __exit__(self, *args: object) -> None:
-        self.close()
 
 
 class GreenhouseConnector(Connector):
@@ -179,6 +134,9 @@ class GreenhouseConnector(Connector):
         finally:
             if owns_client and hasattr(client, "close"):
                 client.close()
+
+        if not isinstance(payload, dict):
+            raise ConnectorSchemaError(f"Expected JSON object from {self.url}")
 
         if "jobs" not in payload:
             raise ConnectorSchemaError("Greenhouse response missing 'jobs' key")
