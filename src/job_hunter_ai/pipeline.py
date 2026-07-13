@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import re
 import time
-import functools
+>>>>>>> 1d11f0e (feat(phase3): robust source expansion - config-driven ATS (Greenhouse/Lever/Ashby), parallel fetch + backoff, expanded Telegram, strengthened dedup, target role metrics)
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -38,19 +38,25 @@ from job_hunter_ai.ranking.ranking import rank_jobs
 
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 DEFAULT_CONFIG = {
     "ats": {"greenhouse": {"boards": ["aave", "optimism"]}, "lever": {"sites": []}, "ashby": {"boards": []}},
     "telegram": {"channels": ["cryptohiring_1", "tonhunt"]},
     "robustness": {"max_retries": 2, "backoff_base_seconds": 1.5, "concurrency": 4},
 }
 
+=======
 CONFIG_PATH = Path("config/source_config.yaml")
 
 
 def _load_source_config() -> dict:
     if not CONFIG_PATH.exists():
         logger.warning(f"{CONFIG_PATH} not found, using minimal defaults")
-        return DEFAULT_CONFIG.copy()
+return {
+            "ats": {"greenhouse": {"boards": ["aave", "optimism"]}, "lever": {"sites": []}, "ashby": {"boards": []}},
+            "telegram": {"channels": ["cryptohiring_1", "tonhunt"]},
+            "robustness": {"max_retries": 2, "backoff_base_seconds": 1.5, "concurrency": 4},
+        }
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f) or {}
 
@@ -166,7 +172,7 @@ def _fetch_with_retry(fetcher, name: str, max_retries: int = 2, backoff: float =
             return fetcher()
         except Exception as e:
             if attempt == max_retries:
-                logger.exception(f"{name} failed after {max_retries} retries")
+logger.warning(f"{name} failed after {max_retries} retries: {e}")
                 return []
             sleep = backoff * (2 ** attempt)
             logger.info(f"{name} transient error (attempt {attempt+1}), sleeping {sleep:.1f}s")
@@ -187,30 +193,30 @@ def fetch_ats_wave(config: dict, limit_per: int = 15) -> list[CanonicalJob]:
 
     # Greenhouse
     for board in ats.get("greenhouse", {}).get("boards", []):
-        def _fetch_green(b):
-            return [
+def make_greenhouse_fetch(b=board):
+            return lambda: [
                 _to_canonical(rec, f"greenhouse:{b}")
                 for rec in GreenhouseConnector(b).fetch(limit=limit_per).records
             ]
-        tasks.append((f"greenhouse:{board}", functools.partial(_fetch_green, board)))
+        tasks.append((f"greenhouse:{board}", make_greenhouse_fetch()))
 
     # Lever
     for site in ats.get("lever", {}).get("sites", []):
-        def _fetch_lever(s):
-            return [
+        def make_lever_fetch(s=site):
+            return lambda: [
                 _to_canonical(rec, f"lever:{s}")
                 for rec in LeverConnector(s).fetch(limit=limit_per).records
             ]
-        tasks.append((f"lever:{site}", functools.partial(_fetch_lever, site)))
+        tasks.append((f"lever:{site}", make_lever_fetch()))
 
     # Ashby
     for board in ats.get("ashby", {}).get("boards", []):
-        def _fetch_ashby(b):
-            return [
+        def make_ashby_fetch(b=board):
+            return lambda: [
                 _to_canonical(rec, f"ashby:{b}")
                 for rec in AshbyConnector(b).fetch(limit=limit_per).records
             ]
-        tasks.append((f"ashby:{board}", functools.partial(_fetch_ashby, board)))
+        tasks.append((f"ashby:{board}", make_ashby_fetch()))
 
     if not tasks:
         return jobs
@@ -226,7 +232,7 @@ def fetch_ats_wave(config: dict, limit_per: int = 15) -> list[CanonicalJob]:
                     if cj:
                         jobs.append(cj)
             except Exception as e:
-                logger.exception(f"ATS task {name} failed")
+logger.warning(f"ATS task {name} failed: {e}")
 
     return jobs
 
