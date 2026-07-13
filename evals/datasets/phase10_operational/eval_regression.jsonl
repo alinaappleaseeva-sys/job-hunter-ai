@@ -1,0 +1,3 @@
+{"example_id": "reg-001", "change": "ranking: tighten role_fit weight", "before_p3": 0.72, "after_p3": 0.68, "ghost_fp_change": 0.0, "label": "regression"}
+{"example_id": "reg-002", "change": "ghosting: lower stale threshold", "before_p3": 0.71, "after_p3": 0.73, "ghost_fp_change": -0.03, "label": "improvement"}
+{"example_id": "reg-003", "change": "dedup: stricter title similarity", "before_p3": 0.70, "after_p3": 0.69, "ghost_fp_change": 0.02, "label": "regression"}
