@@ -1,0 +1,2 @@
+{"example_id": "ingest-hh-001", "source": "hh.ru", "url": "https://hh.ru/search/vacancy", "records_expected_min": 10, "notes": "hh.ru - high volume RU board. Anti-bot sensitive. Start with smoke only."}
+{"example_id": "ingest-hh-002", "source": "hh.ru", "url": "https://hh.ru/search/vacancy?text=python", "records_expected_min": 5, "notes": "Search filtered smoke."}

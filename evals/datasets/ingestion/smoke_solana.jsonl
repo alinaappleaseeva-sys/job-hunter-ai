@@ -1,0 +1,2 @@
+{"example_id": "ingest-sol-001", "source": "solana", "url": "https://jobs.solana.com/companies", "records_expected_min": 2, "notes": "Solana ecosystem jobs board. Ecosystem-specific roles."}
+{"example_id": "ingest-sol-002", "source": "solana", "url": "https://jobs.solana.com/jobs", "records_expected_min": 2, "notes": "Direct jobs listing smoke."}

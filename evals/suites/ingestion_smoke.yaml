@@ -15,6 +15,9 @@ gates:
     per_source:
       remoteok: 3
       wellfound: 2
+      solana: 2
+      habr_career: 2
+      hhru: 3
       telegram: 1
 
 ci:
