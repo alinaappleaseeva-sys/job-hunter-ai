@@ -69,7 +69,6 @@ def main(limit: int = 6) -> dict:
         "sources": result["sources"],
         "metrics": metrics,
         "top_5": top_jobs,
-        "per_source_errors": [],  # populated in future runs via logging capture
         "duration_seconds": (datetime.utcnow() - start).total_seconds(),
     }
 
@@ -83,9 +82,6 @@ def main(limit: int = 6) -> dict:
     logger.info(f"Top titles: {[t['title'][:50] for t in top_jobs]}")
     logger.info(f"Telemetry saved to {telemetry_path}")
 
-# Regenerate report (re-uses pipeline run)
-=======
->>>>>>> 77a13ab (fix(phase3+4): address review feedback)
     # Regenerate fresh HTML report
     try:
         import subprocess
