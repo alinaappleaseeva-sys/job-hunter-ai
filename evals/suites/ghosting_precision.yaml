@@ -1,0 +1,47 @@
+# Ghosting precision evaluation suite
+# Phase 7 exit gate
+
+name: ghosting_precision
+version: "1.0"
+phase: 7
+description: >
+  Rule-based ghost scoring quality.
+  Measures false positives on good jobs vs catch rate on clear ghosts.
+  Prefers downrank over hide when evidence is weak.
+
+dataset:
+  path: evals/datasets/ghosting_precision/examples.jsonl
+  format: jsonl
+
+harness:
+  module: evals.harness.ghosting
+  entrypoint: run_suite
+
+gates:
+  fp_rate_on_good:
+    max: 0.15
+    metric: "fraction of active-good jobs receiving ghost_score >= 0.3"
+    policy_note: "if exceeded, must default to downrank only"
+  catch_rate_on_ghosts:
+    min: 0.60
+    metric: "stale + suspicious_evergreen with ghost_score >= 0.5"
+  explanation_coverage:
+    min: 1.0
+    metric: "all non-zero ghost scores must emit at least one reason"
+
+tracked_diagnostics:
+  - avg_ghost_score_active_good
+  - avg_ghost_score_stale
+  - downrank_count
+  - hide_count
+
+reporting:
+  output_dir: evals/reports/ghosting_precision
+  formats:
+    - json
+    - markdown
+  include_per_example_failures: true
+
+ci:
+  pytest_path: tests/unit/test_ghosting.py
+  blocking: true
