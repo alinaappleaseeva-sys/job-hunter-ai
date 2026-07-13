@@ -1,0 +1,2 @@
+{"example_id": "ingest-ro-001", "source": "remoteok", "url": "https://remoteok.com/remote-dev-jobs", "records_expected_min": 5, "notes": "Remote OK board API or scrape smoke. Check parse_rate and freshness."}
+{"example_id": "ingest-ro-002", "source": "remoteok", "url": "https://remoteok.com/api", "records_expected_min": 3, "notes": "JSON API path preferred for reliability."}

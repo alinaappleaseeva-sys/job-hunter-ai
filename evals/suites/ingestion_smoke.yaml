@@ -1,0 +1,22 @@
+# Ingestion smoke suite (Phase 8)
+name: ingestion_smoke
+version: "1.0"
+phase: 8
+description: Source-specific smoke checks for new boards and Telegram. Records fetched, parse success, basic health.
+
+dataset:
+  path: evals/datasets/ingestion/
+  format: dir
+
+gates:
+  parse_rate:
+    min: 0.8
+  records_min:
+    per_source:
+      remoteok: 3
+      wellfound: 2
+      telegram: 1
+
+ci:
+  pytest_path: tests/unit/test_ingestion_smoke.py
+  blocking: true
