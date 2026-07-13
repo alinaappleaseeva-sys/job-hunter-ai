@@ -447,10 +447,12 @@ Ranking precision answers: “given worthwhile data, are we surfacing the right 
    - applied
 4. Persist feedback events.
 5. Expose match explanations.
+6. Minimal local web demo (Streamlit) for interactive job review and structured feedback.
 
 ### Deliverables
 - first usable candidate-facing output
 - review and feedback loop
+- minimal runnable Streamlit demo (demo/streamlit_delivery_demo.py)
 
 ### Exit criteria
 - user can review jobs and provide structured feedback
