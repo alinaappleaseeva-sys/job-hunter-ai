@@ -498,6 +498,8 @@ Ranking precision answers: “given worthwhile data, are we surfacing the right 
 - Remaining Phase 10 items (full triage flow, dataset curation process, rollout rules, runbooks) can be iterated in follow-up waves.
 - Telegram risk #5 from earlier is now mitigated with real client path.
 
+Phase 10 completed (evals + real Telegram + source health + triage + regression review + data refresh + rollout + runnable CV pipeline).
+
 ## 6. Pull Request Strategy
 
 Keep PRs short and scoped to one decision or one subsystem step.
