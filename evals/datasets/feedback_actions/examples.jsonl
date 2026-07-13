@@ -1,0 +1,6 @@
+{"example_id": "fb-001", "profile_id": "p-sr-be-us", "canonical_job_id": "cj-001", "action": "relevant", "reason": "good match for senior backend", "expected_trace": ["score_breakdown.total_score", "score_breakdown.explanations", "ghost_score"], "label": "valid"}
+{"example_id": "fb-002", "profile_id": "p-sr-be-us", "canonical_job_id": "cj-002", "action": "not_relevant", "reason": "wrong seniority", "expected_trace": ["score_breakdown.seniority_fit", "explanations"], "label": "valid"}
+{"example_id": "fb-003", "profile_id": "p-sr-be-us", "canonical_job_id": "cj-003", "action": "duplicate", "reason": "same as cj-001", "expected_trace": ["score_breakdown", "ghost_score"], "label": "valid"}
+{"example_id": "fb-004", "profile_id": "p-sr-be-us", "canonical_job_id": "cj-004", "action": "ghost_likely", "reason": "old posting", "expected_trace": ["ghost_score", "score_breakdown"], "label": "valid"}
+{"example_id": "fb-005", "profile_id": "p-sr-be-us", "canonical_job_id": "cj-005", "action": "applied", "reason": "submitted", "expected_trace": ["score_breakdown", "explanations"], "label": "valid"}
+{"example_id": "fb-006", "profile_id": "p-negative", "canonical_job_id": "cj-006", "action": "relevant", "reason": "", "expected_trace": [], "label": "invalid_trace"}
