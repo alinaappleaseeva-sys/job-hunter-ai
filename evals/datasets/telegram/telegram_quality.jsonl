@@ -1,0 +1,9 @@
+{"example_id": "tg-001", "channel": "tonhunt", "text": "Hiring Senior TON Developer. Remote. Apply: https://t.me/...", "is_job": true, "is_unique": true, "freshness_hours": 4, "label": "good_signal"}
+{"example_id": "tg-002", "channel": "tonhunt", "text": "We are looking for Backend Engineer (Python) at Ston.FI", "is_job": true, "is_unique": false, "freshness_hours": 36, "label": "duplicate_stale"}
+{"example_id": "tg-003", "channel": "cryptohiring_1", "text": "Hiring: Head of Operations for MEXC. Remote, Web3 experience required.", "is_job": true, "is_unique": true, "freshness_hours": 8, "label": "good_signal"}
+{"example_id": "tg-004", "channel": "cryptohiring_1", "text": "Looking for community manager. DM for details", "is_job": true, "is_unique": true, "freshness_hours": 2, "label": "good_signal"}
+{"example_id": "tg-005", "channel": "smerkisjobs", "text": "Open position: Program Manager (Blum + partners). DAO experience preferred.", "is_job": true, "is_unique": true, "freshness_hours": 12, "label": "good_signal"}
+{"example_id": "tg-006", "channel": "tonhunt", "text": "General crypto market discussion, no openings", "is_job": false, "is_unique": true, "freshness_hours": 1, "label": "noise"}
+{"example_id": "tg-007", "channel": "cryptohiring_1", "text": "Hiring Senior Solidity Dev. Full remote. Apply link in bio.", "is_job": true, "is_unique": true, "freshness_hours": 6, "label": "good_signal"}
+{"example_id": "tg-008", "channel": "smerkisjobs", "text": "We need an Operations Lead for our new DeFi project. Experience with treasury and governance required.", "is_job": true, "is_unique": true, "freshness_hours": 18, "label": "good_signal"}
+{"example_id": "tg-009", "channel": "tonhunt", "text": "Hiring: Operations Manager @ Wallet (TON). Remote.", "is_job": true, "is_unique": true, "freshness_hours": 5, "label": "good_signal"}
