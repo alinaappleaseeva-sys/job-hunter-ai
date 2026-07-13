@@ -3,13 +3,20 @@
 HTML Report Generator for Job Hunter AI (Wave 1)
 
 Generates a clean, self-contained HTML file with ranked jobs.
-Job titles are directly clickable and link to the original posting.
+Job titles are directly clickable <a> links to the original posting.
 
 Run:
     python demo/generate_html_report.py
 
-This will create `job_results.html` and open it in your browser.
-No server restarts needed — perfect for fast iteration.
+This will create `job_results.html` (in current dir) and try to open it.
+
+Notes:
+- We insert src/ into sys.path so the demo can be run directly from the repo root
+  without installing the package in editable mode.
+- Only jobs with "specific" posting URLs are shown (board/listing pages are filtered).
+- Profile name is taken dynamically from the pipeline profile object.
+
+Recommended for fast iteration instead of the old Streamlit demo.
 """
 
 from __future__ import annotations
@@ -25,17 +32,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from job_hunter_ai.pipeline import run_full_pipeline
 
 
+import html
+
 def escape_html(text: str) -> str:
-    """Basic HTML escaping."""
+    """Escape text for safe inclusion in HTML.
+    Delegates to stdlib html.escape for correct & < > " ' handling.
+    """
     if not text:
         return ""
-    return (
-        str(text)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    return html.escape(str(text))
 
 
 def render_job_card(idx: int, rj, url: str | None) -> str:
@@ -85,11 +90,6 @@ def render_job_card(idx: int, rj, url: str | None) -> str:
             explanations_html += f"<li class='text-gray-700'>• <strong>{escape_html(exp.component)}</strong> ({exp.score:.2f}) — {escape_html(reasons)}</li>"
         explanations_html += "</ul></div>"
 
-    # Optional direct link if no title link (fallback)
-    link_html = ""
-    if url and not True:  # title is already the link
-        pass
-
     card = f"""
     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start gap-4">
@@ -112,7 +112,7 @@ def render_job_card(idx: int, rj, url: str | None) -> str:
     return card
 
 
-def generate_html_report(limit_per_source: int = 8, output_path: Path | None = None) -> Path:
+def generate_html_report(limit_per_source: int = 8, output_path: Path | None = None, *, profile_id: str | None = None) -> Path:
     print("Running pipeline...")
     results = run_full_pipeline(limit_per_source=limit_per_source)
     ranked = results["ranked_jobs"]
@@ -123,25 +123,35 @@ def generate_html_report(limit_per_source: int = 8, output_path: Path | None = N
     if output_path is None:
         output_path = Path("job_results.html")
 
-    # Prefer jobs with specific real URLs (from live connectors like WWR, RemoteOK, Workable)
-    # Skip generic board links from sample/fallback data
+    # Prefer jobs with specific real URLs from live connectors.
+    # We avoid generic "board" pages (e.g. /remote, /jobs?filter=...) that don't point to one posting.
+    #
+    # Passes:
+    #   https://weworkremotely.com/remote-jobs/some-specific-job-slug
+    #   https://apply.workable.com/acme/j/ABC123/apply
+    #   https://remoteok.com/remote-jobs/remote-foo-bar-123456
+    #
+    # Does not pass:
+    #   https://arc.dev/remote
+    #   https://wellfound.com/jobs?filter=remote
+    #   https://example.com/jobs
     def is_specific_real_url(u: str) -> bool:
         if not u:
             return False
         ul = u.lower().rstrip("/")
-        # Generic board pages - reject
+        # Reject obvious generic board / listing pages
         if ul.endswith(("/remote", "jobs?filter=remote", "/remote-jobs", "/jobs")):
             return False
-        # Specific real job postings
-        markers = [
+        # Accept known patterns that include a concrete job identifier
+        specific_markers = [
             "weworkremotely.com/remote-jobs/",
             "remoteok.com/remote-jobs/",
             "apply.workable.com",
             "/j/",
         ]
-        if any(m in u.lower() for m in markers):
+        if any(m in u.lower() for m in specific_markers):
             return True
-        # Other specific job links
+        # Fallback: long /jobs/ path usually indicates a specific posting
         return "/jobs/" in u.lower() and len(u) > 35
 
     good = [rj for rj in ranked if is_specific_real_url(getattr(rj.canonical_job, "url", "") or "")]
@@ -156,6 +166,11 @@ def generate_html_report(limit_per_source: int = 8, output_path: Path | None = N
         cj = rj.canonical_job
         url = getattr(cj, "url", None) or None
         cards_html += render_job_card(idx, rj, url)
+
+    # Build dynamic profile header
+    profile_name = getattr(profile, "headline", None) or getattr(profile, "profile_id", "Candidate")
+    if hasattr(profile, "target_role_families") and profile.target_role_families:
+        profile_name = f"{profile_name} • {', '.join(profile.target_role_families[:2])}"
 
     # Profile summary
     profile_html = f"""
@@ -174,12 +189,10 @@ def generate_html_report(limit_per_source: int = 8, output_path: Path | None = N
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Hunter AI — Alina Aseeva Results</title>
+    <title>Job Hunter AI — Results</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {{ font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }}
-        .job-card {{ transition: all 0.1s ease; }}
-        .job-card:hover {{ transform: translateY(-1px); }}
     </style>
 </head>
 <body class="bg-gray-100 py-8">
@@ -187,7 +200,7 @@ def generate_html_report(limit_per_source: int = 8, output_path: Path | None = N
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Job Hunter AI — Real Results</h1>
-                <p class="text-gray-600 mt-1">Alina Aseeva • Head of Operations (Web3/DAO)</p>
+                <p class="text-gray-600 mt-1">{profile_name}</p>
             </div>
             <div class="text-right text-sm text-gray-500">
                 Generated: {datetime.now().strftime("%Y-%m-%d %H:%M")}<br>
