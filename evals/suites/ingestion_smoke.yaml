@@ -14,7 +14,10 @@ gates:
   records_min:
     per_source:
       remoteok: 3
+      weworkremotely: 3
+      arcdev: 2
       wellfound: 2
+      workable: 2
       solana: 2
       habr_career: 2
       hhru: 3

@@ -18,6 +18,7 @@ EXPECTED_SOURCES = [
     ("smoke_habr_career.jsonl", 2),
     ("smoke_hhru.jsonl", 2),
     ("smoke_weworkremotely.jsonl", 1),
+    ("smoke_workable.jsonl", 1),
 ]
 
 def test_all_phase8_smoke_datasets_exist():

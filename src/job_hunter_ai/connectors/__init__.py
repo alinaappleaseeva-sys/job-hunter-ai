@@ -5,6 +5,7 @@ Each source connector typically lands in its own PR to keep review scoped.
 """
 
 from .ashby import AshbyConnector
+from .arcdev import ArcDevConnector, load_sample_arcdev_jobs
 from .base import Connector
 from .base import ConnectorAuthError
 from .base import ConnectorEmptyResponseError
@@ -29,30 +30,36 @@ from .quality import ghost_rate
 from .quality import is_ghost_or_stale
 from .quality import parse_rate
 from .remoteok import RemoteOKConnector
-from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
-from .arcdev import ArcDevConnector, load_sample_arcdev_jobs
-from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
 from .solana import SolanaJobsConnector, load_sample_solana_jobs
 from .telegram import TelegramConnector, load_sample_telegram_messages, get_wave1_telegram_channels
 from .telegram_channels import get_wave1_channels, load_sample_for_channel, WAVE1_CHANNELS
+from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
 from .wellfound import WellfoundConnector, load_sample_wellfound_jobs
+from .workable import WorkableConnector, load_sample_workable_jobs
 
 __all__ = [
-    "WeWorkRemotelyConnector",
-    "ArcDevConnector",
-    "load_sample_weworkremotely_jobs",
     "AshbyConnector",
+    "ArcDevConnector",
     "GreenhouseConnector",
     "LeverConnector",
     "RemoteOKConnector",
+    "WeWorkRemotelyConnector",
+    "WorkableConnector",
     "WellfoundConnector",
     "SolanaJobsConnector",
     "HabrCareerConnector",
     "HhruConnector",
     "TelegramConnector",
     "load_sample_telegram_messages",
+    "load_sample_weworkremotely_jobs",
+    "load_sample_workable_jobs",
     "load_sample_wellfound_jobs",
     "load_sample_solana_jobs",
+    "load_sample_arcdev_jobs",
+    "get_wave1_telegram_channels",
+    "get_wave1_channels",
+    "load_sample_for_channel",
+    "WAVE1_CHANNELS",
     "Connector",
     "ConnectorAuthError",
     "ConnectorEmptyResponseError",

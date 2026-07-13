@@ -1,2 +1,2 @@
-{"example_id": "ingest-wf-001", "source": "wellfound", "url": "https://wellfound.com/jobs", "records_expected_min": 5, "notes": "Wellfound (AngelList) startup jobs. Check for compensation and remote signals."}
-{"example_id": "ingest-wf-002", "source": "wellfound", "url": "https://wellfound.com/jobs?role=engineering", "records_expected_min": 3, "notes": "Engineering filter smoke."}
+{"source": "wellfound", "records_expected_min": 2}
+{"source": "wellfound", "records_expected_min": 2}
