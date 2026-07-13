@@ -42,6 +42,7 @@ def _days_since(dt: datetime | None) -> float:
 def _infer_basic_signals(job: CanonicalJob) -> dict[str, bool]:
     signals: dict[str, bool] = {}
     age_days = _days_since(job.canonical_posted_at)
+    url = getattr(job, "url", None) or ""
     if age_days > 90:
         signals["old_posting_age"] = True
     if getattr(job, "source_count", 1) >= 2 or age_days > 60:
@@ -51,6 +52,11 @@ def _infer_basic_signals(job: CanonicalJob) -> dict[str, bool]:
         signals["stale_secondary_listing"] = True
     if getattr(job, "source_count", 1) >= 3 and age_days > 30:
         signals["repost_pattern"] = True
+    # URL-based signal for Phase 7
+    if url and any(bad in url.lower() for bad in ["aggregator", "repost", "click", "redirect"]):
+        signals["apply_link_redirects_to_non_job_page"] = True
+    if not url or url.strip() == "":
+        signals["apply_link_missing"] = True
     return signals
 
 
