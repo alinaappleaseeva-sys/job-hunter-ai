@@ -69,6 +69,7 @@ def main(limit: int = 6) -> dict:
         "sources": result["sources"],
         "metrics": metrics,
         "top_5": top_jobs,
+        "per_source_errors": [],  # populated in future runs via logging capture
         "duration_seconds": (datetime.utcnow() - start).total_seconds(),
     }
 
