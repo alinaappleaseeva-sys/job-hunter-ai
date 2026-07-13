@@ -34,4 +34,6 @@ robustness:
   concurrency: 3
   timeout_per_source: 12
 
-# success_metrics: (planned for future use / Phase 5 evals, currently for docs only)
+success_metrics:
+  track_target_role_delta: true
+  target_role_families: ["chief_of_staff", "dao_ops", "operations", "program_management"]
