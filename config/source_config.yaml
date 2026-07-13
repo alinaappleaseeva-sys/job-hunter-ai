@@ -1,0 +1,39 @@
+# Source configuration for Phase 3 robust expansion
+# Focused on realistic public boards for web3/fintech/ops roles
+
+ats:
+  greenhouse:
+    boards:
+      - stripe          # fintech + ops heavy
+      - coinbase
+      - a16z            # crypto/venture ops
+    limit_per_board: 10
+
+  lever:
+    sites:
+      - stripe
+      - coinbase
+    limit_per_site: 8
+
+  ashby:
+    boards:
+      - stripe
+      - coinbase
+    limit_per_board: 8
+
+telegram:
+  channels:
+    - cryptohiring_1
+    - tonhunt
+    - smerkisjobs
+  limit_per_channel: 5
+
+robustness:
+  max_retries: 1
+  backoff_base_seconds: 1.0
+  concurrency: 3
+  timeout_per_source: 12
+
+success_metrics:
+  track_target_role_delta: true
+  target_role_families: ["chief_of_staff", "dao_ops", "operations", "program_management"]
