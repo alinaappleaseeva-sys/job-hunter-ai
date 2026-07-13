@@ -1,84 +1,86 @@
 # Source Inventory
 
-This file is the working inventory of job sources we may parse.
+This file is the working inventory of job sources.
 
-Purpose:
-- keep one editable list of candidate sources;
-- group sources by acquisition strategy;
-- separate direct connectors from sources that need extra research;
-- expand over time without losing the original coverage map.
+**Purpose**:
+- Track candidate sources
+- Show **actual implementation status** (not just desire)
+- Support prioritization for Implementation Plan 2 - Sources
 
-Status values we will use later:
-- `candidate`: source is known and worth considering
-- `priority`: source is likely in early MVP scope
-- `research-needed`: source exists, but parsing path or value still needs validation
+## Implementation Status Legend
+
+| Status          | Meaning |
+|-----------------|---------|
+| **real**        | Live connector that fetches real data |
+| **stub**        | Only returns sample/fixture data |
+| **none**        | Not implemented |
+| **partial**     | Some functionality exists (e.g. real Telegram but limited channels) |
+
+---
 
 ## ATS Platforms
 
-These are high-leverage sources because one connector can unlock many company career pages.
+High-leverage because one connector unlocks many companies.
 
-| Source | URL | Status | Notes |
-|---|---|---|---|
-| Greenhouse | <https://www.greenhouse.io/> | `priority` | High-value ATS family for early connector work. |
-| Lever | <https://www.lever.co/> | `priority` | High-value ATS family for early connector work. |
-| Ashby | <https://www.ashbyhq.com/> | `priority` | Important ATS for startup and growth-company hiring. |
-| Workable | <https://www.workable.com/> | `candidate` | Broad ATS coverage, likely worth second wave. |
-| Recruitee | <https://recruitee.com/> | `candidate` | Good ATS family for broader company coverage. |
+| Source      | URL                          | Inventory Status | **Implementation** | Notes |
+|-------------|------------------------------|------------------|--------------------|-------|
+| Greenhouse  | https://www.greenhouse.io/   | priority         | **real**           | Full public job board API |
+| Lever       | https://www.lever.co/        | priority         | **real**           | Good pagination support |
+| Ashby       | https://www.ashbyhq.com/     | priority         | **real**           | Rate-limited public API |
+| Workable    | https://www.workable.com/    | candidate        | **none**           | Good candidate for Wave 1-2 |
+| Recruitee   | https://recruitee.com/       | candidate        | **none**           | Worth adding in Wave 2 |
+
+---
 
 ## Job Boards
 
-These are direct job discovery surfaces. Some will overlap with ATS-originated jobs and will need strong dedup logic.
+| Source            | URL                              | Inventory Status | **Implementation** | Notes |
+|-------------------|----------------------------------|------------------|--------------------|-------|
+| Remote OK         | https://remoteok.com/            | priority         | **real**           | Currently one of the strongest live sources |
+| We Work Remotely  | https://weworkremotely.com/      | candidate        | **none**           | High priority for Wave 1 (remote) |
+| Arc.dev           | https://arc.dev/                 | candidate        | **none**           | Remote tech roles |
+| Wellfound         | https://wellfound.com/           | priority         | **stub**           | High relevance for startup ops roles |
+| Otta              | https://otta.com/                | candidate        | **none**           | Startup/tech |
+| Habr Career       | https://career.habr.com/         | priority         | **stub**           | RU tech |
+| hh.ru             | https://hh.ru/                   | priority         | **stub**           | High anti-bot difficulty |
+| LinkedIn Jobs     | https://www.linkedin.com/jobs/   | priority         | **none**           | Very high effort |
+| Indeed            | https://www.indeed.com/          | candidate        | **none**           | Noisy, high dedup cost |
+| Solana Jobs       | https://jobs.solana.com/         | priority         | **stub**           | Ecosystem specific |
 
-| Source | URL | Status | Notes |
-|---|---|---|---|
-| LinkedIn Jobs | <https://www.linkedin.com/jobs/> | `priority` | Large coverage, but parsing and access path may need careful handling. |
-| hh.ru | <https://hh.ru/> | `priority` | Core Russian-language board; important for local coverage. |
-| Indeed | <https://www.indeed.com/> | `candidate` | Massive board, but likely noisy and dedup-heavy. |
-| Remote OK | <https://remoteok.com/> | `priority` | Strong remote coverage. |
-| We Work Remotely | <https://weworkremotely.com/> | `candidate` | Remote-first board with relevant overlap. |
-| Wellfound | <https://wellfound.com/> | `priority` | Strong startup job surface. |
-| Otta | <https://otta.com/> | `candidate` | Relevant startup/tech board; access details need validation. |
-| Habr Career | <https://career.habr.com/> | `priority` | Important RU tech hiring surface. |
-| Arc.dev | <https://arc.dev/> | `candidate` | Relevant for international remote/tech roles. |
-| AngelList | <https://www.angellist.com/> | `research-needed` | Mentioned as the parent/mothership around CoinList context; we need to validate current job-surface value and access path. |
-| Solana Jobs | <https://jobs.solana.com/companies> | `priority` | Important ecosystem-specific board for Solana-related hiring. |
-| IDAgent companies | <https://www.idagent.pro/companies#consultation> | `research-needed` | Needs validation: whether this is a meaningful recurring hiring source or just a company listing surface. |
+---
 
 ## Telegram Channels
 
-Telegram is likely to give early or off-platform signals. It should be treated as a first-class source family, not a side channel.
+Telegram is now high-value because we have a **real** Telethon implementation.
 
-| Channel | URL / Handle | Status | Notes |
-|---|---|---|---|
-| cryptohiring_1 | `@cryptohiring_1` | `priority` | MEXC-focused vacancies. |
-| tonhunt | `@tonhunt` | `priority` | TON ecosystem roles: Wallet, TON, TOP, Ston.FI and others. |
-| smerkisjobs | `@smerkisjobs` | `priority` | Mostly Blum hiring, with spillover from partners like Bybit and Pancake. |
-| hrlunapark | `@hrlunapark` | `candidate` | Engineering-heavy roles. |
-| rfoundersjobs | `@rfoundersjobs` | `candidate` | Needs later validation on consistency and uniqueness. |
-| crypto_talents | `@crypto_talents` | `candidate` | Crypto-focused hiring surface; quality needs validation. |
-| hiring_by_lukina | `@hiring_by_lukina` | `candidate` | Needs later validation on role mix and freshness. |
-| zarubezhom_jobs | `@zarubezhom_jobs` | `candidate` | Potential international job flow; likely broad and noisy. |
-| AFrucareer | `@AFrucareer` | `candidate` | Needs validation on fit for target roles and markets. |
+| Channel            | Handle             | Inventory Status | **Implementation** | Notes |
+|--------------------|--------------------|------------------|--------------------|-------|
+| cryptohiring_1     | @cryptohiring_1    | priority         | **partial**        | High relevance (Web3) |
+| tonhunt            | @tonhunt           | priority         | **partial**        | TON ecosystem |
+| smerkisjobs        | @smerkisjobs       | priority         | **partial**        | Blum + partners |
+| hrlunapark         | @hrlunapark        | candidate        | **none**           | Engineering heavy |
+| rfoundersjobs      | @rfoundersjobs     | candidate        | **none**           | - |
+| crypto_talents     | @crypto_talents    | candidate        | **none**           | - |
+| hiring_by_lukina   | @hiring_by_lukina  | candidate        | **none**           | - |
+| zarubezhom_jobs    | @zarubezhom_jobs   | candidate        | **none**           | - |
 
-## Company Career Pages
+**Action**: Expand active channels using real TelegramConnector (see `implementation-plan-sources.md` Wave 1).
 
-These are direct company surfaces. For now we treat them as explicit tracked pages or seeds for later company crawling.
+---
 
-| Company | URL | Status | Notes |
-|---|---|---|---|
-| Doist Careers | <https://doist.com/careers> | `candidate` | Useful as a direct career-page source and as an example company-page parser target. |
+## Company Career Pages & Other
 
-## Notes For Later Expansion
+| Type                    | Status | Notes |
+|-------------------------|--------|-------|
+| Direct company pages    | **none** | Potential future seed-based crawler |
+| IDAgent companies       | research-needed | Low priority |
 
-- We should eventually split this file into:
-  - active MVP sources
-  - watchlist sources
-  - rejected or low-value sources
-- For each source we will later want extra metadata:
-  - parsing method
-  - auth requirements
-  - anti-bot risk
-  - expected freshness
-  - expected uniqueness versus other sources
-  - eval coverage status
+---
 
+## Summary (Current Real Coverage)
+
+- **Strong**: Greenhouse, Ashby, Lever, RemoteOK, Telegram (infrastructure)
+- **Medium**: Wellfound, Solana, Habr, hh.ru (stubs only)
+- **Weak / Missing**: We Work Remotely, Arc.dev, Otta, Workable, Recruitee, LinkedIn, most Telegram channels
+
+See `docs/architecture/implementation-plan-sources.md` for the recommended connection order.
