@@ -1,0 +1,29 @@
+# Feedback / Delivery actions evaluation suite
+# Phase 9
+
+name: feedback_actions
+version: "1.0"
+phase: 9
+description: >
+  User actions on ranked jobs must be traceable to ranking + ghost decisions.
+  No silent actions. Feedback enables iteration.
+
+dataset:
+  path: evals/datasets/feedback_actions/examples.jsonl
+  format: jsonl
+
+gates:
+  traceability_rate:
+    min: 0.90
+  no_silent_actions:
+    max: 0.0   # 0% silent
+  explanations_exposed:
+    min: 0.80
+
+tracked:
+  - actions_with_full_trace
+  - silent_actions
+
+ci:
+  pytest_path: tests/unit/test_feedback.py
+  blocking: true

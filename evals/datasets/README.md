@@ -6,36 +6,28 @@ Store curated examples here.
 
 | Directory | Phase | Status |
 |---|---|---|
-| `ingestion/` | 2–3 / 8 | **active for smoke (Phase 8)** |
-| **`normalization_gold/`** | **4** | **active — 16 labeled examples** |
-| `dedup/` | 5 / 8 | **active — cross-family regression** |
-| **`ranking_topk/`** | **6** | **active — 8 labeled examples** |
-| **`ghosting_precision/`** | **7** | **active — 10 labeled examples** |
+| `ingestion/` | 2–3 / 8 | active |
+| `normalization_gold/` | 4 | active |
+| `dedup_regression/` | 5 / 8 | active |
+| `ranking_topk/` | 6 | active |
+| `ghosting_precision/` | 7 | active |
+| `feedback_actions/` | **9** | **new scaffold** |
 
 ## Active datasets
 
-### `ingestion/`
-Source-specific smoke checks for new boards and Telegram (Phase 8).
-See `ingestion/README.md`.
+### `feedback_actions/` (Phase 9)
+Labeled user actions on RankedJobs.
+Must record full trace to score_breakdown, explanations, ghost_score.
 
-### `dedup_regression/`
-Must-merge / must-not-merge including cross-family (ATS + boards + Telegram).
-See `dedup_regression/README.md` and examples.
+**Suite:** `evals/suites/feedback_actions.yaml`
+**Rubric:** `evals/rubrics/feedback_traceability.md`
 
-**Suite:** `evals/suites/dedup_regression.yaml` (to be added)
+### Other active (see previous)
 
-### `ghosting_precision/`
-... (existing)
-
-### `ranking_topk/`
-... (existing)
-
-### `normalization_gold/`
-... (existing)
+- `ghosting_precision/`
+- `ranking_topk/`
+- etc.
 
 ## Rules for dataset changes
-
-1. **New connector** → extend gold set with ≥3 representative postings + ingestion smoke before rollout.
-2. **Cross-family dedup** → add to dedup_regression.
-3. **Ranking or ghost change after expansion** → re-run ranking_topk and ghosting_precision.
-4. Never delete without changelog.
+- **New delivery/feedback logic** → extend `feedback_actions` + re-run traceability gates before merge.
+- Never delete labeled rows without changelog.
