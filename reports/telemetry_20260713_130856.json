@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-07-13T13:08:56.758635Z",
+  "profile_id": "alina-aseeva-head-ops-web3",
+  "raw_count": 671,
+  "ranked_count": 671,
+  "sources": [
+    "arcdev",
+    "greenhouse",
+    "remoteok",
+    "wellfound",
+    "weworkremotely"
+  ],
+  "metrics": {
+    "raw_count": 671,
+    "ranked_count": 671,
+    "sources_used": 5,
+    "target_role_family_count": 497,
+    "target_role_ratio": 0.741
+  },
+  "top_5": [
+    {
+      "title": "head of operations",
+      "company": "Axine Labs",
+      "score": 1.0,
+      "role_family": "chief_of_staff",
+      "market": "web3",
+      "url": "https://wellfound.com/jobs?filter=remote",
+      "comp_min": 180000
+    },
+    {
+      "title": "program manager, dao operations",
+      "company": "Friss Labs",
+      "score": 1.0,
+      "role_family": "dao_ops",
+      "market": "web3",
+      "url": "https://wellfound.com/jobs?filter=remote",
+      "comp_min": 160000
+    },
+    {
+      "title": "program manager - crypto",
+      "company": "Web3 Co",
+      "score": 0.985,
+      "role_family": "dao_ops",
+      "market": "web3",
+      "url": "https://arc.dev/remote",
+      "comp_min": null
+    },
+    {
+      "title": "accounting manager, gl operations & intercompany",
+      "company": "Coinbase",
+      "score": 0.542,
+      "role_family": "dao_ops",
+      "market": "ai-web3",
+      "url": "https://www.coinbase.com/careers/positions/7779094?gh_jid=7779094",
+      "comp_min": null
+    },
+    {
+      "title": "accounting manager, gl operations & intercompany",
+      "company": "Coinbase",
+      "score": 0.625,
+      "role_family": "dao_ops",
+      "market": "ai-web3",
+      "url": "https://www.coinbase.com/careers/positions/7822885?gh_jid=7822885",
+      "comp_min": null
+    }
+  ],
+  "duration_seconds": 18.562479
+}
