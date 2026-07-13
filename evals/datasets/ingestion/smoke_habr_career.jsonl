@@ -1,0 +1,2 @@
+{"example_id": "ingest-habr-001", "source": "habr_career", "url": "https://career.habr.com/vacancies", "records_expected_min": 5, "notes": "Habr Career RU tech board. Russian-language roles."}
+{"example_id": "ingest-habr-002", "source": "habr_career", "url": "https://career.habr.com/companies", "records_expected_min": 2, "notes": "Companies section smoke."}
