@@ -424,6 +424,13 @@ Ranking precision answers: “given worthwhile data, are we surfacing the right 
 - ranking quality re-check after source expansion
 - gate: no source family rollout if it causes uncontrolled duplicate or junk growth
 
+**Post-Phase 8 status note (as of implementation):**
+- Fully implemented real connectors: Greenhouse, Lever, Ashby (ATS), Remote OK (job board).
+- Telegram: MVP stub only (see risk #5 and Phase 10 task 6).
+- Remaining from original Phase 8 tasks: hh.ru, Wellfound, Habr Career, Solana Jobs not yet implemented.
+- Other priority sources (LinkedIn, We Work Remotely, etc.) remain for later waves.
+- Full source status is maintained in docs/research/source-inventory.md.
+
 ## Phase 9: Delivery UX
 
 ### Objectives
@@ -465,6 +472,7 @@ Ranking precision answers: “given worthwhile data, are we surfacing the right 
 3. Add eval regression review routine.
 4. Add data refresh and dataset curation process.
 5. Add rollout rules for new sources.
+6. Implement real Telegram ingestion path using proper Telegram API (Telethon or Pyrogram). Include pagination, channel handling, quality monitoring, and integration with existing ghosting/dedup. (MVP stub from Phase 8 is insufficient for production use.)
 
 ### Deliverables
 - runbooks
@@ -542,7 +550,8 @@ We collapse different openings from the same company.
 We hide good jobs because stale signals are too aggressive.
 
 5. **Telegram noise explosion**
-We treat channels as high-signal before measuring uniqueness and freshness.
+   We treat channels as high-signal before measuring uniqueness and freshness.
+   **Mitigation / Next step (post-Phase 8):** Implement real Telegram client using Telethon or Pyrogram (with pagination, rate limits, and auth). Add dedicated ingestion smoke + noise metrics before scaling. Tracked explicitly in Phase 10.
 
 ## 9. Definition Of MVP Done
 
