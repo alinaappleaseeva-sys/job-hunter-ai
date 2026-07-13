@@ -104,8 +104,8 @@ def apply_ghost_penalty(
 ) -> list[Any]:
     """Adjust scores in-place for ghosted jobs.
 
-    Used by ranking/delivery pipeline.
-    Returns the (possibly modified) list.
+    Phase 2: do NOT penalize fresh high-fit roles too aggressively.
+    If role_family indicates target ops/CoS and age < 7 days, reduce or skip penalty.
     """
     from job_hunter_ai.common.models import RankedJob  # local import to avoid cycles
 
@@ -115,14 +115,21 @@ def apply_ghost_penalty(
         job = rj.canonical_job
         ghost_score, reasons = compute_ghost_score(job)
 
-        # attach to the canonical for downstream use
         job.ghost_score = ghost_score
 
+        # Phase 2 recency + fit guard
+        age = _days_since(job.canonical_posted_at)
+        is_high_fit_role = job.role_family in ("chief_of_staff", "dao_ops", "operations")
+        fresh_high_fit = is_high_fit_role and age < 7
+
         if ghost_score >= DEFAULT_DOWNRANK_THRESHOLD:
-            # penalize total_score
+            if fresh_high_fit:
+                # skip or strongly reduce penalty for fresh target roles
+                logger = __import__("logging").getLogger(__name__)
+                logger.info(f"Skipping/reducing ghost penalty for fresh high-fit role: {job.title_normalized}")
+                continue
             penalty = 1.0 - (1.0 - downrank_factor) * min(ghost_score / 0.8, 1.0)
             rj.score_breakdown.total_score *= penalty
-            # add explanation
             rj.score_breakdown.explanations.append(
                 type(rj.score_breakdown.explanations[0])(
                     component="ghost_penalty",
@@ -130,6 +137,5 @@ def apply_ghost_penalty(
                     reasons=[f"ghost_score={ghost_score:.2f}: {r}" for r in reasons[:2]],
                 )
             )
-            # re-sort later if needed by caller
 
     return ranked_jobs

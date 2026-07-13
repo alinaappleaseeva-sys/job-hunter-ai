@@ -1,0 +1,8 @@
+{
+  "comment": "Configurable weights for Phase 2+. Sum should be ~1.0. Tuned to prioritize role_fit for Head of Ops / CoS over salary.",
+  "role_fit": 0.40,
+  "seniority_fit": 0.25,
+  "location_remote_fit": 0.20,
+  "salary_fit": 0.05,
+  "market_fit": 0.10
+}
