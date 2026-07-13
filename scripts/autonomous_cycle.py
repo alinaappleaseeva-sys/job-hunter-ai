@@ -82,6 +82,10 @@ def main(limit: int = 6) -> dict:
     logger.info(f"Top titles: {[t['title'][:50] for t in top_jobs]}")
     logger.info(f"Telemetry saved to {telemetry_path}")
 
+<<<<<<< HEAD
+=======
+    # Regenerate report (re-uses pipeline run)
+>>>>>>> 5db36da (feat(phase4): ranking/delivery polish + automation foundation)
     # Regenerate fresh HTML report
     try:
         import subprocess
