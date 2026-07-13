@@ -30,6 +30,8 @@ from .quality import is_ghost_or_stale
 from .quality import parse_rate
 from .remoteok import RemoteOKConnector
 from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
+from .arcdev import ArcDevConnector, load_sample_arcdev_jobs
+from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
 from .solana import SolanaJobsConnector, load_sample_solana_jobs
 from .telegram import TelegramConnector, load_sample_telegram_messages, get_wave1_telegram_channels
 from .telegram_channels import get_wave1_channels, load_sample_for_channel, WAVE1_CHANNELS
@@ -37,6 +39,7 @@ from .wellfound import WellfoundConnector, load_sample_wellfound_jobs
 
 __all__ = [
     "WeWorkRemotelyConnector",
+    "ArcDevConnector",
     "load_sample_weworkremotely_jobs",
     "AshbyConnector",
     "GreenhouseConnector",
