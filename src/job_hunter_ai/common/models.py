@@ -131,6 +131,7 @@ class CanonicalJob:
     ghost_score: float | None
     canonical_status: str
     merge_confidence: float | None
+    url: str | None = None
     merge_reasons: StringList = field(default_factory=list)
 
 
@@ -142,6 +143,7 @@ class CanonicalMergeEvent:
     posting_id: str
     merged_at: datetime
     merge_confidence: float | None
+    url: str | None = None
     merge_reasons: StringList = field(default_factory=list)
     reviewer_override: bool = False
 

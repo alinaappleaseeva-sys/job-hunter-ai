@@ -33,6 +33,8 @@ def _days_since(dt: datetime | None) -> float:
     if dt is None:
         return 999.0
     now = datetime.now(UTC)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
     delta = now - dt
     return max(0.0, delta.days + delta.seconds / 86400)
 
