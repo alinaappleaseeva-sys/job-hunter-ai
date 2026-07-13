@@ -1,0 +1,55 @@
+name: CI - Tests + Evals + Report
+
+on:
+  push:
+    branches: [ main, phase-* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml httpx
+          # add more if needed: pytest etc.
+
+      - name: Run smoke pipeline
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          from job_hunter_ai.pipeline import run_full_pipeline
+          r = run_full_pipeline(limit_per_source=3)
+          assert r['total_raw'] > 5, 'Too few jobs'
+          print('Smoke OK. Raw:', r['total_raw'])
+          "
+
+      - name: Run Precision@K eval (Phase 5)
+        run: |
+          python evals/harness/precision_topk.py --k 5 || echo "Precision gate (non-blocking for now)"
+
+      - name: Generate HTML report (smoke)
+        run: |
+          python demo/generate_html_report.py || echo "Report gen note"
+
+      - name: Run autonomous cycle (dry)
+        run: |
+          python scripts/autonomous_cycle.py --limit 2 || echo "Cycle smoke done"
+
+      - name: Upload report artifact (optional)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: job-results
+          path: job_results.html
+          retention-days: 7

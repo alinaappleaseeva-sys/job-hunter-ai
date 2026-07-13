@@ -1,8 +1,10 @@
 
 # Generated artifacts (Phase 3/4)
 # Generated demo artifacts
+# Phase 5+ generated artifacts
 *.egg-info/
 *.py[cod]
+*.telemetry*.json
 .DS_Store
 .env
 .env.*
