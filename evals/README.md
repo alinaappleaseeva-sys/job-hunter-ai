@@ -54,3 +54,9 @@ Questions:
 
 If a change improves coverage but worsens junk rate, that is not a silent win.
 
+
+### Ranking Quality (Phase 2 update)
+- Added Head of Operations / Chief of Staff gold dataset under `evals/datasets/head_ops_cos_gold/`.
+- Tests for priority title boosts (CoS, Head Ops, dao_ops).
+- Target metrics now track `target_role_family_count` and role_fit on high-priority titles.
+- Gold examples emphasize web3/DAO/fintech ops roles for the specific candidate profile.

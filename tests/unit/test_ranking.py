@@ -185,3 +185,86 @@ def test_ranking_suite_yaml_exists():
     assert suite_path.exists()
     content = suite_path.read_text()
     assert "precision_at_3" in content
+
+
+# Phase 2 additions: tests for CoS / Head of Ops boosts + new gold dataset
+
+import json
+from pathlib import Path
+
+PHASE2_GOLD_PATH = Path("evals/datasets/head_ops_cos_gold/examples.jsonl")
+
+def _load_phase2_gold():
+    if not PHASE2_GOLD_PATH.exists():
+        return []
+    examples = []
+    with PHASE2_GOLD_PATH.open(encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if line:
+                examples.append(json.loads(line))
+    return examples
+
+PHASE2_GOLD = _load_phase2_gold()
+
+def test_phase2_cos_head_ops_boosts():
+    """Phase 2: high-priority titles (chief of staff, head of operations) should get strong role_fit."""
+    from job_hunter_ai.ranking.ranking import _score_role_fit, DEFAULT_WEIGHTS
+    from job_hunter_ai.common.models import CandidateProfile, CanonicalJob
+    from datetime import datetime, timezone
+
+    profile = CandidateProfile(
+        profile_id="test",
+        target_role_families=["chief_of_staff", "operations"],
+        target_seniorities=["head"],
+        target_title_keywords=["chief of staff", "head of operations", "ops"],
+        remote_preference="remote",
+        min_compensation=120000,
+    )
+
+    # Simulate a job with exact high priority title
+    job_cos = CanonicalJob(
+        canonical_job_id="test-cos",
+        primary_posting_id="test-cos",
+        company_name="DAO Co",
+        company_domain=None,
+        title_normalized="chief of staff",
+        role_family="chief_of_staff",
+        seniority="head",
+        market="web3",
+        remote_mode="remote",
+        employment_type=None,
+        location_country="Remote",
+        location_region=None,
+        location_city=None,
+        compensation_min=140000,
+        compensation_max=None,
+        compensation_currency="USD",
+        canonical_posted_at=datetime(2026, 7, 1, tzinfo=timezone.utc),
+        first_seen_at=datetime(2026, 7, 1, tzinfo=timezone.utc),
+        last_seen_at=datetime(2026, 7, 1, tzinfo=timezone.utc),
+        active_posting_count=1,
+        source_count=1,
+        ghost_score=None,
+        canonical_status="active",
+        merge_confidence=None,
+        merge_reasons=[],
+    )
+
+    score, reasons = _score_role_fit(profile, job_cos)
+    assert score >= 0.9, f"Expected high score for CoS title, got {score}"
+    assert any("high-priority" in r or "chief of staff" in " ".join(reasons).lower() for r in reasons), "Expected high-priority boost reason"
+
+def test_phase2_head_ops_cos_gold():
+    """Phase 2: basic smoke on new CoS/Head Ops gold dataset."""
+    if not PHASE2_GOLD:
+        return  # skip if not present
+    for ex in PHASE2_GOLD[:2]:
+        profile = _build_profile(ex["profile"])
+        jobs = [_make_canonical_from_gold(j) for j in ex["jobs"]]
+        ranked = rank_jobs(profile, jobs)
+        # At least one highly_relevant should be in top 2 for these examples
+        top_ids = [rj.canonical_job.canonical_job_id for rj in ranked[:2]]
+        highly = [j["canonical_job_id"] for j in ex["jobs"] if j.get("relevance_label") == "highly_relevant"]
+        overlap = set(top_ids) & set(highly)
+        assert len(overlap) >= 1, f"Expected highly relevant CoS/Head Ops in top for {ex['example_id']}"

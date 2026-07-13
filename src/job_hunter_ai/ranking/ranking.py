@@ -28,7 +28,9 @@ logger = logging.getLogger(__name__)
 CONFIG_PATH = Path("config/ranking_weights.json")
 
 def load_weights() -> dict[str, float]:
-    """Load weights from config or fall back to defaults (Phase 2)."""
+    """Load weights from config or fall back to defaults (Phase 2).
+    Adds validation: warn if sum != ~1.0 or file missing.
+    """
     defaults = {
         "role_fit": 0.40,
         "seniority_fit": 0.25,
@@ -36,14 +38,19 @@ def load_weights() -> dict[str, float]:
         "salary_fit": 0.05,
         "market_fit": 0.10,
     }
+    if not CONFIG_PATH.exists():
+        logger.warning(f"Ranking weights config {CONFIG_PATH} not found, using defaults")
+        return defaults
     try:
-        if CONFIG_PATH.exists():
-            with open(CONFIG_PATH) as f:
-                loaded = json.load(f)
-            for k in defaults:
-                if k in loaded and isinstance(loaded[k], (int, float)):
-                    defaults[k] = float(loaded[k])
-            logger.info(f"Loaded ranking weights from {CONFIG_PATH}")
+        with open(CONFIG_PATH) as f:
+            loaded = json.load(f)
+        for k in defaults:
+            if k in loaded and isinstance(loaded[k], (int, float)):
+                defaults[k] = float(loaded[k])
+        total = sum(defaults.values())
+        if abs(total - 1.0) > 0.02:
+            logger.warning(f"Ranking weights sum to {total:.3f} (expected ~1.0)")
+        logger.info(f"Loaded ranking weights from {CONFIG_PATH}: {defaults}")
     except Exception as e:
         logger.warning(f"Failed to load weights from config: {e}, using defaults")
     return defaults
@@ -72,7 +79,7 @@ def _score_role_fit(profile: CandidateProfile, job: CanonicalJob) -> tuple[float
     kw_match = _contains_any(title, profile.target_title_keywords)
     family_match = role_family in profile.target_role_families if profile.target_role_families else False
 
-    # Phase 2: High-priority title boosts for CoS / Head of Ops
+    # Phase 2: High-priority title boosts for CoS / Head of Ops (capped at 1.0)
     high_priority = ["chief of staff", "head of operations", "head of ops", "dao", "governance", "treasury ops"]
     priority_boost = 0.0
     for hp in high_priority:
@@ -253,7 +260,7 @@ def rank_jobs(
     for i, rj in enumerate(ranked, 1):
         rj.rank = i
         if i <= 5:
-            logger.debug(f"Top {i}: {rj.canonical_job.title_normalized}@{rj.canonical_job.company_name} "
+            logger.info(f"Top {i}: {rj.canonical_job.title_normalized}@{rj.canonical_job.company_name} "
                          f"score={rj.score_breakdown.total_score:.3f} role_fit={rj.score_breakdown.role_fit:.2f} "
                          f"market={rj.canonical_job.market}")
 

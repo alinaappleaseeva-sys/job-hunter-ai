@@ -581,3 +581,25 @@ The MVP is done when:
 4. Ghost scoring exists and affects visibility policy.
 5. We have data-backed eval suites for ingestion, normalization, dedup, ranking, and ghosting.
 6. We have enough review confidence to tell whether a change improved or degraded system quality.
+
+## Phase 2 Status (completed as of 2026-07-13)
+
+**Focus**: Role/Market Detection & Prioritization + Ranking enhancements for Head of Ops / CoS profile.
+
+**Key changes**:
+- `_to_canonical` enhanced to scan description/content + tags.
+- Stronger role_family: chief_of_staff, dao_ops, governance, treasury, program management.
+- Expanded market detection (web3 + security, ai-web3).
+- Configurable weights from config/ranking_weights.json (role_fit raised to 0.40, salary_fit lowered to 0.05).
+- Priority boosts for exact CoS/Head Ops titles in _score_role_fit.
+- Ghost penalty now has recency + high-fit guard (fresh target roles protected).
+- New gold dataset evals/datasets/head_ops_cos_gold/ for target titles.
+- Added target_role_family_count metric.
+
+**Self-validation results**:
+- Pipeline produces raw >15 jobs (limit 5 per source).
+- 6+ jobs with target role families (chief_of_staff / dao_ops / operations).
+- Top ranked jobs show role_fit=1.00 for "head of operations", "chief of staff", "program manager, dao operations".
+- Weights load correctly with validation.
+
+See full plan in docs/plans/implementation-plan-job-aggregator-ranking.md and PR #44.
