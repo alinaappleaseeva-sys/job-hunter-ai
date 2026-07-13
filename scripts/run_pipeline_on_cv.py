@@ -158,15 +158,15 @@ def main() -> None:
 
 
 def _make_synthetic_jobs() -> list[CanonicalJob]:
-    """Fallback if RemoteOK is down."""
+    """Realistic Web3/Ops jobs matching Alina profile for demo."""
     base = datetime.utcnow()
     jobs = []
     samples = [
         ("Head of Operations - Web3 Protocol", "StableUnit DAO", "operations", "head", "web3", 165000),
         ("Program Manager, DAO Governance", "Arbitrum Foundation", "operations", "senior", "web3", 155000),
-        ("Senior Backend Engineer", "Some SaaS", "engineering", "senior", "saas", 170000),
         ("Operations Lead - DeFi", "Lido", "operations", "lead", "defi", 180000),
-        ("Project Manager (Crypto)", "Bybit", "operations", "mid", "crypto", 120000),
+        ("Head of DAO Operations", "Aave", "operations", "head", "defi", 190000),
+        ("Governance & Ops Manager", "ENS DAO", "operations", "senior", "dao", 145000),
     ]
     for i, (title, company, role, sen, market, comp) in enumerate(samples):
         jobs.append(CanonicalJob(
