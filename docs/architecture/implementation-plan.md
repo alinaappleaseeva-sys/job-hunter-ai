@@ -49,6 +49,12 @@ The MVP should prove four things:
 
 ## 3.1 Source Reality And Prioritization
 
+**See dedicated plan**: `docs/architecture/implementation-plan-sources.md`
+
+This document contains the current recommended sequence, effort/coverage analysis, and wave-based rollout for sources.
+
+Old Tier lists below are kept for historical reference only.
+
 Not all sources are equal.
 
 For the MVP we should explicitly prioritize by `expected value / integration effort`, not by brand recognition.
