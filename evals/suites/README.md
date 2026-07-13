@@ -7,5 +7,5 @@ Recommended first suite files:
 - `ingestion_smoke.yaml`
 - `normalization_v1.yaml` ✅ (Phase 4)
 - `dedup_regression.yaml`
-- `ranking_topk.yaml` ✅ (Phase 6 scaffold + dataset)
-- `ghosting_precision.yaml`
+- `ranking_topk.yaml` ✅ (Phase 6)
+- `ghosting_precision.yaml` ✅ (Phase 7 scaffold)

@@ -10,9 +10,17 @@ Store curated examples here.
 | **`normalization_gold/`** | **4** | **active — 16 labeled examples** |
 | `dedup/` | 5 | planned (`dedup_regression`) |
 | **`ranking_topk/`** | **6** | **active — 8 labeled examples** |
-| `ghosting/` | 7 | planned |
+| **`ghosting_precision/`** | **7** | **active — 10 labeled examples** |
 
 ## Active datasets
+
+### `ghosting_precision/`
+
+Labeled examples for ghost scoring (stale / suspicious evergreen / active-good).  
+See `ghosting_precision/README.md` for signals, labels, and policy.
+
+**Suite:** `evals/suites/ghosting_precision.yaml`  
+**Rubric:** `evals/rubrics/ghosting_precision.md`
 
 ### `ranking_topk/`
 
@@ -44,4 +52,5 @@ See `normalization_gold/README.md` for sampling, biases, and refresh policy.
 2. **New connector** → extend gold set with ≥3 representative postings before rollout.
 3. **Dedup rule change** → update `dedup_regression` must-merge / must-not-merge pairs (Phase 5).
 4. **Ranking heuristic or profile model change** → extend or relabel `ranking_topk` examples; PR must show precision@3 / baseline comparison before merge.
-5. Never delete labeled rows without recording reason in dataset README changelog.
+5. **Ghost scoring change** → extend `ghosting_precision` examples and re-run FP/catch rate gates before merge.
+6. Never delete labeled rows without recording reason in dataset README changelog.
