@@ -30,7 +30,8 @@ from .quality import is_ghost_or_stale
 from .quality import parse_rate
 from .remoteok import RemoteOKConnector
 from .solana import SolanaJobsConnector, load_sample_solana_jobs
-from .telegram import TelegramConnector, load_sample_telegram_messages
+from .telegram import TelegramConnector, load_sample_telegram_messages, get_wave1_telegram_channels
+from .telegram_channels import get_wave1_channels, load_sample_for_channel, WAVE1_CHANNELS
 from .wellfound import WellfoundConnector, load_sample_wellfound_jobs
 
 __all__ = [

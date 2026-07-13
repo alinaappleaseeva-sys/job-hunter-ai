@@ -1,17 +1,21 @@
-"""Telegram channels connector (Phase 10 - real path).
+"""Telegram channels connector (Phase 10 - real path + Wave 1 expansion).
 
-Supports both:
-- Stub / sample mode (for tests and offline)
-- Real mode using Telethon (MTProto) for channel history
+Supports:
+- Real mode using Telethon (MTProto)
+- Stub / sample mode via channel registry (for tests, offline, and quick Wave 1 coverage)
 
-Real usage:
+Wave 1 focus: easy multi-channel support for high-relevance Web3/DAO hiring channels.
+
+Usage example (stub):
+    from job_hunter_ai.connectors.telegram import TelegramConnector
+    conn = TelegramConnector.from_channel("tonhunt")   # auto-loads Wave 1 samples
+    result = conn.fetch(limit=20)
+
+Usage example (real):
     from telethon import TelegramClient
-    client = TelegramClient(session, api_id, api_hash)
+    client = TelegramClient(...)
     conn = TelegramConnector("telegram:tonhunt", client=client)
     result = conn.fetch(limit=50)
-
-The connector returns RawSourceRecord with source_type="repost_channel".
-Integrates with existing ghosting/dedup via content_hash and metadata.
 """
 
 from __future__ import annotations
@@ -28,6 +32,11 @@ from job_hunter_ai.connectors.base import (
     make_content_hash,
     utcnow,
 )
+from job_hunter_ai.connectors.telegram_channels import (
+    get_channel_handle,
+    load_sample_for_channel,
+    get_wave1_channels,
+)
 
 try:
     from telethon import TelegramClient
@@ -42,23 +51,37 @@ except ImportError:
 class TelegramConnector(Connector):
     """Telegram repost channel connector.
 
-    source_name example: "telegram:tonhunt"
+    source_name format: "telegram:<channel_key>"  e.g. "telegram:tonhunt"
     """
 
     def __init__(
         self,
         source_name: str,
         messages: list[dict] | None = None,
-        client: Any | None = None,  # TelegramClient when real
+        client: Any | None = None,
     ) -> None:
         super().__init__(source_name, "repost_channel")
         self.messages = messages or []
         self.client = client
 
+    @classmethod
+    def from_channel(
+        cls,
+        channel: str,
+        client: Any | None = None,
+    ) -> "TelegramConnector":
+        """Convenience constructor for Wave 1.
+
+        Uses the channels registry to load sample data when no real client.
+        Example: TelegramConnector.from_channel("cryptohiring_1")
+        """
+        source_name = f"telegram:{channel}" if not channel.startswith("telegram:") else channel
+        samples = load_sample_for_channel(channel)
+        return cls(source_name=source_name, messages=samples, client=client)
+
     async def _fetch_real(
         self, *, limit: int | None = None, cursor_value: str | None = None
     ) -> list[RawSourceRecord]:
-        """Real fetch using Telethon (requires authenticated client)."""
         if not TELETHON_AVAILABLE or self.client is None:
             raise RuntimeError(
                 "Telethon not installed or no client provided. "
@@ -69,7 +92,6 @@ class TelegramConnector(Connector):
         records: list[RawSourceRecord] = []
         now = utcnow()
 
-        # Simple pagination using cursor as offset_id if provided
         offset_id = int(cursor_value) if cursor_value and cursor_value.isdigit() else 0
 
         async for msg in self.client.iter_messages(
@@ -89,7 +111,6 @@ class TelegramConnector(Connector):
                 "id": external_id,
                 "text": text,
                 "date": msg.date.isoformat() if msg.date else None,
-                "sender_id": getattr(msg.sender_id, "user_id", None) if hasattr(msg, "sender_id") else None,
                 "views": getattr(msg, "views", None),
             }
 
@@ -120,10 +141,7 @@ class TelegramConnector(Connector):
     def fetch(self, *, cursor_value: str | None = None, limit: int | None = None) -> FetchResult:
         now = utcnow()
 
-        # Real path (async inside sync for simplicity in MVP; real callers should await)
         if self.client is not None:
-            # Note: for full async use, callers should use the async version
-            # Here we provide sync wrapper for compatibility with existing pipeline
             import asyncio
             try:
                 loop = asyncio.get_event_loop()
@@ -136,24 +154,26 @@ class TelegramConnector(Connector):
             )
             return FetchResult(records=records, cursor_after=str(now))
 
-        # Stub / sample path (backwards compatible)
+        # Stub / sample path (enhanced for Wave 1)
         records: list[RawSourceRecord] = []
+        channel_key = self.source_name.split(":", 1)[-1] if ":" in self.source_name else self.source_name
 
         for idx, msg in enumerate(self.messages):
             if not isinstance(msg, dict):
                 continue
             text = msg.get("text") or msg.get("message", "")
-            if not text or ("job" not in text.lower() and "hiring" not in text.lower()):
+            text_lower = text.lower()
+            job_keywords = ["job", "hiring", "position", "opening", "role", "looking for", "we need", "open "]
+            if not text or not any(k in text_lower for k in job_keywords):
                 continue
 
             external_id = str(msg.get("id", idx))
-            url = msg.get("url") or f"https://t.me/{self.source_name.split(':')[-1]}/{external_id}"
+            url = msg.get("url") or f"https://t.me/{channel_key}/{external_id}"
 
             payload = {
                 "id": external_id,
                 "text": text,
                 "date": msg.get("date"),
-                "from": msg.get("from"),
             }
 
             record = RawSourceRecord(
@@ -167,7 +187,7 @@ class TelegramConnector(Connector):
                 payload=payload,
                 content_hash=make_content_hash(text),
                 cursor_value=cursor_value,
-                metadata={"provider": "stub", "channel": self.source_name},
+                metadata={"provider": "stub", "channel": channel_key},
             )
             records.append(record)
 
@@ -190,21 +210,18 @@ class TelegramConnector(Connector):
             return None
 
 
+# Backwards-compatible helper (still works)
 def load_sample_telegram_messages(channel: str = "tonhunt") -> list[dict]:
-    """Sample messages for tests (unchanged from Phase 8)."""
-    return [
-        {"id": 101, "text": "Hiring: Senior TON Developer @ Wallet. Remote. Apply: https://example.com", "date": "2026-07-10"},
-        {"id": 102, "text": "We are looking for a Backend Engineer (Python) at Ston.FI", "date": "2026-07-09"},
-    ]
+    """Legacy helper. Prefer TelegramConnector.from_channel(channel) for Wave 1."""
+    return load_sample_for_channel(channel)
 
 
-# Convenience async fetcher for advanced callers
 async def fetch_telegram_real(
     client: Any,
     channel: str,
     limit: int | None = 50,
 ) -> list[dict]:
-    """Low-level helper to fetch raw messages using Telethon (for advanced use)."""
+    """Low-level helper for advanced real fetches."""
     if not TELETHON_AVAILABLE:
         raise RuntimeError("Telethon not installed")
     items = []
@@ -217,3 +234,8 @@ async def fetch_telegram_real(
                 "views": getattr(msg, "views", 0),
             })
     return items
+
+
+def get_wave1_telegram_channels() -> dict:
+    """Return metadata for Wave 1 priority channels."""
+    return get_wave1_channels()
