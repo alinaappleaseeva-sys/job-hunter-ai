@@ -1,0 +1,4 @@
+{"example_id": "tgq-001", "channel": "tonhunt", "text": "Hiring Senior TON Developer. Remote. Apply: https://...", "is_job": true, "is_unique": true, "freshness_hours": 6, "label": "good_signal"}
+{"example_id": "tgq-002", "channel": "tonhunt", "text": "We are looking for Backend (Python) at Ston.FI", "is_job": true, "is_unique": false, "freshness_hours": 48, "label": "duplicate_stale"}
+{"example_id": "tgq-003", "channel": "cryptohiring_1", "text": "Looking for community manager. DM for details", "is_job": true, "is_unique": true, "freshness_hours": 2, "label": "good_signal"}
+{"example_id": "tgq-004", "channel": "tonhunt", "text": "General crypto discussion, no specific openings", "is_job": false, "is_unique": true, "freshness_hours": 1, "label": "noise"}

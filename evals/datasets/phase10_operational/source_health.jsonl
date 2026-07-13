@@ -1,0 +1,4 @@
+{"example_id": "sh-001", "source": "greenhouse", "window_hours": 24, "fetches": 48, "success_rate": 0.98, "avg_parse_quality": 0.92, "stale_ratio": 0.05, "label": "healthy"}
+{"example_id": "sh-002", "source": "telegram:tonhunt", "window_hours": 24, "fetches": 12, "success_rate": 0.75, "avg_parse_quality": 0.65, "stale_ratio": 0.40, "label": "degraded_fetch"}
+{"example_id": "sh-003", "source": "wellfound", "window_hours": 48, "fetches": 20, "success_rate": 0.90, "avg_parse_quality": 0.55, "stale_ratio": 0.25, "label": "low_quality_parse"}
+{"example_id": "sh-004", "source": "remoteok", "window_hours": 24, "fetches": 60, "success_rate": 1.0, "avg_parse_quality": 0.88, "stale_ratio": 0.10, "label": "healthy"}

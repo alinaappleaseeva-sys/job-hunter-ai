@@ -1,0 +1,30 @@
+# Phase 10 Operational Hardening suite
+name: phase10_operational
+version: "1.0"
+phase: 10
+description: >
+  Source health monitoring, Telegram quality/noise, eval regression detection,
+  and data refresh processes.
+
+datasets:
+  - evals/datasets/phase10_operational/source_health.jsonl
+  - evals/datasets/phase10_operational/telegram_quality.jsonl
+  - evals/datasets/phase10_operational/eval_regression.jsonl
+
+gates:
+  source_health:
+    min_healthy_rate: 0.85
+  telegram_signal:
+    min_job_signal_rate: 0.55
+    min_unique_rate: 0.65
+  regression_detection:
+    require_post_change_summary: true   # for ranking/ghost/ingestion changes
+
+tracked:
+  - degraded_sources
+  - telegram_noise_ratio
+  - eval_regressions_caught
+
+ci:
+  pytest_path: tests/unit/test_phase10_operational.py
+  blocking: true

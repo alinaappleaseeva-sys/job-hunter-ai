@@ -9,4 +9,5 @@ Recommended first suite files:
 - `dedup_regression.yaml` ✅ (Phase 8)
 - `ranking_topk.yaml` ✅ (Phase 6)
 - `ghosting_precision.yaml` ✅ (Phase 7)
-- `feedback_actions.yaml` ✅ (Phase 9 scaffold)
+- `feedback_actions.yaml` ✅ (Phase 9)
+- `phase10_operational.yaml` ✅ (Phase 10 scaffold)

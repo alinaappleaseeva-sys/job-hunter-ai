@@ -11,23 +11,9 @@ Store curated examples here.
 | `dedup_regression/` | 5 / 8 | active |
 | `ranking_topk/` | 6 | active |
 | `ghosting_precision/` | 7 | active |
-| `feedback_actions/` | **9** | **new scaffold** |
-
-## Active datasets
-
-### `feedback_actions/` (Phase 9)
-Labeled user actions on RankedJobs.
-Must record full trace to score_breakdown, explanations, ghost_score.
-
-**Suite:** `evals/suites/feedback_actions.yaml`
-**Rubric:** `evals/rubrics/feedback_traceability.md`
-
-### Other active (see previous)
-
-- `ghosting_precision/`
-- `ranking_topk/`
-- etc.
+| `feedback_actions/` | 9 | active |
+| `phase10_operational/` | **10** | **new scaffold** (source health, telegram noise, eval regression) |
 
 ## Rules for dataset changes
-- **New delivery/feedback logic** → extend `feedback_actions` + re-run traceability gates before merge.
-- Never delete labeled rows without changelog.
+- New operational / health / regression logic → extend `phase10_operational` + re-run gates.
+- Material ranking/ghosting/ingestion changes require post-change eval summary (see Phase 10 suite).
