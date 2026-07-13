@@ -19,6 +19,8 @@ from .http_client import HttpxDirectClient
 from .base import make_content_hash
 from .base import utcnow
 from .greenhouse import GreenhouseConnector
+from .habr_career import HabrCareerConnector
+from .hhru import HhruConnector
 from .lever import LeverConnector
 from .quality import average_field_coverage
 from .quality import compute_quality
@@ -27,15 +29,23 @@ from .quality import ghost_rate
 from .quality import is_ghost_or_stale
 from .quality import parse_rate
 from .remoteok import RemoteOKConnector
+from .solana import SolanaJobsConnector, load_sample_solana_jobs
 from .telegram import TelegramConnector, load_sample_telegram_messages
+from .wellfound import WellfoundConnector, load_sample_wellfound_jobs
 
 __all__ = [
     "AshbyConnector",
     "GreenhouseConnector",
     "LeverConnector",
     "RemoteOKConnector",
+    "WellfoundConnector",
+    "SolanaJobsConnector",
+    "HabrCareerConnector",
+    "HhruConnector",
     "TelegramConnector",
     "load_sample_telegram_messages",
+    "load_sample_wellfound_jobs",
+    "load_sample_solana_jobs",
     "Connector",
     "ConnectorAuthError",
     "ConnectorEmptyResponseError",
