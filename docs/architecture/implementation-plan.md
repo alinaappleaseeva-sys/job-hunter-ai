@@ -490,6 +490,14 @@ Ranking precision answers: “given worthwhile data, are we surfacing the right 
 - stale dataset refresh checklist
 - post-change evaluation summary required for material ranking or ghosting changes
 
+
+**Post-Phase 10 status note (as of implementation):**
+- Real TelegramConnector implemented with Telethon (pagination + metadata). Stub mode preserved.
+- Basic source health summaries added (compute_source_health).
+- Evals scaffold for source_health, telegram_quality, eval_regression.
+- Remaining Phase 10 items (full triage flow, dataset curation process, rollout rules, runbooks) can be iterated in follow-up waves.
+- Telegram risk #5 from earlier is now mitigated with real client path.
+
 ## 6. Pull Request Strategy
 
 Keep PRs short and scoped to one decision or one subsystem step.
