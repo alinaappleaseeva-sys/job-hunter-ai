@@ -1,23 +1,24 @@
-.DS_Store
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.venv/
-venv/
-dist/
-build/
+
+# Generated artifacts (Phase 3/4)
+# Generated demo artifacts
 *.egg-info/
+*.py[cod]
+.DS_Store
 .env
 .env.*
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+build/
 coverage/
-htmlcov/
+dist/
 evals/reports/*.json
 evals/reports/*.md
-tmp/
-
-
-# Generated demo artifacts
+htmlcov/
 job_results.html
-
+reports/
+reports/telemetry_*.json
+tmp/
+venv/
