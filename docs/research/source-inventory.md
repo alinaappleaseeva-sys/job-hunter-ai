@@ -24,9 +24,9 @@ High-leverage because one connector unlocks many companies.
 
 | Source      | URL                          | Inventory Status | **Implementation** | Notes |
 |-------------|------------------------------|------------------|--------------------|-------|
-| Greenhouse  | https://www.greenhouse.io/   | priority         | **real**           | Full public job board API |
-| Lever       | https://www.lever.co/        | priority         | **real**           | Good pagination support |
-| Ashby       | https://www.ashbyhq.com/     | priority         | **real**           | Rate-limited public API |
+| Greenhouse  | https://www.greenhouse.io/   | priority         | **real** (Phase 3) | Wired via config + parallel fetch + backoff |
+| Lever       | https://www.lever.co/        | priority         | **real** (Phase 3) | Wired via config + parallel fetch + backoff |
+| Ashby       | https://www.ashbyhq.com/     | priority         | **real** (Phase 3) | Wired (Tier-2 rate aware) + parallel |
 | Workable    | https://www.workable.com/    | candidate        | **none**           | Good candidate for Wave 1-2 |
 | Recruitee   | https://recruitee.com/       | candidate        | **none**           | Worth adding in Wave 2 |
 
