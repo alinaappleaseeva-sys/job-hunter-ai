@@ -10,7 +10,7 @@ surface for the first implementation wave.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 JsonDict = dict[str, Any]
@@ -198,3 +198,22 @@ class RankedJob:
     canonical_job: CanonicalJob
     score_breakdown: JobScoreBreakdown
     rank: int | None = None
+
+
+@dataclass(slots=True)
+class FeedbackEvent:
+    """User feedback action on a RankedJob.
+
+    Must capture full trace to ranking + ghost decisions for auditability.
+    """
+    event_id: str
+    profile_id: str
+    canonical_job_id: str
+    action: str  # relevant | not_relevant | duplicate | ghost_likely | applied
+    reason: str | None = None
+    score_breakdown: "JobScoreBreakdown | None" = None
+    explanations: list["ScoreExplanation"] = field(default_factory=list)
+    ghost_score: float | None = None
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    metadata: dict[str, Any] = field(default_factory=dict)
+

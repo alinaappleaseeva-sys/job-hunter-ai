@@ -9,6 +9,7 @@ from .models import CanonicalJob
 from .models import CanonicalMergeEvent
 from .models import CandidateProfile
 from .models import ConnectorQuality
+from .models import FeedbackEvent
 from .models import JobScoreBreakdown
 from .models import NormalizedJobPosting
 from .models import RankedJob
@@ -21,6 +22,7 @@ __all__ = [
     "CanonicalMergeEvent",
     "CandidateProfile",
     "ConnectorQuality",
+    "FeedbackEvent",
     "JobScoreBreakdown",
     "NormalizedJobPosting",
     "RankedJob",
