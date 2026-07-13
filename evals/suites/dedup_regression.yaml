@@ -1,0 +1,25 @@
+# Dedup regression suite (Phase 5/8)
+name: dedup_regression
+version: "1.0"
+phase: 8
+description: Must-merge and must-not-merge for cross-family dedup (ATS + boards + Telegram).
+
+dataset:
+  path: evals/datasets/dedup_regression/examples.jsonl
+  format: jsonl
+
+gates:
+  false_merge_rate:
+    max: 0.05
+  missed_merge_rate:
+    max: 0.10
+  cross_family_covered:
+    min: 1.0
+
+tracked:
+  - must_merge_pairs
+  - must_not_merge_pairs
+
+ci:
+  pytest_path: tests/unit/test_dedup_regression.py
+  blocking: true
