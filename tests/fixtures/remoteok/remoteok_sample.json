@@ -1,0 +1,23 @@
+[
+  {
+    "id": "12345",
+    "position": "Senior Backend Engineer",
+    "company": "Acme Labs",
+    "location": "Remote",
+    "url": "https://remoteok.com/remote-jobs/12345-senior-backend-engineer",
+    "date": "2026-07-10T12:00:00Z",
+    "description": "Build scalable systems...",
+    "tags": ["python", "backend"],
+    "salary": "$140k - $180k"
+  },
+  {
+    "id": "12346",
+    "position": "Product Engineer",
+    "company": "Wallet",
+    "location": "Remote (EU)",
+    "url": "https://remoteok.com/remote-jobs/12346",
+    "date": "2026-07-09",
+    "description": "Work on TON products",
+    "tags": ["ton", "blockchain"]
+  }
+]

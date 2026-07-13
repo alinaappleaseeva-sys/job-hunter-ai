@@ -26,11 +26,16 @@ from .quality import field_coverage
 from .quality import ghost_rate
 from .quality import is_ghost_or_stale
 from .quality import parse_rate
+from .remoteok import RemoteOKConnector
+from .telegram import TelegramConnector, load_sample_telegram_messages
 
 __all__ = [
     "AshbyConnector",
     "GreenhouseConnector",
     "LeverConnector",
+    "RemoteOKConnector",
+    "TelegramConnector",
+    "load_sample_telegram_messages",
     "Connector",
     "ConnectorAuthError",
     "ConnectorEmptyResponseError",
