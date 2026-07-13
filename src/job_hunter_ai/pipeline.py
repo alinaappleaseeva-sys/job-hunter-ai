@@ -1,11 +1,13 @@
-"""Core pipeline for job aggregation and ranking (Phases 0-1).
+"""Core pipeline for job aggregation and ranking (Phases 0-2).
 
-Includes metrics, honest salary, updated profile.
+Includes metrics, honest salary (120k from Phase 1), updated profile (CoS, Head Ops, fintech/web3 from Phase 1/2),
+enhanced _to_canonical with desc + tags (Phase 2), target role metrics.
 """
 
 from __future__ import annotations
 
 import logging
+import re
 from datetime import datetime
 from typing import Any
 
@@ -24,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_alina_profile() -> CandidateProfile:
-    """Single source of truth for Alina's profile (updated for Phase 1)."""
+    """Single source of truth for Alina's profile (Phase 1 + Phase 2 updates)."""
     return CandidateProfile(
         profile_id="alina-aseeva-head-ops-web3",
         target_role_families=["operations", "program_management", "head_of_ops", "dao_ops", "chief_of_staff"],
@@ -38,12 +40,15 @@ def get_alina_profile() -> CandidateProfile:
         preferred_locations=["remote", "any"],
         min_compensation=120000,
         compensation_currency="USD",
-        preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech"],
+        preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
         notes="10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in 2026.",
     )
 
 
 def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
+    """Phase 2: scan title + description/content + tags for stronger CoS/Head Ops / market signals.
+    Preserves Phase 1 honest salary handling (120k default, None for undisclosed).
+    """
     payload = rec.payload or {}
     title = (payload.get("title") or payload.get("position") or "").strip()
     if not title:
@@ -60,12 +65,27 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
     )
 
     title_lower = title.lower()
+    desc = str(payload.get("description") or payload.get("content") or "").lower()
+    tags = [t.lower() for t in (payload.get("tags") or [])]
+    full_text = f"{title_lower} {desc} {' '.join(tags)}"
 
-    market_keywords = ["web3", "crypto", "defi", "dao", "blockchain", "fintech"]
-    market = "web3" if any(k in title_lower for k in market_keywords) else "saas"
+    # Phase 2 enhanced market classification (title + desc + tags)
+    market = "web3"
+    if any(k in full_text for k in ["security", "cyber", "infosec"]):
+        market = "security"
+    elif any(k in full_text for k in ["ai", "llm", "agent", "ml"]):
+        market = "ai-web3"
+    elif not any(k in full_text for k in ["web3", "crypto", "defi", "dao", "blockchain", "fintech"]):
+        market = "saas"
 
-    ops_keywords = ["ops", "operations", "program", "governance", "head of", "dao", "chief of staff", "head of operations"]
-    role_family = "operations" if any(k in title_lower for k in ops_keywords) else "other"
+    # Phase 2: stronger role_family for Head of Operations, Chief of Staff, governance, treasury, program
+    role_family = "other"
+    if any(k in full_text for k in ["chief of staff", "head of operations", "head of ops"]):
+        role_family = "chief_of_staff"
+    elif any(k in full_text for k in ["governance", "treasury", "dao ops", "program management", "program manager"]):
+        role_family = "dao_ops"
+    elif any(k in full_text for k in ["ops", "operations", "program", "head of"]):
+        role_family = "operations"
 
     seniority = "senior" if any(k in title_lower for k in ["senior", "lead", "head", "manager", "chief"]) else "mid"
 
@@ -77,9 +97,7 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
             comp_min = int(num) * 1000
             break
     if comp_min is None:
-        content = str(payload.get("content") or payload.get("description") or "")
-        import re
-        m = re.search(r'\$?\s*(\d{2,3})\s*[kK]', content)
+        m = re.search(r'\$?\s*(\d{2,3})\s*[kK]', desc)
         if m:
             val = int(m.group(1))
             if val >= 100:
@@ -156,7 +174,7 @@ def fetch_all_wave1(limit_per_source: int = 8) -> list[CanonicalJob]:
 
 
 def run_full_pipeline(limit_per_source: int = 8) -> dict:
-    """Run with metrics (Phase 0 success)."""
+    """Run with Phase 0/1/2 metrics."""
     profile = get_alina_profile()
     canonical_jobs = fetch_all_wave1(limit_per_source)
 
@@ -186,11 +204,14 @@ def run_full_pipeline(limit_per_source: int = 8) -> dict:
         "sources_used": len(sources),
     }
 
-    # Phase 0 metric
+    # Phase 2 metric
+    target_roles = sum(1 for j in canonical_jobs if j.role_family in ["chief_of_staff", "dao_ops", "operations"])
+    metrics["target_role_family_count"] = target_roles
+
     if raw_count < 5:
         logger.warning("Low volume in this run")
 
-    logger.info(f"Pipeline: raw={raw_count}, ranked={ranked_count}")
+    logger.info(f"Pipeline: raw={raw_count}, ranked={ranked_count}, target_roles={target_roles}")
 
     return {
         "profile": profile,
