@@ -38,23 +38,19 @@ from job_hunter_ai.ranking.ranking import rank_jobs
 
 logger = logging.getLogger(__name__)
 
->>>>>>> 77a13ab (fix(phase3+4): address review feedback)
 DEFAULT_CONFIG = {
     "ats": {"greenhouse": {"boards": ["aave", "optimism"]}, "lever": {"sites": []}, "ashby": {"boards": []}},
     "telegram": {"channels": ["cryptohiring_1", "tonhunt"]},
     "robustness": {"max_retries": 2, "backoff_base_seconds": 1.5, "concurrency": 4},
 }
 
-<<<<<<< HEAD
-=======
-=======
 CONFIG_PATH = Path("config/source_config.yaml")
 
 
 def _load_source_config() -> dict:
     if not CONFIG_PATH.exists():
         logger.warning(f"{CONFIG_PATH} not found, using minimal defaults")
-return DEFAULT_CONFIG.copy()
+        return DEFAULT_CONFIG.copy()
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f) or {}
 
@@ -170,7 +166,7 @@ def _fetch_with_retry(fetcher, name: str, max_retries: int = 2, backoff: float =
             return fetcher()
         except Exception as e:
             if attempt == max_retries:
-logger.exception(f"{name} failed after {max_retries} retries")
+                logger.exception(f"{name} failed after {max_retries} retries")
                 return []
             sleep = backoff * (2 ** attempt)
             logger.info(f"{name} transient error (attempt {attempt+1}), sleeping {sleep:.1f}s")
@@ -191,7 +187,7 @@ def fetch_ats_wave(config: dict, limit_per: int = 15) -> list[CanonicalJob]:
 
     # Greenhouse
     for board in ats.get("greenhouse", {}).get("boards", []):
-def _fetch_green(b):
+        def _fetch_green(b):
             return [
                 _to_canonical(rec, f"greenhouse:{b}")
                 for rec in GreenhouseConnector(b).fetch(limit=limit_per).records
@@ -230,7 +226,7 @@ def _fetch_green(b):
                     if cj:
                         jobs.append(cj)
             except Exception as e:
-logger.exception(f"ATS task {name} failed")
+                logger.exception(f"ATS task {name} failed")
 
     return jobs
 
