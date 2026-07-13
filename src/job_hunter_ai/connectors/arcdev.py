@@ -48,7 +48,7 @@ class ArcDevConnector(Connector):
 
 def load_sample_arcdev_jobs() -> list[dict]:
     return [
-        {"id": "arc-1", "title": "Head of Operations", "company": "Remote Startup", "url": "https://arc.dev/jobs/1"},
-        {"id": "arc-2", "title": "Program Manager - Crypto", "company": "Web3 Co", "url": "https://arc.dev/jobs/2"},
-        {"id": "arc-3", "title": "Senior Project Manager (Remote)", "company": "Tech DAO", "url": "https://arc.dev/jobs/3"},
+        {"id": "arc-1", "title": "Head of Operations", "company": "Remote Startup", "url": "https://arc.dev/remote"},
+        {"id": "arc-2", "title": "Program Manager - Crypto", "company": "Web3 Co", "url": "https://arc.dev/remote"},
+        {"id": "arc-3", "title": "Senior Project Manager (Remote)", "company": "Tech DAO", "url": "https://arc.dev/remote"},
     ]

@@ -17,3 +17,7 @@ evals/reports/*.json
 evals/reports/*.md
 tmp/
 
+
+# Generated demo artifacts
+job_results.html
+
