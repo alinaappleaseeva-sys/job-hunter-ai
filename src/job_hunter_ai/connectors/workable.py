@@ -131,22 +131,16 @@ class WorkableConnector(Connector):
 
 
 def load_sample_workable_jobs() -> list[dict]:
-    """Sample data for tests / offline."""
+    """Neutral sample (Phase 0 hygiene - no target roles)."""
     return [
         {
-            "id": "wf-123",
-            "title": "Head of Operations",
-            "company_name": "Acme Labs",
-            "location": "Remote",
-            "remote": True,
-            "application_url": "https://apply.workable.com/acme/j/123",
+            "title": "Software Engineer",
+            "company": "Example Company",
+            "url": "https://example.com/jobs/1",
         },
         {
-            "id": "wf-456",
-            "title": "Program Manager - Web3",
-            "company_name": "DAO Co",
-            "location": "Remote",
-            "remote": True,
-            "application_url": "https://apply.workable.com/acme/j/456",
+            "title": "Sales Development Rep",
+            "company": "Growth Co",
+            "url": "https://example.com/jobs/2",
         },
     ]
