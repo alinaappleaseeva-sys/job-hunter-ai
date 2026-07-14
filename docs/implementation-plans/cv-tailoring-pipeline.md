@@ -2,7 +2,7 @@
 
 **Project**: job-hunter-ai  
 **Stage**: Tailored CV Generator (Good → Excellent)  
-**Date**: 2026-07-14  
+**Date**: 2026-07-14 (revised)  
 **Owner**: Alina + AI Agent  
 **Related PR**: #48 (CV update + recency filter)  
 **Inspiration**: https://github.com/varunr89/resume-tailoring-skill (batch gap analysis + library approach)
@@ -83,7 +83,7 @@ For each high-potential job in the user's Top-15 (e.g. `head of operations @ Axi
 3. **Single Discovery Session**
    - Agent presents consolidated gaps.
    - Asks targeted questions once (e.g., "For DAO governance roles, do you have any experience with token treasury oversight or voting mechanics that isn't listed?").
-   - User answers → facts are stored as **enrichments** (linked to master CV version).
+   - User answers → facts are stored as **enrichments** (linked to specific master CV version).
 
 4. **Per-Job Tailoring**
    - Score each master bullet against the specific JD.
@@ -96,123 +96,198 @@ For each high-potential job in the user's Top-15 (e.g. `head of operations @ Axi
    - Present all tailored versions side-by-side or in a clean review format.
    - User can accept / request tweaks / add more facts.
 
-## 6. Recommended Phased Implementation
+## 6. Versioning, Storage & Evaluation (Important Additions)
 
-### Phase 0: Foundations (1–2 sessions)
-- Structured parser for current master CV (YAML/JSON intermediate or Pydantic models).
-- JD fetcher + requirement extractor (reuse existing connectors + LLM extraction).
-- Basic "fact library" from master CV.
-- Simple similarity scoring between bullets and JD requirements.
+### Master CV Versioning
+- Every run must record an explicit `master_cv_version`:
+  - Format: `YYYY-MM-DD-<short-hash>` (e.g. `2026-07-14-a3f2b1`)
+  - Include full content hash (sha256 of the markdown) for strong traceability.
+- All enrichments and tailored CVs **must** reference this version.
 
-**Deliverable**: `src/cv_tailor/models.py` + `parse_master_cv()` + basic JD parser.
+### Enrichments Storage (Start Simple)
+- Recommended initial approach: `enrichments/YYYY-MM-DD_HHMMSS_<job-cluster>.json`
+- Each file contains:
+  - `master_cv_version`
+  - `discovered_gaps`
+  - `questions_and_answers`
+  - `added_facts` (with source = "user_confirmed")
+- Later evolution options: git-tracked YAML, SQLite, or a small local DB if volume grows.
 
-### Phase 1: Gap Analysis + Interactive Discovery (Core Value)
-- Cross-job gap detector.
-- CLI / chat flow for discovery session:
-  - "Comparing your master CV against these 12 jobs, the most common gaps I see are..."
-  - Specific questions per gap cluster.
-- Storage of user answers as durable enrichments (e.g., `enrichments/alina-aseeva-2026-07-14.json` or in repo under a dedicated folder).
-- Ability to re-run discovery when master CV or Top list changes.
+### Evaluation / Golden Set
+- Create `evals/cv_tailoring/` directory.
+- Include 2–3 real job descriptions + corresponding master bullets + expected tailored versions (with rationale).
+- Evaluation rubric (at minimum):
+  - **Truthfulness** (0–5): No fabrication, dates, or invented achievements.
+  - **Relevance lift** (0–5): Clear improvement in alignment with JD.
+  - **Readability** (0–5): Professional tone, good flow.
+  - **No degradation**: Tailored version must not be worse than a lightly reordered master.
+- Add simple automated checks + manual review notes.
 
-**Key Rule**: Every enrichment must be traceable back to a user answer.
+### Quantifiable Success Metrics
+- % of bullets changed (vs master)
+- Keyword overlap lift (TF-IDF or embedding similarity between tailored bullets and JD)
+- User approval rate on first 10–15 tailored CVs
+- Average time spent in discovery session per batch
 
-### Phase 2: Tailoring Engine (Good → Excellent)
-- Bullet scorer + selector (pick top 3 per experience section).
-- Rephraser with strict rules:
-  - Synonym substitution only.
-  - Stronger action verbs from allowed list.
-  - Front-load outcomes.
-  - Add light context bridges when user-confirmed.
-- Summary rewriter (target-role version of the master summary).
-- Emphasis applicator (bold metrics and role keywords).
-- Strict "no fabrication" validator (can be simple + LLM-as-judge with user review).
+## 7. Recommended Approach: Vertical MVP Spike First
 
-**Example rules** (from provided images):
-- Turn generic bullets into "enabled X for Y merchants, generating $Z".
-- Highlight "commercial bank in Australia", "MENA and Asia", specific tech (QR codes, etc.).
-- Keep the original achievement but make the relevance obvious.
+**Strong recommendation (revised priority)**
 
-### Phase 3: Batch Mode + Review Surface
-- Process Top-N jobs in one run.
-- Generate one tailored CV per job (named clearly: `Alina_Aseeva_Tailored_Axine_Labs_Head_of_Ops_2026-07-14.md`).
-- Side-by-side diff view (master vs tailored) or clean review deck.
-- Batch approval workflow (accept all / review individually / request changes).
+Instead of building horizontal foundations first (Phase 0 → 1 → 2), **start with a vertical end-to-end spike on 1–2 real jobs**.
 
-### Phase 4: Quality Gates & Guardrails
-- Automated checks:
-  - No dates changed.
-  - No new companies/roles invented.
-  - Bullet count guard (configurable, default respect user's 3-bullet preference where it exists).
-  - Readability / professionalism heuristics.
-- LLM-as-judge pass ("Is this version clearly better for this JD while remaining truthful?").
-- Human review required before any use.
+**Why this is better**:
+- You will immediately see real problems: quality of rephrasing, how diffs look, usefulness of enrichments, where the LLM hallucinates or breaks.
+- Faster feedback loop from you as the user.
+- Avoid over-engineering foundations that may need to be redone after seeing reality.
 
-### Phase 5: Integration & Polish
-- Hook into existing pipeline (`run_pipeline_on_cv.py` or autonomous cycle).
-- After finding Top matches → offer "Tailor CVs for these jobs?"
-- Store tailored versions alongside `job_results.html` / reports.
-- Command: `python scripts/tailor_cvs_for_top.py --limit 10`
-- Later: export to DOCX / clean PDF.
+**Suggested flow**:
+1. Pick 1–2 current top jobs (e.g. Axine Labs Head of Operations + Friss Labs Program Manager, DAO Ops).
+2. Manually + with LLM help go through the full flow for these 1–2 jobs.
+3. Build only the minimal pieces needed to complete the spike.
+4. Capture learnings → then design proper foundations.
 
-## 7. Data Model (Proposed)
+After the spike, you can safely build the reusable components.
+
+## 8. Phased Implementation (Adjusted for Vertical-First)
+
+### Spike 0: Vertical MVP on 1–2 Real Jobs (Start Here)
+**Goal**: End-to-end on real data as fast as possible.
+
+- Parse current master CV (simple structured extraction, even if hacky at first).
+- Take 1–2 real JDs from recent top results.
+- Manual + LLM-assisted gap identification.
+- First attempt at rephrasing + reordering (with heavy user review).
+- Produce tailored Markdown + side-by-side diff (even if manual or basic HTML).
+- Document all problems encountered.
+
+**Deliverables**:
+- 1–2 tailored CVs you are happy to send.
+- A short "lessons learned" document.
+- List of must-have components for the real implementation.
+
+### Phase 1: Foundations (informed by the spike)
+- Pydantic v2 models with strict validation for MasterCV, JDRequirements, Enrichment, TailoredCV.
+- Master CV parser + versioning (date + content hash).
+- JD parser (LLM extraction + regex for structured fields: must-have / nice-to-have / keywords).
+- Basic fact library.
+
+### Phase 2: Gap Analysis + Interactive Discovery
+- Cross-job gap detector (deduplicated across the batch).
+- CLI/chat discovery session.
+- Simple JSON storage for enrichments (per run, with `master_cv_version`).
+- Ability to re-run when master CV or Top list changes.
+
+**Key Rule**: Every enrichment must be traceable to a user answer.
+
+### Phase 3: Tailoring Engine + Review UX
+- Bullet scoring: 
+  - Embedding similarity (sentence-transformers / Voyage / OpenAI embeddings)
+  - + keyword boost
+  - + recency/impact boost
+- Rephraser with explicit rules:
+  - Allowed action verbs list (expand from user examples)
+  - Forbidden patterns (e.g. unnecessary passive→active voice changes)
+  - Always produce a "vanilla" baseline (master CV, only reordered)
+- Summary rewriter + emphasis applicator.
+- **Diff / Review UX**: Generate an HTML report with side-by-side comparison (use `difflib` or `markdown2` + simple CSS). This is high priority for usability.
+- Batch generation for Top-N.
+
+### Phase 4: Quality Gates & Evaluation
+- Automated checks (no date changes, no invented facts, bullet count preferences).
+- LLM-as-judge with explicit rubric.
+- `evals/cv_tailoring/` golden set + rubric (Truthfulness, Relevance lift, Readability, No degradation).
+- Human approval gate.
+
+### Phase 5: Integration & Hardening
+- Hook into existing pipeline.
+- Command like `python scripts/tailor_cvs_for_top.py --limit 10`
+- Metrics dashboard (even simple).
+- Export options (Markdown primary, DOCX later).
+- Edge case handling:
+  - Partial employment / consulting gigs
+  - Overlapping roles
+  - Non-standard experience formats
+
+## 9. Rephrasing Rules & Technical Details (Expanded)
+
+**Rephrasing guidelines** (to be encoded):
+- Use stronger, more precise action verbs where they better match the JD.
+- Add role-relevant context only when backed by master CV or user confirmation.
+- Prefer active voice when it improves clarity (but do not force changes that sound unnatural).
+- Always keep original metrics and facts.
+
+**Technical recommendations**:
+- Use **Pydantic v2** with `model_config = {"extra": "forbid"}` and strict mode where possible.
+- JD parsing: Hybrid approach — LLM for overall understanding + regex/rules for extracting "must have" vs "nice to have".
+- Bullet scoring: Hybrid (embeddings + keyword matching + impact signals).
+- Always generate two versions per job:
+  1. Tailored (optimized)
+  2. Vanilla baseline (for comparison)
+
+## 10. Edge Cases to Handle
+
+- Consulting / fractional roles
+- Overlapping or concurrent experience
+- Research / academic experience being mapped to industry roles
+- Very short or very long tenures
+- Roles with heavy "ownership" language vs pure execution
+
+## 11. Data Model (Proposed)
 
 ```yaml
-# master_cv_version: 2026-07-14
-# enrichments/
-#   2026-07-14-axine-labs-gaps.json
+# master_cv_version: 2026-07-14-a3f2b1
+# enrichments/2026-07-14_143022_axine-friss.json
 ```
 
-Core structures:
-- `MasterExperience` (company, title, dates, bullets[], tags)
-- `JDRequirements` (must-have skills, preferred signals, keywords, level)
-- `Enrichment` (gap_id, question, user_answer, added_facts[], approved_at)
-- `TailoredBullet` (original_bullet_id, new_text, rationale, emphasis_ranges)
-- `TailoredCV` (job_id, tailored_summary, per_experience_sections, generated_at, master_version)
+Core structures (Pydantic):
+- `MasterCV` (version, experiences, skills, education, hash)
+- `JDRequirements`
+- `Enrichment` (master_version, questions, answers, added_facts)
+- `TailoredBullet` (original_id, tailored_text, rationale, emphasis)
+- `TailoredCV` (job, master_version, tailored_sections, vanilla_baseline, metrics)
 
-## 8. User Experience Flow (Target)
+## 12. User Experience Flow (Target)
 
-1. User runs pipeline → gets fresh Top-12.
-2. `tailor top` (or automatic after pipeline).
-3. System:
-   - Builds fact library from master.
-   - Analyzes all 12 JDs.
-   - Runs one discovery session (10–15 smart questions).
-4. User answers questions (chat or form).
-5. System generates 12 tailored Markdown files.
-6. User reviews in a nice diff/review UI (Markdown or HTML).
-7. User approves or asks for adjustments on specific jobs.
-8. Approved tailored CVs are ready to send.
+1. User runs pipeline → gets fresh Top-N.
+2. `tailor top` or explicit command.
+3. System builds fact library + analyzes JDs.
+4. Runs one discovery session (clustered questions).
+5. Generates tailored + vanilla versions for each job.
+6. Produces HTML review report with side-by-side diffs.
+7. User reviews, approves, or requests adjustments.
+8. Approved versions are ready.
 
-## 9. Risks & Mitigations
+## 13. Risks & Mitigations
 
 | Risk | Mitigation |
 |------|------------|
-| User feels the tailored version is "worse" | Strong quality gates + side-by-side review + "revert to master" option |
-| Over-aggressive rephrasing invents things | Strict rules + traceability + user confirmation on any new framing |
-| Too many questions in discovery | Deduplicate gaps across batch; cluster questions; make optional |
-| Master CV becomes out of date | Clear workflow: always update master first, then re-run discovery |
-| Hallucinated skills in LLM rephrasing | Rule-based rephraser first + LLM only for suggestions + validation step |
+| User feels the tailored version is "worse" | Always provide vanilla baseline + strong quality gates + easy revert |
+| Over-aggressive rephrasing | Strict rules engine + traceability + user confirmation on new framing |
+| LLM breaks on edge cases | Start with vertical spike to discover them early |
+| Discovery session asks too many questions | Deduplicate across batch + make questions optional |
+| Enrichments become messy | Start with timestamped JSON files + clear versioning |
 
-## 10. Milestones & Suggested Order
+## 14. Milestones (Vertical-First Order)
 
-1. **M1 (Foundation)**: Master CV parser + JD requirement extractor + basic scoring.
-2. **M2 (Discovery MVP)**: Gap analysis + interactive Q&A that stores enrichments.
-3. **M3 (Tailoring MVP)**: Generate one high-quality tailored CV for a single job (e.g. Axine Labs).
-4. **M4 (Batch + Review)**: Process 8–12 jobs + clean review surface.
-5. **M5 (Integration)**: Hook into existing job-hunter pipeline + CLI command.
-6. **M6 (Hardening)**: Quality gates, traceability, export options, tests.
+1. **Spike 0 (Vertical MVP)**: End-to-end on 1–2 real jobs + lessons learned.
+2. **M1 (Foundations)**: Pydantic models, versioning, master parser, basic JD extraction.
+3. **M2 (Discovery)**: Gap analysis + interactive session with JSON storage.
+4. **M3 (Tailoring + UX)**: Scoring (with embeddings), rephrasing engine, HTML side-by-side review.
+5. **M4 (Evaluation & Gates)**: Golden set + rubric + automated checks.
+6. **M5 (Integration)**: Pipeline hook + CLI + metrics.
+7. **M6 (Hardening)**: Edge cases, batch polish, export.
 
-## 11. Next Immediate Steps (After Plan Approval)
+## 15. Next Immediate Steps
 
-- [ ] Confirm this plan or adjust priorities.
-- [ ] Decide on first target job for M3 (recommend one of the current Top: Axine Labs or Friss Labs).
-- [ ] Choose storage for enrichments (repo folder vs separate vault).
-- [ ] Decide on output format priority (Markdown first is recommended).
-- [ ] Set up the first small spike: parse current master CV into structured data.
+- [ ] Confirm revised plan (vertical spike first).
+- [ ] Choose first 1–2 target jobs for the spike (recommend current top ones: Axine Labs and/or Friss Labs).
+- [ ] Decide on simple initial tech (Pydantic + basic LLM calls + difflib for diffs).
+- [ ] Set up `evals/cv_tailoring/` skeleton early.
+- [ ] Run the first vertical spike.
 
 ---
 
 **Ready when you are.**  
-Reply with "Let's start" + any adjustments (e.g. "make discovery session lighter", "focus on batch first", "add DOCX early", etc.), and I'll begin Phase 0 implementation.
+We will start with a real vertical spike on actual top vacancies so we learn fast and only build what is truly needed.
 
-We will treat your current master CV as excellent raw material and only make it more precisely targeted — never less good.
+Reply with "Let's start the spike" (and which jobs to use first) or any further adjustments.
