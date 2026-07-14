@@ -56,7 +56,7 @@ def _load_source_config() -> dict:
 
 
 def get_alina_profile() -> CandidateProfile:
-    """Single source of truth for Alina's profile (Phase 1/2 baseline)."""
+    """Single source of truth for Alina's profile (Phase 1/2 baseline). Derived from CV Alina_Aseeva_CV_14.07.2026.md."""
     return CandidateProfile(
         profile_id="alina-aseeva-head-ops-web3",
         target_role_families=["operations", "program_management", "head_of_ops", "dao_ops", "chief_of_staff"],
@@ -71,7 +71,7 @@ def get_alina_profile() -> CandidateProfile:
         min_compensation=120000,
         compensation_currency="USD",
         preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
-        notes="10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in 2026.",
+        notes="Head of Operations. 10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in June 2026. CV: 14.07.2026",
     )
 
 
@@ -283,24 +283,60 @@ def fetch_all_wave1(limit_per_source: int = 8) -> list[CanonicalJob]:
     return deduped
 
 
+
+def _apply_recency_filter(jobs: list[CanonicalJob], max_age_days: int = 40) -> tuple[list[CanonicalJob], int]:
+    """Hard drop jobs older than max_age_days before ranking.
+    Returns (filtered_jobs, dropped_count)
+    """
+    from datetime import datetime, UTC
+
+    def _days_since(dt):
+        if dt is None:
+            return 999.0
+        now = datetime.now(UTC)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=UTC)
+        delta = now - dt
+        return max(0.0, delta.days + delta.seconds / 86400)
+
+    kept = []
+    dropped = 0
+    for j in jobs:
+        age = _days_since(getattr(j, "canonical_posted_at", None))
+        if age <= max_age_days:
+            kept.append(j)
+        else:
+            dropped += 1
+    return kept, dropped
+
+
 def run_full_pipeline(limit_per_source: int = 8) -> dict:
     """Run with Phase 3 metrics (volume delta, target roles)."""
     profile = get_alina_profile()
+    cfg = _load_source_config()
     canonical_jobs = fetch_all_wave1(limit_per_source)
-
     raw_count = len(canonical_jobs)
-    sources = sorted({j.canonical_job_id.split("-")[0].split(":")[0] for j in canonical_jobs})
+
+    # Hard recency filter (>40 days by default)
+    recency_cfg = cfg.get("recency", {})
+    max_age = recency_cfg.get("hard_max_age_days", 40)
+    canonical_jobs, dropped_old = _apply_recency_filter(canonical_jobs, max_age)
+
+    sources = sorted({j.canonical_job_id.split("-")[0].split(":")[0] for j in canonical_jobs}) if canonical_jobs else []
 
     if not canonical_jobs:
-        logger.warning("No jobs fetched")
+        logger.warning(f"No jobs after recency filter (dropped {dropped_old} old jobs)")
         return {
             "profile": profile,
             "ranked_jobs": [],
             "digest": {},
-            "total_raw": 0,
+            "total_raw": raw_count,
             "sources": [],
-            "metrics": {"raw_count": 0, "ranked_count": 0},
+            "metrics": {"raw_count": raw_count, "ranked_count": 0, "recency_dropped": dropped_old},
         }
+
+    if dropped_old > 0:
+        logger.info(f"Recency filter: dropped {dropped_old} jobs older than {max_age} days")
 
     ranked = rank_jobs(profile, canonical_jobs)
     apply_ghost_penalty(ranked)
@@ -312,6 +348,7 @@ def run_full_pipeline(limit_per_source: int = 8) -> dict:
     metrics = {
         "raw_count": raw_count,
         "ranked_count": ranked_count,
+        "recency_dropped": dropped_old,
         "sources_used": len(sources),
         "target_role_family_count": target_roles,
         "target_role_ratio": round(target_roles / max(raw_count, 1), 3),
