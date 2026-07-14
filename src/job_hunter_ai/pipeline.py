@@ -56,7 +56,7 @@ def _load_source_config() -> dict:
 
 
 def get_alina_profile() -> CandidateProfile:
-    """Single source of truth for Alina's profile (Phase 1/2 baseline)."""
+    """Single source of truth for Alina's profile (Phase 1/2 baseline). Derived from CV Alina_Aseeva_CV_14.07.2026.md."""
     return CandidateProfile(
         profile_id="alina-aseeva-head-ops-web3",
         target_role_families=["operations", "program_management", "head_of_ops", "dao_ops", "chief_of_staff"],
@@ -71,7 +71,7 @@ def get_alina_profile() -> CandidateProfile:
         min_compensation=120000,
         compensation_currency="USD",
         preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
-        notes="10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in 2026.",
+        notes="Head of Operations. 10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in June 2026. CV: 14.07.2026",
     )
 
 

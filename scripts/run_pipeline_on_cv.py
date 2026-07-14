@@ -36,24 +36,26 @@ from job_hunter_ai.ranking.ranking import rank_jobs
 
 
 def build_profile_from_alina_cv() -> CandidateProfile:
-    """Hand-crafted profile derived from the attached real CV."""
+    """Hand-crafted profile derived from the attached real CV (Alina_Aseeva_CV_14.07.2026.md)."""
     return CandidateProfile(
         profile_id="alina-aseeva-head-ops-web3",
-        target_role_families=["operations", "program_management", "head_of_ops", "dao_ops"],
-        target_seniorities=["head", "lead", "senior"],
+        target_role_families=["operations", "program_management", "head_of_ops", "dao_ops", "chief_of_staff"],
+        target_seniorities=["head", "lead", "senior", "chief"],
         target_title_keywords=[
             "operations", "program", "head of", "dao", "governance",
-            "project management", "ops lead", "web3 ops",
+            "project management", "ops lead", "web3 ops", "program manager",
+            "chief of staff", "head of operations", "chief of", "ops manager",
         ],
         remote_preference="remote",
         preferred_locations=["remote", "any"],
-        min_compensation=140000,
+        min_compensation=120000,
         compensation_currency="USD",
-        preferred_markets=["web3", "defi", "dao", "crypto", "blockchain"],
+        preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
         notes=(
-            "10+ years building ops from scratch in Web3/DAO/DeFi. "
-            "Strong on governance, cross-functional alignment, AI automation, "
-            "treasury/settlement, and scaling operations. Returning to full-time in 2026."
+            "Head of Operations. 10+ years building ops from scratch in Web3/DAO/DeFi. "
+            "Strong on governance, treasury/settlement, cross-functional alignment, "
+            "AI automation, and scaling operations. Returning to full-time in June 2026. "
+            "CV: 14.07.2026"
         ),
     )
 
