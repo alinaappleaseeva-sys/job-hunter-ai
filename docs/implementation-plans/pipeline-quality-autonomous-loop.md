@@ -1,236 +1,222 @@
 # Implementation Plan: Pipeline Quality & Coverage — Autonomous Improvement Loop
 
-**Date**: 2026-07-14  
-**Owner**: Hermes Agent (autonomous) + Alina (final review)  
-**Goal**: Reach a state where a single pipeline run on Alina's profile reliably surfaces **≥15 truly good roles** (high relevance, low noise) for Head of Operations / DAO Operations / Program Manager in Web3/DAO/crypto/fintech.  
-**Status**: Planning → Execution (autonomous mode)
+**Version**: v1.1 (2026-07-14)  
+**Owner**: Hermes Agent (autonomous) + Alina (steering & final review)  
+**Status**: Active — Refining based on feedback  
+**Current Phase**: Phase 0 (Sample Hygiene) + early Phase 1 (Role Family + Requirements)  
+**Blockers**: None  
+**Next Milestone**: First autonomous review after Phase 1 core quality PRs land  
 
-## 1. North Star & Success Criteria
+**Related Documents** (cross-links):
+- [CV Tailoring Pipeline Plan](../cv-tailoring-pipeline.md) (handover target once we have ≥15 good roles)
+- [Phase 5 Verification Lessons](../../docs/decisions/phase-5-verification-lessons.md)
+- [Main Job Aggregator & Ranking Plan](../../docs/architecture/implementation-plan.md)
+- [Sources Expansion Plan](../../docs/architecture/implementation-plan-sources.md)
+- This plan takes precedence for the quality-first loop
 
-### Primary Success
-After a clean pipeline run + autonomous validation, at least **15 roles** are marked as "truly good" by the agent using the explicit rubric below.
-
-### Definition of "Truly Good Role" (Autonomous Rubric)
-A role is **truly good** only if it passes **all** of the following (agent must be strict):
-
-1. **Role fit** — Title + role_family clearly aligns with target (Head of Operations, DAO Ops, Program Manager / governance / cross-functional ops in web3/dao/crypto). Pure accounting/finance/GL ops, sales, HR, or generic "ops" in non-relevant industries = fail.
-2. **No hard credential mismatch** — Does not require CPA, Big 4, specific licenses, or heavy public accounting/SOX experience that the candidate does not have.
-3. **Market & context relevance** — Company or ecosystem is web3, DAO, crypto, blockchain, or very close fintech/ops-adjacent where the candidate's background (governance, treasury, building from 0-1, cross-functional leadership) is directly applicable.
-4. **Seniority & scope** — Senior/Lead/Head/Manager level ops/program work, not junior or purely executional.
-5. **Data quality** — Real job (not obvious stub/sample), recent enough (per recency filter), reasonable compensation signal.
-6. **Agent gut check** — "If this was the only job I saw today, would I be excited to tailor a CV for it?" — honest no = fail.
-
-**Note**: Agent must document the pass/fail + 1-2 sentence rationale for borderline cases.
-
-### Secondary Metrics (tracked per run)
-- % of top-20 that pass the rubric
-- Number of "near-miss" roles (fail only on one criterion)
-- Source diversity in the good set
-- Presence of clear DAO/governance/treasury/cross-functional ops examples
-
-## 2. Overall Approach — Autonomous Quality → Coverage Loop
-
-**Core Principle**: Never add volume (new sources) until quality controls are strong enough that the new volume does not flood the top with мусор.
-
-**Loop Structure** (agent runs this with minimal user intervention):
-
-1. **Quality Round** (mandatory before new sources)
-   - Clean samples
-   - Improve role_family + requirements extraction + penalties
-   - Run full pipeline on CV
-   - Autonomous review of top jobs using rubric
-   - If < 15 truly good → stay in Quality mode (or small targeted fixes)
-
-2. **Coverage Step** (add in small batches)
-   - Add up to **4 sources** at a time from `docs/architecture/implementation-plan-sources.md`
-   - Make them produce real (or clearly marked) data
-   - Re-run pipeline
-   - Autonomous review
-
-3. **Decision Gate** (agent decides)
-   - ≥15 truly good in one run → Surface results + summary to user + stop or ask for next goal
-   - Still noisy → Another Quality round + possibly another small batch of sources
-   - Stuck (3+ loops with no meaningful lift) → Surface diagnosis + blocked items to user
-
-The agent will:
-- Work in small, reviewable PRs
-- Run the pipeline after every meaningful change that affects ranking
-- Log autonomous reviews (in a run log or comments)
-- Only promote "good" sets to the user when they pass the rubric
-
-## 3. Phase 0 — Sample Hygiene (First Action)
-
-**Problem**: Many connectors fall back to `load_sample_*` that contain misleading high-relevance fakes (e.g. "Head of Operations @ Axine Labs" that was actually Business Development in mineral mapping).
-
-**Agent Actions**:
-- Audit every `load_sample_*` function across connectors:
-  - `wellfound.py`
-  - `weworkremotely.py`
-  - `arcdev.py`
-  - `solana.py`
-  - `habr_career.py`
-  - `workable.py`
-  - Telegram channel samples
-  - Any others
-- For each sample:
-  - Remove or heavily neuter any that claim target roles (Head of Ops, DAO Ops, Program Manager in web3) unless they are verifiably real recent examples.
-  - Prefer conservative/neutral samples or empty lists when live fetch fails.
-  - Add clear comments: `# FALLBACK ONLY — not used for ranking decisions`.
-- Update any code that treats samples as realistic data for ranking/telemetry.
-- Add a simple guard: if a job comes from a known sample source in production runs, log a warning.
-
-**Exit criteria**: No sample data in the top-30 of a normal CV run contains obviously fake high-fit roles for the target profile.
-
-## 4. Phase 1 — Core Quality Improvements
-
-### 4.1 Improve `infer_role_family` (negative rules + precision)
-
-Current logic is too crude (`\boperations|ops\b` → "operations").
-
-**Planned changes** (in `src/job_hunter_ai/normalization/fields/enrichment.py`):
-- Add strong negative patterns that force "other" or a new "finance_ops" / "accounting_ops" family:
-  - accounting, "gl operations", "general ledger", tax, audit, "sox", "cpa", "big 4", "public accounting", "financial reporting", "intercompany", "close process", reconciliation, etc.
-- Add positive but more precise patterns for target families:
-  - "dao", "governance", "working group", "contributor", "treasury ops", "program manager.*(dao|web3|crypto|ops)", "head of ops", "chief of staff", "ops lead.*web3", etc.
-- Consider sub-families or tags if simple string rules become messy (keep simple first).
-- Update `resolve_role_family` and callers if needed.
-- Add unit tests for new rules (especially negative cases).
-
-**Goal**: "Accounting Manager, GL Operations" no longer gets `role_family=operations` for our profile.
-
-### 4.2 Hard Requirements Extraction + Scoring
-
-Currently ranking has almost no signal from actual JD requirements.
-
-**New component**:
-- Create or extend `src/job_hunter_ai/normalization/fields/requirements.py`
-- Extract hard credentials from raw description / "requirements" section:
-  - CPA, CFA, "Big 4", "public accounting", "SOX 404", "U.S. GAAP", specific licenses, "must have X years in Y", "Bachelor's in Accounting/Finance" when combined with heavy accounting language.
-- Store in `CanonicalJob` (new fields: `hard_requirements: list[str]`, `requires_cpa: bool`, etc.).
-- In ranking:
-  - New score component: `requirements_fit` (or penalty).
-  - If job requires CPA/Big4 + profile does not claim it → strong negative score (e.g. 0.0–0.3 on that component).
-  - General mismatch on "specific experience" language that is clearly not in master CV → penalty.
-- Make the penalty tunable via weights.
-
-**MVP scope for first iteration**:
-- Simple regex + keyword list for credentials.
-- Basic "requires_accounting_credential" flag.
-- Penalty only for the most obvious cases (CPA/Big4/SOX when clearly required).
-
-### 4.3 Strengthen Overall Mismatch Penalties in Ranking
-
-- Review `compute_score_breakdown` and `_score_role_fit`.
-- Add or increase negative signals when role_family is finance/accounting heavy but profile target is general/dao ops.
-- Consider a small "profile_hard_filters" step before full scoring (e.g. drop or heavily downrank jobs that explicitly require credentials the candidate lacks).
-- Ensure recency + other filters still apply.
-
-## 5. Autonomous Validation Protocol (How the Agent Reviews)
-
-When the agent reviews a run:
-
-1. Run the pipeline (or use latest telemetry + full job data).
-2. Take top 25–40 roles.
-3. For each, answer the rubric questions above.
-4. Count truly good roles.
-5. Log in a structured way (e.g. `evals/runs/autonomous_review_YYYYMMDD.md` or similar):
-   - Run ID / timestamp
-   - Sources active
-   - Number of truly good
-   - List of good ones with short justification
-   - List of near-misses + why they failed
-   - Decision: "Continue quality", "Add next batch of sources", or "Ready for user review"
-6. Only surface a set to the user when ≥15 truly good in one run, or when the agent believes the current state is the best we can get without major new work.
-
-The agent treats itself as a strict, slightly skeptical reviewer on behalf of the user.
-
-## 6. Source Addition Strategy
-
-Sources will be added in **batches of up to 4** from the prioritized list in `docs/architecture/implementation-plan-sources.md` (Wave 1 first):
-
-Recommended first batches (agent will pick based on current gaps):
-- Batch A: We Work Remotely + Arc.dev (easy remote tech)
-- Batch B: More Telegram channels (high relevance for web3)
-- Batch C: Wellfound real implementation (or better fallback)
-- Batch D: Workable or next clean ATS
-
-For each source added:
-- Make it return real (or clearly conservative) data.
-- Add minimal smoke/eval coverage.
-- Re-run full pipeline + autonomous review before considering the next batch.
-
-Do **not** add more than 4 at a time without a review gate.
-
-## 7. Branching, PR & Execution Rules
-
-- Work on feature branches off `main` (or current stable).
-- **Rebase** before opening or updating PRs (no merge commits in feature branches).
-- Keep PRs small and reviewable. Prefer one logical change per PR (e.g. "quality: add negative rules to infer_role_family", "ranking: add requirements mismatch penalty").
-- PR description template (use this structure):
-  ```
-  ## Problem
-  ...
-
-  ## Solution
-  ...
-
-  ## Plan
-  - Step 1
-  - Step 2
-
-  ## Post-merge action items
-  - Run full pipeline
-  - Autonomous review
-  - ...
-  ```
-- After any change that affects ranking or ingestion:
-  - Run `python scripts/run_pipeline_on_cv.py` (or equivalent)
-  - Generate report if available
-  - Perform autonomous review
-- Regular PR cadence: aim for a PR after each meaningful atomic improvement or after completing a small batch of source additions + review.
-- Tag PRs with labels if the repo uses them (quality, sources, ranking, etc.).
-
-## 8. Run Commands & Artifacts
-
-- Main run: `python scripts/run_pipeline_on_cv.py`
-- There is also `scripts/autonomous_cycle.py` — evaluate if useful for scripted loops.
-- After significant changes: update telemetry, job_results.html, and autonomous review notes.
-- Store autonomous review logs under `evals/runs/` or `docs/runs/`.
-
-## 9. Decision Framework for the Agent (Autonomous)
-
-- After each full run + review:
-  - If ≥15 truly good → Prepare summary + list for user. Ask if they want to continue for more volume or move to tailoring.
-  - If 8–14 truly good → One more focused quality pass or one small source batch.
-  - If <8 → Prioritize quality fixes. Do not add new noisy sources yet.
-- If 3 consecutive loops show no lift in good count → Surface "plateau" diagnosis to user with data.
-- Always prefer quality improvements over volume when the top is still polluted.
-
-## 10. Risks & Safeguards
-
-- Over-filtering (killing good roles) → Keep "near-miss" tracking. Agent will note roles that are interesting but blocked by new rules.
-- Sample pollution returning → Phase 0 is non-negotiable.
-- New sources being very noisy → Strict autonomous review before accepting them into "good" count.
-- Agent hallucinating relevance → Use the explicit rubric + write short justifications. Be conservative.
-
-## 11. Exit Criteria for the Whole Effort
-
-- One clean run produces ≥15 roles that pass the full "truly good" rubric.
-- The agent has high confidence (documented) that the top of the list is mostly signal, not noise.
-- User confirms the set looks useful and we can move (or not) to CV tailoring work.
-
-## 12. Immediate Next Steps (Agent Will Execute)
-
-1. Create this plan + open PR for review (documentation).
-2. Start Phase 0: Audit and clean all `load_sample_*` functions (PR per connector or grouped).
-3. Implement first version of `infer_role_family` negative rules + tests.
-4. Add basic hard requirements extraction + penalty.
-5. Run pipeline + autonomous review.
-6. Decide on next micro-step or first batch of 4 sources.
+**Metrics Dashboard** (to be populated):
+- `reports/telemetry_*.json` (per-source breakdown)
+- `evals/runs/autonomous_review_*.md`
+- Simple Markdown summary generated after each full run
 
 ---
 
-**This plan is designed for autonomous execution with regular PRs and clear gates.**  
-The agent will follow the loop, document reviews, and only surface results to the user when they meet the bar or when stuck.
+## 1. North Star & Quantitative Goals
 
-User can interrupt at any time with "СТоп", "давай другой приоритет", or specific instructions. Otherwise the agent will keep cycling through quality → small coverage → review.
+**Goal**: After a single clean pipeline run, reliably surface **≥15 truly good roles** that pass a strict rubric (see below). The top of the list must be mostly signal, not noise.
+
+**Quantitative Success Criteria (overall)**
+- ≥15 roles pass the full "Truly Good Role" rubric in one run.
+- Top-10 average role_fit ≥ 0.80 (or configured threshold).
+- Target source contribution in the good set ≥ 40% from non-Stripe/Coinbase sources (after first batches).
+- False positive rate in top-20 ≤ 20% (agent review).
+- No sample/fake data in top-30 of production-style runs.
+
+---
+
+## 2. "Truly Good Role" Rubric (Explicit & Measurable)
+
+A role is **truly good** only if it passes **all** Must-Have criteria. Nice-to-have items increase confidence but are not required for the count.
+
+### Must-Have (all required)
+| Criterion                    | Definition / Threshold                                                                 | How Measured                          | Example Pass                          | Example Fail                          |
+|------------------------------|----------------------------------------------------------------------------------------|---------------------------------------|---------------------------------------|---------------------------------------|
+| **Title / Role Family**     | Senior/Head/Lead/Program Manager level in target family (Head of Ops, Chief of Staff, DAO Ops, DAO Program Manager, Governance Ops, Treasury Ops, etc.) | `infer_role_family` + title keywords | "Head of Operations", "DAO Program Manager", "Chief of Staff - Web3" | "Accounting Manager, GL Operations", "Junior Ops Associate" |
+| **No Hard Credential Mismatch** | Does not require CPA, Big 4, public accounting, SOX 404, U.S. GAAP as hard requirement | `requirements.py` extraction + penalty | No mention or "nice to have" only    | "CPA with 6+ years... Big 4 preferred... SOX 404" |
+| **Market / Domain Bias**    | Web3, crypto, blockchain, DAO, or strong fintech/ops-adjacent where user's background applies | Market tags + company + description  | "DAO Treasury Ops at Protocol X"     | Traditional bank accounting ops       |
+| **Recency**                 | Posted within hard cutoff (default 40 days)                                           | Recency filter in pipeline           | 12 days ago                          | 47 days ago                           |
+| **Role Fit Score**          | role_fit ≥ 0.70 (or configured threshold) + clear explanation in breakdown            | Ranking breakdown                    | role_fit=0.92 with "title + family + priority boost" | role_fit=0.45 "weak role signal"     |
+| **Seniority / Scope**       | Senior+ scope (leading ops, building processes, cross-functional, 0→1 work)          | Seniority field + description parse  | "Lead operations for DAO contributor program" | Pure executional "ops coordinator"   |
+
+### Nice-to-Have (boost confidence)
+- Compensation signal present and reasonable.
+- Equity mentioned (web3 typical).
+- Remote / location-independent.
+- Explicit mention of governance, treasury, contributor programs, working groups.
+- Company in user's preferred list or strong web3 signal.
+
+**Autonomous Review Rule**: Agent must log 1-2 sentence rationale for every borderline role. Conservative default — when in doubt, mark as not-good.
+
+---
+
+## 3. Phased Execution with Quantitative Exit Criteria
+
+### Phase 0: Sample Hygiene (Quantitative Exit)
+- **Action**: Audit + neutralize every `load_sample_*` across all connectors.
+- **Exit Criteria**:
+  - 0 target-like roles ("Head of Operations", "DAO Operations", "Program Manager - Crypto") in any sample file.
+  - Post-clean pipeline run: 0 sample-origin jobs in top-30.
+  - All samples have clear comment: `# FALLBACK ONLY — Phase 0 hygiene`.
+
+**Status**: In progress (Wellfound, WeWorkRemotely, ArcDev, Workable cleaned in first PRs).
+
+### Phase 1: Core Quality — Role Family + Hard Requirements (Quantitative Exit)
+- **Actions**:
+  - Negative rules + precision in `infer_role_family` (finance_ops for accounting roles).
+  - Hard requirements extraction module.
+  - Mismatch penalty in ranking (tunable weight).
+- **Exit Criteria**:
+  - "Accounting Manager, GL Operations" (or equivalent) returns `role_family="finance_ops"` and triggers requirements penalty ≤ 0.3.
+  - Role_fit for the exact Coinbase example drops below 0.5.
+  - New component visible in score breakdowns.
+
+### Phase 2: Ranking Controls & Observability (Quantitative Exit)
+- Feature flags / config toggles for: `role_family`, `hard_requirements`, `recency_soft_downrank`, `penalty_*`.
+- Tunable recency (hard_max + soft downrank 30-40d).
+- Per-source telemetry in every run.
+- **Exit Criteria**:
+  - Can toggle any component via config without code change.
+  - Every run produces `per_source` breakdown in telemetry (volume, target_ratio, error_rate, top-k good count).
+
+### Phase 3+: Source Batches (max 4 per batch)
+- Before adding any batch: compute **Source Health Score**.
+- **Source Health Score** (0-1): `ingestion_success_rate * target_hit_rate * (1 - error_rate)`.
+- Add only if health score ≥ 0.6 (or document exception).
+- After adding batch + run: autonomous review.
+- **Exit per batch**: At least 2-3 new good roles from the new sources, or clear documentation why not.
+
+**Overall Loop Exit**:
+- One clean run produces ≥15 roles that pass the full rubric.
+- Agent confidence high (documented in review log).
+- Handover criteria to CV tailoring met (see Post-Merge).
+
+---
+
+## 4. Autonomous Review Protocol (LLM-as-Judge + Human Spot-Check)
+
+**Process** (agent executes after every meaningful run):
+
+1. Run pipeline (or use latest telemetry + full job data).
+2. Take top 25-40 roles.
+3. For each role, score against the explicit rubric (LLM-as-judge using the table above).
+4. Produce structured output:
+   - Count of truly good roles.
+   - List of good roles with short justification.
+   - Near-misses + failing criterion.
+   - Per-source contribution.
+5. **Human spot-check**: Random sample 10-20% of the reviewed set (or top-10) is flagged for Alina review.
+6. Log to `evals/runs/autonomous_review_YYYYMMDD_HHMM.md` (or append to telemetry).
+7. Decision:
+   - ≥15 good → Surface summary + list to user.
+   - 8-14 good → One more quality pass or next source batch.
+   - <8 → Prioritize quality, do not add volume.
+
+**LLM-as-Judge Prompt Skeleton** (to be versioned):
+"Using the following rubric [paste table], evaluate this job for Alina (Head of Ops Web3/DAO). Must pass all Must-Have. Output: pass/fail + 1 sentence reason per criterion + overall verdict."
+
+---
+
+## 5. Pipeline & Automation Improvements
+
+### Configurability (to be implemented)
+- `source_config.yaml`:
+  ```yaml
+  rate_limits:
+    wellfound: {requests_per_min: 10, backoff: 2}
+    greenhouse: {requests_per_min: 30}
+    telegram: {requests_per_min: 5}
+  recency:
+    hard_max_age_days: 40
+    soft_downrank_start_days: 30
+    soft_downrank_factor: 0.7
+  ranking_toggles:
+    use_hard_requirements: true
+    use_role_family_negatives: true
+    recency_soft: true
+  ```
+- Feature flags / config-driven toggles for all major ranking components (easy A/B and rollback).
+
+### Telemetry
+- Every run must emit per-source breakdown:
+  - volume, target_ratio, error_rate, top_k_good_count, avg_role_fit
+- Generate simple Markdown summary (`reports/summary_*.md`) or basic HTML dashboard.
+- Deduplication metrics: track false negative merges (jobs that should have been deduped but weren't).
+
+### Recency
+- Hard filter (already implemented) + soft downrank for 30-40 days window (configurable).
+
+### CI / Quality Gates
+- Add ruff + black + pre-commit (as previously planned).
+- Smoke test: `python scripts/run_pipeline_on_cv.py --limit_per_source 3 --max_jobs 20`.
+- Run smoke after every PR that touches ingestion or ranking.
+
+---
+
+## 6. Development Process
+
+- Rebase workflow (no merge commits on feature branches).
+- Small, reviewable PRs (one logical change).
+- Standard PR template: Problem / Solution / Plan / Post-merge action items.
+- Before adding a new source batch: calculate and document Source Health Score.
+- Use feature flags / config toggles for ranking components.
+
+**ADR Recommendation** (to be created):
+- `docs/decisions/adr-001-rebase-small-prs.md` — Why we use rebase + small PRs for this loop (traceability, easy rollback, fast feedback).
+
+---
+
+## 7. Risks & Edge Cases (Expanded)
+
+- **Ghost jobs / fake postings**: Maintain dedicated eval family. Flag jobs with suspicious patterns (very generic text, no company site link, posted date anomalies).
+- **Salary handling**: Never fabricate. Undisclosed = neutral. Log when salary is missing.
+- **Seasonal / location bias**: Track in per-source telemetry.
+- **LLM drift in role_family / requirements**: Periodic gold set re-evaluation (small labeled set of 20-30 jobs). Re-run gold set after major inference changes.
+- **Scaling (>1000 raw jobs)**: Add caching, better pagination limits, incremental processing.
+- **Over-filtering**: Track "near-miss" roles. If good roles start disappearing, relax specific rules with data.
+- **Source health regression**: If a previously good source drops below health threshold, pause it and investigate.
+
+---
+
+## 8. Post-Merge & Handover
+
+- When ≥15 truly good roles achieved in a clean run:
+  - Produce final autonomous review log.
+  - Update status in this plan.
+  - Seamless handover to CV Tailoring Pipeline (use the existing vertical spike work as starting point).
+  - Master CV version + golden evals from tailoring plan become the next focus.
+
+- **Monitoring**:
+  - After significant runs: commit `reports/summary_*.md` + telemetry.
+  - Consider lightweight daily/weekly autonomous summary job (cron or script) that appends to a running log.
+
+---
+
+## 9. Immediate Next Steps (Agent Will Execute Autonomously)
+
+1. Finish Phase 0 sample hygiene (remaining connectors if any) → PR.
+2. Land Phase 1 core (role_family negatives + requirements) → PRs already opened.
+3. Add basic feature flags / config toggles for ranking components.
+4. Implement per-source telemetry + simple Markdown summary.
+5. Run full pipeline + first autonomous review (LLM-as-judge + spot-check).
+6. Compute Source Health Score for first 4 sources from sources plan.
+7. Add first batch of 4 sources only if health is acceptable.
+8. Repeat review loop.
+
+All changes via PR. Agent will document decisions in review logs.
+
+---
+
+**This revised plan is now significantly more actionable and measurable.**  
+Every phase has quantitative exit criteria. The rubric is explicit. Review protocol includes LLM-as-judge + human spot-check. Traceability, feature flags, source health, and risks are covered.
+
+Ready for your review or for the agent to continue execution on the next micro-step.
