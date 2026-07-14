@@ -1,0 +1,35 @@
+{
+  "master_cv_version": "2026-07-14-a31b6212",
+  "timestamp": "2026-07-14T15:26:17.763312",
+  "jobs": [
+    {
+      "job_id": "axine-labs-head-of-operations-2026",
+      "title": "Head of Operations",
+      "company": "Axine Labs",
+      "gaps": [
+        {
+          "category": "must_have",
+          "description": "Web3 / crypto / DAO experience is a significant plus",
+          "evidence_in_master": [],
+          "missing_signals": [
+            "Web3 / crypto / DAO experience is a significant plus"
+          ]
+        }
+      ],
+      "tailored_stub": {
+        "summary": "**Operations and program management leader** with 10+ years building cross-functional operating systems across consulting, media, and Web3. Built internal operations from scratch twice as founding CEO — designing operational workflows, aligning function heads, and driving delivery across engineering...",
+        "note": "This is a placeholder. Real rephrasing + reordering will come next."
+      }
+    },
+    {
+      "job_id": "friss-labs-dao-operations-pm-2026",
+      "title": "Program Manager, DAO Operations",
+      "company": "Friss Labs",
+      "gaps": [],
+      "tailored_stub": {
+        "summary": "**Operations and program management leader** with 10+ years building cross-functional operating systems across consulting, media, and Web3. Built internal operations from scratch twice as founding CEO — designing operational workflows, aligning function heads, and driving delivery across engineering...",
+        "note": "This is a placeholder. Real rephrasing + reordering will come next."
+      }
+    }
+  ]
+}
