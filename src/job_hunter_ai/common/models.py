@@ -189,6 +189,7 @@ class JobScoreBreakdown:
     location_remote_fit: float = 0.0
     salary_fit: float = 0.0
     market_fit: float = 0.0
+    recency_fit: float = 0.0
     total_score: float = 0.0
     explanations: list[ScoreExplanation] = field(default_factory=list)
 

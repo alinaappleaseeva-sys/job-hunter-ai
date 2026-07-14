@@ -32,11 +32,12 @@ def load_weights() -> dict[str, float]:
     Adds validation: warn if sum != ~1.0 or file missing.
     """
     defaults = {
-        "role_fit": 0.40,
-        "seniority_fit": 0.25,
-        "location_remote_fit": 0.20,
+        "role_fit": 0.35,
+        "seniority_fit": 0.22,
+        "location_remote_fit": 0.18,
         "salary_fit": 0.05,
-        "market_fit": 0.10,
+        "market_fit": 0.08,
+        "recency_fit": 0.12,
     }
     if not CONFIG_PATH.exists():
         logger.warning(f"Ranking weights config {CONFIG_PATH} not found, using defaults")
@@ -197,6 +198,46 @@ def _score_market_fit(profile: CandidateProfile, job: CanonicalJob) -> tuple[flo
         return 0.5, [f"market {job_market} not in preferred markets"]
     return 0.6, ["market unknown"]
 
+from datetime import UTC, datetime
+
+def _days_since(dt: datetime | None) -> float:
+    if dt is None:
+        return 999.0
+    now = datetime.now(UTC)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    delta = now - dt
+    return max(0.0, delta.days + delta.seconds / 86400)
+
+
+def _score_recency_fit(job: CanonicalJob) -> tuple[float, list[str]]:
+    """Separate recency component.
+    Strong downrank for 21-40 days, hard preference for fresh jobs.
+    Jobs >40 days should be filtered upstream.
+    """
+    reasons = []
+    age = _days_since(job.canonical_posted_at)
+
+    if age > 40:
+        score = 0.0
+        reasons.append(f"older than 40 days (age≈{age:.0f}d) — hard filtered upstream")
+    elif age <= 7:
+        score = 1.0
+        reasons.append(f"very fresh (≤7 days, age≈{age:.0f}d)")
+    elif age <= 14:
+        score = 0.85
+        reasons.append(f"fresh (8-14 days, age≈{age:.0f}d)")
+    elif age <= 21:
+        score = 0.65
+        reasons.append(f"recent (15-21 days, age≈{age:.0f}d)")
+    elif age <= 30:
+        score = 0.40
+        reasons.append(f"aging (22-30 days, age≈{age:.0f}d) — strong downrank")
+    else:  # 31-40
+        score = 0.20
+        reasons.append(f"stale (31-40 days, age≈{age:.0f}d) — heavy penalty")
+
+    return round(score, 3), reasons
 
 def compute_score_breakdown(
     profile: CandidateProfile, job: CanonicalJob, weights: dict[str, float] | None = None
@@ -208,13 +249,16 @@ def compute_score_breakdown(
     loc_s, loc_r = _score_location_remote_fit(profile, job)
     sal_s, sal_r = _score_salary_fit(profile, job)
     mkt_s, mkt_r = _score_market_fit(profile, job)
+    rec_s, rec_r = _score_recency_fit(job)
 
+    rec_w = weights.get("recency_fit", 0.0)
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
         + loc_s * weights["location_remote_fit"]
         + sal_s * weights["salary_fit"]
         + mkt_s * weights["market_fit"]
+        + rec_s * rec_w
     )
 
     explanations: list[ScoreExplanation] = [
@@ -223,6 +267,7 @@ def compute_score_breakdown(
         ScoreExplanation(component="location_remote_fit", score=loc_s, reasons=loc_r),
         ScoreExplanation(component="salary_fit", score=sal_s, reasons=sal_r),
         ScoreExplanation(component="market_fit", score=mkt_s, reasons=mkt_r),
+        ScoreExplanation(component="recency_fit", score=rec_s, reasons=rec_r),
     ]
 
     return JobScoreBreakdown(
@@ -231,6 +276,7 @@ def compute_score_breakdown(
         location_remote_fit=loc_s,
         salary_fit=sal_s,
         market_fit=mkt_s,
+        recency_fit=rec_s,
         total_score=round(total, 3),
         explanations=explanations,
     )

@@ -125,6 +125,16 @@ def main() -> None:
         print(f"RemoteOK fetch failed ({e}). Using synthetic fallback jobs.\n")
         canonical_jobs = _make_synthetic_jobs()
 
+    # Apply same recency filter as main pipeline (drop >40 days)
+    from datetime import datetime, UTC
+    def _days(dt):
+        if dt is None: return 999.0
+        if dt.tzinfo is None: dt = dt.replace(tzinfo=UTC)
+        return max(0.0, (datetime.now(UTC) - dt).days)
+    before = len(canonical_jobs)
+    canonical_jobs = [j for j in canonical_jobs if _days(getattr(j, "canonical_posted_at", None)) <= 40]
+    print(f"After recency filter (<40 days): {len(canonical_jobs)} / {before}\n")
+
     print("Running ranking...")
     ranked = rank_jobs(profile, canonical_jobs)
     print(f"Ranked {len(ranked)} jobs.\n")
