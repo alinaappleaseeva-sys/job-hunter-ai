@@ -268,6 +268,34 @@ def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -
 
     return 0.95, ["no strong credential mismatch detected"]
 
+
+def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -> tuple[float, list[str]]:
+    """Basic hard credential mismatch penalty.
+
+    Looks for obvious accounting/CPA/SOX requirements in available description text.
+    Returns low score + explanation when mismatch is detected for our profile.
+    """
+    reasons = []
+    # Try to find raw description in common places
+    desc = ""
+    if hasattr(job, "description") and job.description:
+        desc = job.description
+    if not desc and hasattr(job, "payload") and isinstance(getattr(job, "payload", None), dict):
+        desc = job.payload.get("description", "") or ""
+    if not desc and hasattr(job, "raw_description"):
+        desc = getattr(job, "raw_description", "") or ""
+
+    req = extract_hard_requirements(desc)
+    if req.get("requires_accounting_credential"):
+        reasons.append("hard credential mismatch (CPA/Big 4/SOX/GAAP/public accounting required)")
+        return 0.15, reasons   # strong penalty
+
+    if req.get("raw_signals"):
+        reasons.append("some credential signals present but not blocking")
+        return 0.7, reasons
+
+    return 0.95, ["no strong credential mismatch detected"]
+
 def compute_score_breakdown(
     profile: CandidateProfile, job: CanonicalJob, weights: dict[str, float] | None = None
 ) -> JobScoreBreakdown:
@@ -284,6 +312,9 @@ def compute_score_breakdown(
     rec_w = weights.get("recency_fit", 0.0)
     req_weight = 0.10   # modest weight for requirements mismatch penalty
 
+
+    # Include requirements component in total (give it a modest weight for now)
+    req_weight = 0.10
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
@@ -291,16 +322,7 @@ def compute_score_breakdown(
         + sal_s * weights["salary_fit"]
         + mkt_s * weights["market_fit"]
         + rec_s * rec_w
-        + req_s * req_weight
-    )
 
-    explanations: list[ScoreExplanation] = [
-        ScoreExplanation(component="role_fit", score=role_s, reasons=role_r),
-        ScoreExplanation(component="seniority_fit", score=sen_s, reasons=sen_r),
-        ScoreExplanation(component="location_remote_fit", score=loc_s, reasons=loc_r),
-        ScoreExplanation(component="salary_fit", score=sal_s, reasons=sal_r),
-        ScoreExplanation(component="market_fit", score=mkt_s, reasons=mkt_r),
-        ScoreExplanation(component="recency_fit", score=rec_s, reasons=rec_r),
         ScoreExplanation(component="requirements_mismatch", score=req_s, reasons=req_r),
     ]
 
