@@ -239,6 +239,7 @@ def _score_recency_fit(job: CanonicalJob) -> tuple[float, list[str]]:
         reasons.append(f"stale (31-40 days, age≈{age:.0f}d) — heavy penalty")
 
     return round(score, 3), reasons
+<<<<<<< HEAD
 
 
 def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -> tuple[float, list[str]]:
@@ -267,6 +268,8 @@ def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -
         return 0.7, reasons
 
     return 0.95, ["no strong credential mismatch detected"]
+=======
+>>>>>>> cac2255 (feat(recency): hard filter for jobs older than 40 days + recency_fit scoring component)
 
 def compute_score_breakdown(
     profile: CandidateProfile, job: CanonicalJob, weights: dict[str, float] | None = None
@@ -279,11 +282,15 @@ def compute_score_breakdown(
     sal_s, sal_r = _score_salary_fit(profile, job)
     mkt_s, mkt_r = _score_market_fit(profile, job)
     rec_s, rec_r = _score_recency_fit(job)
+<<<<<<< HEAD
     req_s, req_r = _score_requirements_mismatch(profile, job)   # from PR
 
     rec_w = weights.get("recency_fit", 0.0)
     req_weight = 0.10   # modest weight for requirements mismatch penalty
+=======
+>>>>>>> cac2255 (feat(recency): hard filter for jobs older than 40 days + recency_fit scoring component)
 
+    rec_w = weights.get("recency_fit", 0.0)
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
@@ -291,7 +298,10 @@ def compute_score_breakdown(
         + sal_s * weights["salary_fit"]
         + mkt_s * weights["market_fit"]
         + rec_s * rec_w
+<<<<<<< HEAD
         + req_s * req_weight
+=======
+>>>>>>> cac2255 (feat(recency): hard filter for jobs older than 40 days + recency_fit scoring component)
     )
 
     explanations: list[ScoreExplanation] = [
@@ -301,7 +311,10 @@ def compute_score_breakdown(
         ScoreExplanation(component="salary_fit", score=sal_s, reasons=sal_r),
         ScoreExplanation(component="market_fit", score=mkt_s, reasons=mkt_r),
         ScoreExplanation(component="recency_fit", score=rec_s, reasons=rec_r),
+<<<<<<< HEAD
         ScoreExplanation(component="requirements_mismatch", score=req_s, reasons=req_r),
+=======
+>>>>>>> cac2255 (feat(recency): hard filter for jobs older than 40 days + recency_fit scoring component)
     ]
 
     return JobScoreBreakdown(
@@ -311,7 +324,10 @@ def compute_score_breakdown(
         salary_fit=sal_s,
         market_fit=mkt_s,
         recency_fit=rec_s,
+<<<<<<< HEAD
         requirements_mismatch=req_s,
+=======
+>>>>>>> cac2255 (feat(recency): hard filter for jobs older than 40 days + recency_fit scoring component)
         total_score=round(total, 3),
         explanations=explanations,
     )
