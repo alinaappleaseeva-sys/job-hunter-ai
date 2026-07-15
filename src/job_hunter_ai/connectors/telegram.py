@@ -5,22 +5,23 @@ Supports:
 - Stub / sample mode via channel registry (for tests, offline, and quick Wave 1 coverage)
 
 Wave 1 focus: easy multi-channel support for high-relevance Web3/DAO hiring channels.
+Improved noise filtering with segment keywords for Ops/DAO/Governance/Treasury/Contributor roles.
 
 Usage example (stub):
     from job_hunter_ai.connectors.telegram import TelegramConnector
-    conn = TelegramConnector.from_channel("tonhunt")   # auto-loads Wave 1 samples
+    conn = TelegramConnector.from_channel("web3hiring")
     result = conn.fetch(limit=20)
 
 Usage example (real):
     from telethon import TelegramClient
     client = TelegramClient(...)
-    conn = TelegramConnector("telegram:tonhunt", client=client)
+    conn = TelegramConnector("telegram:web3hiring", client=client)
     result = conn.fetch(limit=50)
 """
 
 from __future__ import annotations
 
-import os
+import re
 from datetime import datetime
 from typing import Any
 
@@ -48,6 +49,97 @@ except ImportError:
     Message = None  # type: ignore
 
 
+# === Tuned segment-aware job signal filter (Wave 1 tuning) ===
+
+_JOB_SIGNALS = {
+    "job", "hiring", "position", "opening", "role", "looking for", "we need",
+    "open ", "we're hiring", "join us", "vacancy", "now hiring",
+    "head of", "senior ", "lead ", "manager "
+}
+
+# Strong positive keywords for the target segment (tuned per plan)
+_SEGMENT_KEYWORDS = {
+    # Exact high-value phrases
+    "head of ops", "senior operations", "dao ops", "treasury ops",
+    "governance lead", "contributor coordinator", "program manager",
+    "on-chain operations", "dao finance",
+    # Core terms
+    "ops", "operations", "dao", "governance", "treasury", "contributor",
+    "program", "head of ops", "ops lead", "operations lead",
+    "governance lead", "treasury ops", "contributor coordinator",
+    "program manager", "chief of staff", "opco", "dao coordination",
+    "dao finance", "on-chain operations"
+}
+
+_NEGATIVE_PATTERNS = [
+    r"\b(developer|engineer|solidity|rust|python backend|frontend|smart contract)\b.*\b(only|role|position)\b",
+    r"\b(marketing|growth|content|community manager|designer)\b(?!.*(ops|operations|dao))",
+    r"\b(intern|internship)\b",
+    r"\b(airdrop|giveaway|crypto signal|trading signal)\b",
+    r"^\s*(dm|pm) me for details\s*$",
+    r"\b(solidity|smart contract|rust developer|frontend engineer)\b",
+]
+
+
+def is_telegram_job_signal(text: str) -> bool:
+    """Core filter used in both real Telethon and stub paths."""
+    if not text or not isinstance(text, str):
+        return False
+    text_lower = text.lower().strip()
+
+    has_signal = any(sig in text_lower for sig in _JOB_SIGNALS)
+    if not has_signal:
+        return False
+
+    for pat in _NEGATIVE_PATTERNS:
+        if re.search(pat, text_lower):
+            return False
+
+    return True
+
+
+def score_telegram_message(text: str) -> dict:
+    """Detailed scoring for eval. Higher weight for Head/Senior/Lead + DAO/Treasury/Gov + remote."""
+    if not text:
+        return {"is_job": False, "has_segment": False, "is_noise": True, "score": 0.0}
+
+    text_lower = text.lower()
+
+    has_signal = any(sig in text_lower for sig in _JOB_SIGNALS)
+    has_segment = any(kw in text_lower for kw in _SEGMENT_KEYWORDS)
+
+    # Bonus for seniority + key domains
+    seniority_boost = any(x in text_lower for x in ["head of", "senior", "lead", "manager"])
+    domain_boost = any(x in text_lower for x in ["dao", "treasury", "governance", "ops"])
+    remote_boost = any(x in text_lower for x in ["remote", "async", "full remote"])
+
+    is_negative = any(re.search(p, text_lower) for p in _NEGATIVE_PATTERNS)
+
+    is_job = has_signal and not is_negative
+
+    score = 0.0
+    if has_signal:
+        score += 0.4
+    if has_segment:
+        score += 0.35
+    if seniority_boost:
+        score += 0.15
+    if domain_boost:
+        score += 0.05
+    if remote_boost:
+        score += 0.05
+
+    if is_negative:
+        score -= 0.3
+
+    return {
+        "is_job": is_job,
+        "has_segment": has_segment,
+        "is_noise": not is_job or is_negative,
+        "score": round(max(0.0, min(1.0, score)), 2),
+    }
+
+
 class TelegramConnector(Connector):
     """Telegram repost channel connector.
 
@@ -70,11 +162,7 @@ class TelegramConnector(Connector):
         channel: str,
         client: Any | None = None,
     ) -> "TelegramConnector":
-        """Convenience constructor for Wave 1.
-
-        Uses the channels registry to load sample data when no real client.
-        Example: TelegramConnector.from_channel("cryptohiring_1")
-        """
+        """Convenience constructor for Wave 1."""
         source_name = f"telegram:{channel}" if not channel.startswith("telegram:") else channel
         samples = load_sample_for_channel(channel)
         return cls(source_name=source_name, messages=samples, client=client)
@@ -101,7 +189,7 @@ class TelegramConnector(Connector):
                 continue
 
             text = msg.message
-            if "job" not in text.lower() and "hiring" not in text.lower():
+            if not is_telegram_job_signal(text):
                 continue
 
             external_id = str(msg.id)
@@ -154,7 +242,7 @@ class TelegramConnector(Connector):
             )
             return FetchResult(records=records, cursor_after=str(now))
 
-        # Stub / sample path (enhanced for Wave 1)
+        # Stub / sample path — uses improved filter
         records: list[RawSourceRecord] = []
         channel_key = self.source_name.split(":", 1)[-1] if ":" in self.source_name else self.source_name
 
@@ -162,9 +250,7 @@ class TelegramConnector(Connector):
             if not isinstance(msg, dict):
                 continue
             text = msg.get("text") or msg.get("message", "")
-            text_lower = text.lower()
-            job_keywords = ["job", "hiring", "position", "opening", "role", "looking for", "we need", "open "]
-            if not text or not any(k in text_lower for k in job_keywords):
+            if not is_telegram_job_signal(text):
                 continue
 
             external_id = str(msg.get("id", idx))
@@ -210,32 +296,10 @@ class TelegramConnector(Connector):
             return None
 
 
-# Backwards-compatible helper (still works)
+# Backwards helpers
 def load_sample_telegram_messages(channel: str = "tonhunt") -> list[dict]:
-    """Legacy helper. Prefer TelegramConnector.from_channel(channel) for Wave 1."""
     return load_sample_for_channel(channel)
 
 
-async def fetch_telegram_real(
-    client: Any,
-    channel: str,
-    limit: int | None = 50,
-) -> list[dict]:
-    """Low-level helper for advanced real fetches."""
-    if not TELETHON_AVAILABLE:
-        raise RuntimeError("Telethon not installed")
-    items = []
-    async for msg in client.iter_messages(channel, limit=limit):
-        if msg.message:
-            items.append({
-                "id": msg.id,
-                "text": msg.message,
-                "date": msg.date.isoformat() if msg.date else None,
-                "views": getattr(msg, "views", 0),
-            })
-    return items
-
-
 def get_wave1_telegram_channels() -> dict:
-    """Return metadata for Wave 1 priority channels."""
     return get_wave1_channels()

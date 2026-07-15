@@ -192,7 +192,28 @@ Priority: High because startup job surface is excellent for "Head of Operations"
 
 ---
 
-## 2026-07-15 Update: "День по выбору sources" — Web3/DAO/Ops Prioritization
+## 2026-07-15 Update
+
+## Wave 1 Results (2026-07-15)
+
+**Telegram**:
+- 7 channels active (added @cryptojobslist, @web3jobs)
+- Filter tuned with Head/Senior/DAO Ops/Treasury Ops keywords + scoring
+- Eval: 67.6% pass rate, 59.5% high-score, 1 FP on 37 messages
+
+**Boards**:
+- cryptojobslist RSS MVP connector implemented
+
+**Seeds**:
+- load_protocol_seeds.py + fetch_protocol_stubs.py for 4 protocols (Lido, Optimism, Arbitrum, karpatkey)
+- Governance pages giving contributor/ops signals
+
+**Pipeline smoke**:
+- Full run via run_full_pipeline: ~690 raw, ~310 ranked
+- Precision@5 = 1.0 (proxy)
+
+Lessons: RSS can be sparse. Telegram filters are effective after tuning. Governance forums are high-signal for DAO ops.
+: "День по выбору sources" — Web3/DAO/Ops Prioritization
 
 **Confirmed Segment** (see `docs/research/target-segment.md` for full text):
 Head / Senior Operations + DAO / Governance / Treasury / Contributor Coordination / Program Management в Web3/DeFi/Protocols (и crypto infra).

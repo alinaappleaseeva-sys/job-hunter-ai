@@ -79,7 +79,14 @@ Existing Telethon infrastructure gives big multiplier.
 | cryptojobslist / others | @cryptojobslist, @DeJob etc. | Various Web3 ops/DAO               | Same       | Noise varies                    | High (add) | Expand list. |
 | Older Web3 TG (crypto_talents etc.) | Various            | Mix                                 | Same       | Quality validation needed      | Candidate | Re-evaluate against segment. |
 
-**Action**: Expand `sources/telegram_channels.yaml` or registry with Web3/DAO-relevant ones. Add light per-channel filters. Target noise ≤35% on new channels.
+**Action**: Expand `telegram_channels.py` registry with Web3/DAO-relevant ones. Added improved `is_telegram_job_signal` + segment keywords + negative patterns (2026-07-15). Target noise ≤35%.
+
+**Current Wave 1 status (tuned - 2026-07-15)**:
+- 7 channels: cryptohiring_1, tonhunt, smerkisjobs, web3hiring, dejob_global, **cryptojobslist**, **web3jobs**
+- Filter tuned: stronger positives (Head of Ops, Senior Operations, DAO Ops, Treasury Ops, Governance Lead, etc.), more negatives, score boosts seniority + domain + remote.
+- Eval (37 messages): **67.6% passed**, **59.5% high score (>0.7)**, **70% segment keywords**, still only 1 false positive.
+- cryptojobslist: RSS connector MVP ready (0 items typical).
+- Protocol seeds: loader + minimal fetch stubs (Lido/Optimism/Arbitrum/karpatkey) implemented.
 
 ## Protocol / DAO Career Pages + Governance / Contributors Surfaces
 
