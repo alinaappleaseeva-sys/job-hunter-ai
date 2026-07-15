@@ -82,3 +82,8 @@ __all__ = [
     "is_ghost_or_stale",
     "parse_rate",
 ]
+
+# Web3 specific HTML boards (added in this iteration)
+from .web3career import Web3CareerConnector
+from .findweb3 import FindWeb3Connector
+from .remote3 import Remote3Connector

@@ -9,8 +9,11 @@ import re
 # (e.g. pure accounting, GL, tax, audit, SOX-heavy finance ops).
 # These should NOT match our target_role_families (operations, dao_ops, etc.).
 _NEGATIVE_ROLE_PATTERNS = [
-    re.compile(r"\b(?:accounting|accountant|gl |general ledger|tax|audit|sox|cpa|big 4|public accounting|financial reporting|intercompany|close process|reconciliation|payroll|bookkeeper)\b", re.I),
-    re.compile(r"\b(?:finance ops|financial ops|fp&a|treasury accounting)\b", re.I),
+    re.compile(r"(?:accounting|accountant|gl |general ledger|tax|audit|sox|cpa|big 4|public accounting|financial reporting|intercompany|close process|reconciliation|payroll|bookkeeper)", re.I),
+    re.compile(r"(?:finance ops|financial ops|fp&a|treasury accounting)", re.I),
+    re.compile(r"(?:associate|analyst|specialist)", re.I),
+    re.compile(r"(?:trading|clearing|payment risk|risk operations|corporate actions|hedge fund|tradfi|equities)", re.I),
+    re.compile(r"(?:it operations|design operations|client operations|linkedin operations)", re.I),
 ]
 
 _SENIORITY_RULES: list[tuple[re.Pattern[str], str]] = [

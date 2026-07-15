@@ -62,7 +62,8 @@ From current view (screenshot + validation):
 
 | Source                  | URL / Type                          | Approx. Real Roles (examples) | Feasibility                  | Risk (ghost, speed, anti-bot, noise) | Status      | Notes / Priority |
 |-------------------------|-------------------------------------|-------------------------------|------------------------------|--------------------------------------|-------------|------------------|
-| web3.career            | https://web3.career (esp. /operations-jobs, /dao-jobs, /treasury-jobs, filters) | DAO-Ops, Governance Specialist, Treasury Ops, Operations Associate, Head of Ops/Gov | HTML pages (public, filterable); possible API (partner/docs exist) | Low-medium ghost; good speed (many "New"); low anti-bot on listings | High priority (real needed) | "Operations Jobs in Web3 - Jul 2026 (11-12 New)". Excellent coverage for segment. Scrape or API first. |
+| web3.career            | https://web3.career | ... | HTML | ... | high | 0.20 (general board) |  (esp. /operations-jobs, /dao-jobs, /treasury-jobs, filters) | DAO-Ops, Governance Specialist, Treasury Ops, Operations Associate, Head of Ops/Gov | HTML pages (public, filterable); possible API (partner/docs exist) | Low-medium ghost; good speed (many "New"); low anti-bot on listings | High priority (real needed) | "Operations Jobs in Web3 - Jul 2026
+**Update (this iteration)**: web3.career HTML scraper implemented (operations-jobs + dao-jobs). findweb3.com/jobs/dao and remote3.co connectors added. All three now poll key pages and emit RawSourceRecord with segment_relevant flag. (11-12 New)". Excellent coverage for segment. Scrape or API first. |
 | Cryptocurrency Jobs / Blockchain Jobs | https://cryptojobslist.com/ (incl. DAO ops) | Wide Web3 ops, treasury, governance, protocol ops | RSS exists (structure confirmed); HTML | Medium ghost risk on boards; high update speed (200+ new claimed); low anti-bot | High priority | RSS parse attractive for quick wins. "203-214 new" scale. |
 | DAO Jobs boards        | https://findweb3.com/jobs/dao ; aworker.io/dao-jobs | DAO-Ops Manager, Governance Specialist, DAO Finance & Ops, Voting Power Lead, DAO Coordinator | HTML scrape (public listings) | Medium volume per source; good relevance; low-moderate maintenance | High (DAO-specific) | Very high relevance. Low effort entry. |
 | cryptocurrencyjobs.co  | https://cryptocurrencyjobs.co/     | Operations, Treasury, Governance in crypto | Likely RSS/HTML (similar boards) | Similar to cryptojobslist | High | Complementary volume. |
@@ -148,3 +149,41 @@ See `docs/architecture/implementation-plan-sources.md` for updated waves, sequen
 - Build seed list of 10–20 protocol career/gov surfaces.
 - Add evals for new sources.
 - Monitoring/alerts setup (see plan doc).
+
+
+## Quality Thresholds + Lessons Learned (July 2026 update)
+
+### Per-source accepted_relevance_threshold
+
+| Source              | accepted_relevance_threshold | Rationale |
+|---------------------|------------------------------|-----------|
+| web3career / remote3 | 0.20                         | General boards — accept lower precision at start for volume |
+| findweb3            | 0.35                         | More DAO-focused |
+| protocol_seeds / governance forums | 0.40 | Native sources — higher quality and relevance expected |
+
+### Lessons Learned (critical)
+
+**General boards deliver volume but very low target precision** for our narrow segment (Head/Senior Ops + DAO/Governance/Treasury/Contributor Coordination in Web3/DeFi/Protocols).
+
+- After strict scoring (strong seniority + domain required + heavy negatives for CEX/regulatory/trading ops), strict high-relevance on web3.career + remote3 is typically **0–5%**.
+- Many "Operations" roles are mid-level execution (Associate/Specialist), TradFi-adjacent (Trading Ops, Clearing, Risk, Compliance), or completely off-domain (Design Ops, Revenue Ops, IT Ops).
+- DAO-specific pages sometimes return project names instead of jobs.
+- "Program Manager" alone is not enough — must be paired with DAO/Gov/Treasury context.
+
+**Recommendation going forward**:
+- **Native protocol/DAO surfaces >> general boards** (priority order).
+- Keep general boards (web3.career, remote3, etc.) with low thresholds (0.20) for coverage, but **deprioritize** them in ranking and source selection.
+- Use strict `segment_scorer` (new module) everywhere.
+- Invest heavily in protocol_seeds (20+ protocols), governance forums, Snapshot, contributor programs, and direct DAO ops surfaces.
+- General boards are now secondary "supplement" sources, not primary.
+
+See `src/job_hunter_ai/scoring/segment_scorer.py` for the current strict positive/negative logic + crypto-native bonuses.
+
+### Updated Prioritization (native-first)
+
+1. **Native / High-relevance** (protocol career pages, governance forums, Snapshot, DAO contributor boards, targeted Telegram)
+2. **DAO-focused boards** (findweb3, specific DAO job pages)
+3. **General Web3 boards** (web3.career, cryptojobslist, remote3) — with low weight
+4. **Broad remote/tech** — only if needed for volume
+
+This shift is a direct consequence of the quality evals performed in July 2026.

@@ -1,151 +1,330 @@
-# Protocol / DAO Career Pages, Governance Forums, Discords and Contributor Surfaces
-# Used for targeted seeding of high-relevance sources for Head/Senior Ops + DAO/Gov/Treasury/Contributor roles in Web3.
-# Format supports later crawling/scraping/monitoring.
-# Types: careers_page, governance_forum, snapshot, discord, contributors, jobs_board, other
-
 protocols:
-  - name: Lido
-    slug: lido
-    website: https://lido.fi
-    careers:
-      - url: https://lido.fi/careers
-        type: careers_page
-        notes: Often posts ops, treasury, governance roles.
-    governance:
-      - url: https://research.lido.fi/
-        type: governance_forum
-        notes: Main forum for proposals, DAO Ops requests, contributor coordination.
-      - url: https://snapshot.box/#/s:lido-snapshot.eth
-        type: snapshot
-        notes: On-chain voting, sometimes hiring-related proposals.
-    discord: https://discord.gg/lido
-    tags: [dao, treasury, governance, staking, ops]
-    priority: high
-
-  - name: Optimism
-    slug: optimism
-    website: https://optimism.io
-    governance:
-      - url: https://gov.optimism.io/
-        type: governance_forum
-        notes: Seasons, governance design, contributor programs.
-      - url: https://docs.optimism.io/governance
-        type: other
-    careers:
-      - url: https://jobs.theblockchainassociation.org/companies/optimism-foundation-2
-        type: jobs_board
-        notes: Foundation roles often include ops/governance.
-    discord: https://discord.gg/optimism
-    x: https://x.com/Optimism
-    tags: [l2, governance, collective, ops]
-    priority: high
-
-  - name: Arbitrum
-    slug: arbitrum
-    website: https://arbitrum.foundation
-    careers:
-      - url: https://jobs.arbitrum.io/
-        type: careers_page
-        notes: Foundation and DAO-related ops roles.
-    governance:
-      - url: https://forum.arbitrum.foundation/
-        type: governance_forum
-        notes: Proposals, working groups, contributor coordination.
-      - url: https://snapshot.box/#/s:arbitrum.eth
-        type: snapshot
-    discord: https://discord.gg/arbitrum
-    tags: [l2, dao, governance, ops]
-    priority: high
-
-  - name: Gitcoin
-    slug: gitcoin
-    website: https://gitcoin.co
-    governance:
-      - url: https://gov.gitcoin.co/
-        type: governance_forum
-        notes: DAO coordination, grants, contributor programs.
-    careers:
-      - url: https://gitcoin.co/careers
-        type: careers_page
-    discord: https://discord.gg/gitcoin
-    tags: [dao, grants, public-goods, ops, program-management]
-    priority: high
-
-  - name: karpatkey
-    slug: karpatkey
-    website: https://www.karpatkey.com
-    careers:
-      - url: https://www.karpatkey.com/careers
-        type: careers_page
-        notes: Frequently posts DAO-Ops, Finance & Ops, Governance roles.
-    governance:
-      - url: https://snapshot.box/#/s:karpatkey.eth
-        type: snapshot
-    discord: https://discord.gg/karpatkey
-    tags: [defi, dao-ops, treasury, governance]
-    priority: high
-
-  - name: Safe
-    slug: safe
-    website: https://safe.global
-    careers:
-      - url: https://safe.global/careers
-        type: careers_page
-    governance:
-      - url: https://snapshot.box/#/s:safe.eth
-        type: snapshot
-    discord: https://discord.gg/safe
-    tags: [wallet, infra, governance, ops]
-    priority: medium
-
-  - name: dYdX
-    slug: dydx
-    website: https://dydx.exchange
-    governance:
-      - url: https://dydx.forum/
-        type: governance_forum
-    careers:
-      - url: https://dydx.exchange/careers
-        type: careers_page
-    tags: [defi, dao, governance]
-    priority: medium
-
-  - name: Aragon
-    slug: aragon
-    website: https://aragon.org
-    governance:
-      - url: https://forum.aragon.org/
-        type: governance_forum
-    careers:
-      - url: https://aragon.org/careers
-        type: careers_page
-    tags: [dao, governance, tooling]
-    priority: medium
-
-  - name: StableLab
-    slug: stablelab
-    website: https://www.stablelab.com
-    governance:
-      - url: https://snapshot.box/#/s:stablelab.eth
-        type: snapshot
-    tags: [dao, governance, ops]
-    priority: medium
-
-  - name: Gitcoin (additional contributor surfaces)
-    slug: gitcoin-contributors
-    contributors:
-      - url: https://gitcoin.co/quests
-        type: contributors
-      - url: https://gov.gitcoin.co/c/grants
-        type: other
-    priority: medium
-
-# Additional seeds to expand (add more as discovered)
-# - Other L2s (Base, zkSync, etc.)
-# - Major DeFi (Aave, Uniswap, Maker, Curve)
-# - Infra (Chainlink, The Graph, EigenLayer)
-
-# Usage notes:
-# - Prioritize high for Wave 1/2 seeding.
-# - For each, define fetch strategy later (scrape careers page, monitor forum RSS, Discord alerts, etc.).
-# - Cross-reference with web3.career / cryptojobslist for validation.
+- name: Lido
+  slug: lido
+  website: https://lido.fi
+  careers:
+  - url: https://lido.fi/careers
+    type: careers_page
+    notes: Often posts ops, treasury, governance roles.
+  governance:
+  - url: https://research.lido.fi/
+    type: governance_forum
+    notes: Main forum for proposals, DAO Ops requests, contributor coordination.
+  - url: https://snapshot.box/#/s:lido-snapshot.eth
+    type: snapshot
+    notes: On-chain voting, sometimes hiring-related proposals.
+  discord: https://discord.gg/lido
+  tags:
+  - dao
+  - treasury
+  - governance
+  - staking
+  - ops
+  priority: high
+- name: Optimism
+  slug: optimism
+  website: https://optimism.io
+  governance:
+  - url: https://gov.optimism.io/
+    type: governance_forum
+    notes: Seasons, governance design, contributor programs.
+  - url: https://docs.optimism.io/governance
+    type: other
+  careers:
+  - url: https://jobs.theblockchainassociation.org/companies/optimism-foundation-2
+    type: jobs_board
+    notes: Foundation roles often include ops/governance.
+  discord: https://discord.gg/optimism
+  x: https://x.com/Optimism
+  tags:
+  - l2
+  - governance
+  - collective
+  - ops
+  priority: high
+- name: Arbitrum
+  slug: arbitrum
+  website: https://arbitrum.foundation
+  careers:
+  - url: https://jobs.arbitrum.io/
+    type: careers_page
+    notes: Foundation and DAO-related ops roles.
+  governance:
+  - url: https://forum.arbitrum.foundation/
+    type: governance_forum
+    notes: Proposals, working groups, contributor coordination.
+  - url: https://snapshot.box/#/s:arbitrum.eth
+    type: snapshot
+  discord: https://discord.gg/arbitrum
+  tags:
+  - l2
+  - dao
+  - governance
+  - ops
+  priority: high
+- name: Gitcoin
+  slug: gitcoin
+  website: https://gitcoin.co
+  governance:
+  - url: https://gov.gitcoin.co/
+    type: governance_forum
+    notes: DAO coordination, grants, contributor programs.
+  careers:
+  - url: https://gitcoin.co/careers
+    type: careers_page
+  discord: https://discord.gg/gitcoin
+  tags:
+  - dao
+  - grants
+  - public-goods
+  - ops
+  - program-management
+  priority: high
+- name: karpatkey
+  slug: karpatkey
+  website: https://www.karpatkey.com
+  careers:
+  - url: https://www.karpatkey.com/careers
+    type: careers_page
+    notes: Frequently posts DAO-Ops, Finance & Ops, Governance roles.
+  governance:
+  - url: https://snapshot.box/#/s:karpatkey.eth
+    type: snapshot
+  discord: https://discord.gg/karpatkey
+  tags:
+  - defi
+  - dao-ops
+  - treasury
+  - governance
+  priority: high
+- name: Safe
+  slug: safe
+  website: https://safe.global
+  careers:
+  - url: https://safe.global/careers
+    type: careers_page
+  governance:
+  - url: https://snapshot.box/#/s:safe.eth
+    type: snapshot
+  discord: https://discord.gg/safe
+  tags:
+  - wallet
+  - infra
+  - governance
+  - ops
+  priority: medium
+- name: dYdX
+  slug: dydx
+  website: https://dydx.exchange
+  governance:
+  - url: https://dydx.forum/
+    type: governance_forum
+  careers:
+  - url: https://dydx.exchange/careers
+    type: careers_page
+  tags:
+  - defi
+  - dao
+  - governance
+  priority: medium
+- name: Aragon
+  slug: aragon
+  website: https://aragon.org
+  governance:
+  - url: https://forum.aragon.org/
+    type: governance_forum
+  careers:
+  - url: https://aragon.org/careers
+    type: careers_page
+  tags:
+  - dao
+  - governance
+  - tooling
+  priority: medium
+- name: StableLab
+  slug: stablelab
+  website: https://www.stablelab.com
+  governance:
+  - url: https://snapshot.box/#/s:stablelab.eth
+    type: snapshot
+  tags:
+  - dao
+  - governance
+  - ops
+  priority: medium
+- name: Gitcoin (additional contributor surfaces)
+  slug: gitcoin-contributors
+  contributors:
+  - url: https://gitcoin.co/quests
+    type: contributors
+  - url: https://gov.gitcoin.co/c/grants
+    type: other
+  priority: medium
+- name: Aave
+  slug: aave
+  website: https://aave.com
+  careers:
+  - url: https://aave.com/careers
+    type: careers_page
+    notes: DeFi protocol ops, governance, treasury roles.
+  governance:
+  - url: https://governance.aave.com/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:aave.eth
+    type: snapshot
+  discord: https://discord.gg/aave
+  tags:
+  - defi
+  - lending
+  - governance
+  - dao-ops
+  priority: high
+- name: Uniswap
+  slug: uniswap
+  website: https://uniswap.org
+  governance:
+  - url: https://gov.uniswap.org/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:uniswap
+    type: snapshot
+  careers:
+  - url: https://boards.greenhouse.io/uniswap
+    type: careers_page
+    notes: Protocol ops and contributor roles.
+  discord: https://discord.gg/uniswap
+  tags:
+  - defi
+  - dex
+  - governance
+  - dao
+  priority: high
+- name: MakerDAO
+  slug: makerdao
+  website: https://makerdao.com
+  governance:
+  - url: https://forum.makerdao.com/
+    type: governance_forum
+  - url: https://vote.makerdao.com/
+    type: other
+  careers:
+  - url: https://www.makerdao.com/en/careers
+    type: careers_page
+    notes: Core unit ops, governance, treasury.
+  discord: https://discord.gg/makerdao
+  tags:
+  - defi
+  - stablecoin
+  - governance
+  - treasury
+  - dao
+  priority: high
+- name: Polymarket
+  slug: polymarket
+  website: https://polymarket.com
+  careers:
+  - url: https://boards.greenhouse.io/polymarket
+    type: careers_page
+  governance: []
+  tags:
+  - prediction-market
+  - governance
+  - ops
+  priority: high
+- name: Solana Foundation
+  slug: solana
+  website: https://solana.com
+  careers:
+  - url: https://jobs.solana.com/
+    type: careers_page
+    notes: Ecosystem ops, grants, contributor programs.
+  governance:
+  - url: https://forum.solana.com/
+    type: governance_forum
+  discord: https://discord.gg/solana
+  tags:
+  - l1
+  - ecosystem
+  - grants
+  - ops
+  priority: high
+- name: Polygon
+  slug: polygon
+  website: https://polygon.technology
+  careers:
+  - url: https://polygon.technology/careers
+    type: careers_page
+  governance:
+  - url: https://forum.polygon.technology/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:polygon.eth
+    type: snapshot
+  discord: https://discord.gg/polygon
+  tags:
+  - l2
+  - ecosystem
+  - governance
+  - ops
+  priority: high
+- name: Ethereum Foundation
+  slug: ethereum-foundation
+  website: https://ethereum.foundation
+  careers:
+  - url: https://jobs.ethereum.org/
+    type: careers_page
+    notes: Core research, ops, program management.
+  governance: []
+  discord: ''
+  tags:
+  - l1
+  - research
+  - ecosystem
+  - program-management
+  priority: high
+- name: Base (Coinbase)
+  slug: base
+  website: https://base.org
+  careers:
+  - url: https://www.coinbase.com/careers
+    type: careers_page
+    notes: Base ecosystem ops roles often posted under Coinbase.
+  governance:
+  - url: https://base.mirror.xyz/
+    type: other
+  discord: https://discord.gg/base
+  tags:
+  - l2
+  - ecosystem
+  - ops
+  priority: high
+- name: EigenLayer
+  slug: eigenlayer
+  website: https://eigenlayer.xyz
+  careers:
+  - url: https://jobs.ashbyhq.com/eigenlayer
+    type: careers_page
+  governance:
+  - url: https://forum.eigenlayer.xyz/
+    type: governance_forum
+  discord: https://discord.gg/eigenlayer
+  tags:
+  - restaking
+  - infra
+  - governance
+  - ops
+  priority: high
+- name: Chainlink
+  slug: chainlink
+  website: https://chain.link
+  careers:
+  - url: https://chain.link/careers
+    type: careers_page
+  governance:
+  - url: https://forum.chain.link/
+    type: governance_forum
+  discord: https://discord.gg/chainlink
+  tags:
+  - oracle
+  - infra
+  - ecosystem
+  - ops
+  priority: medium

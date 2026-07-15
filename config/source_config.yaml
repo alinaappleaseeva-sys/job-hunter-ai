@@ -1,46 +1,69 @@
-# Source configuration for Phase 3 robust expansion
-# Focused on realistic public boards for web3/fintech/ops roles
-# Updated Wave 1: expanded Telegram for Web3/DAO/Ops + new boards
-
 ats:
   greenhouse:
     boards:
-      - stripe          # fintech + ops heavy
-      - coinbase
-      - a16z            # crypto/venture ops
+    - stripe
+    - coinbase
+    - a16z
     limit_per_board: 10
-
   lever:
     sites:
-      - stripe
-      - coinbase
+    - stripe
+    - coinbase
     limit_per_site: 8
-
   ashby:
     boards:
-      - stripe
-      - coinbase
+    - stripe
+    - coinbase
     limit_per_board: 8
-
 telegram:
   channels:
-    - cryptohiring_1
-    - tonhunt
-    - smerkisjobs
-    - web3hiring
-    - dejob_global
+  - cryptohiring_1
+  - tonhunt
+  - smerkisjobs
+  - web3hiring
+  - dejob_global
   limit_per_channel: 5
-
 robustness:
   max_retries: 1
   backoff_base_seconds: 1.0
   concurrency: 3
   timeout_per_source: 12
-
 success_metrics:
   track_target_role_delta: true
-  target_role_families: ["chief_of_staff", "dao_ops", "operations", "program_management"]
-
+  target_role_families:
+  - chief_of_staff
+  - dao_ops
+  - operations
+  - program_management
 recency:
   hard_max_age_days: 40
-  comment: "Jobs older than this are dropped before ranking. Part of recency filter feature."
+  comment: Jobs older than this are dropped before ranking. Part of recency filter
+    feature.
+web3career:
+  paths:
+  - operations-jobs
+  - dao-jobs
+  limit_per_path: 15
+  note: HTML scraping of filtered views. High relevance for Ops/DAO segment.
+findweb3:
+  paths:
+  - /jobs/dao
+  limit_per_path: 10
+remote3:
+  paths:
+  - /remote-web3-jobs
+  limit_per_path: 10
+  note: Remote web3 jobs board
+thresholds:
+  web3career:
+    accepted_relevance_threshold: 0.2
+    notes: General board - accept lower precision initially
+  remote3:
+    accepted_relevance_threshold: 0.2
+    notes: General remote web3 board
+  findweb3:
+    accepted_relevance_threshold: 0.35
+    notes: More DAO-focused
+  protocol_seeds:
+    accepted_relevance_threshold: 0.4
+    notes: Native sources - higher bar expected
