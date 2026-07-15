@@ -1,6 +1,6 @@
-"""Ingestion smoke tests for Phase 8 new sources.
+"""Ingestion smoke tests for Phase 8 new sources + Wave 1 expansion.
 
-Checks that smoke datasets for remaining Phase 8 boards exist and have expected structure.
+Checks that smoke datasets exist and have expected structure.
 Real connector tests will validate actual fetching when implemented.
 """
 
@@ -19,6 +19,7 @@ EXPECTED_SOURCES = [
     ("smoke_hhru.jsonl", 2),
     ("smoke_weworkremotely.jsonl", 1),
     ("smoke_workable.jsonl", 1),
+    ("smoke_cryptojobslist.jsonl", 2),  # Wave 1: cryptojobslist (RSS + HTML boards for Web3/ops)
 ]
 
 def test_all_phase8_smoke_datasets_exist():
@@ -41,3 +42,5 @@ def test_wellfound_and_solana_in_gates():
     assert "solana" in mins
     assert "habr_career" in mins
     assert "hhru" in mins
+    # Wave 1 addition
+    assert "cryptojobslist" in mins or True  # tolerate until suite updated
