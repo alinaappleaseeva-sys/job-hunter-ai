@@ -268,6 +268,7 @@ def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -
 
     return 0.95, ["no strong credential mismatch detected"]
 
+
 def compute_score_breakdown(
     profile: CandidateProfile, job: CanonicalJob, weights: dict[str, float] | None = None
 ) -> JobScoreBreakdown:
@@ -315,7 +316,6 @@ def compute_score_breakdown(
         total_score=round(total, 3),
         explanations=explanations,
     )
-
 
 def rank_jobs(
     profile: CandidateProfile,
