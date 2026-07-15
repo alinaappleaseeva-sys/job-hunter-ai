@@ -1,0 +1,3 @@
+{"example_id": "ingest-cjl-001", "source": "cryptojobslist", "url": "https://cryptojobslist.com/", "records_expected_min": 5, "notes": "Cryptojobslist main feed + DAO/ops tags. RSS or HTML. Check freshness and ops/DAO relevance."}
+{"example_id": "ingest-cjl-002", "source": "cryptojobslist", "url": "https://cryptojobslist.com/dao_operations", "records_expected_min": 2, "notes": "DAO Operations specific section - high relevance for target segment."}
+{"example_id": "ingest-cjl-003", "source": "cryptojobslist", "url": "https://api.cryptojobslist.com/rss.xml", "records_expected_min": 3, "notes": "RSS feed path for quick ingestion. Verify XML parse and job-like entries."}
