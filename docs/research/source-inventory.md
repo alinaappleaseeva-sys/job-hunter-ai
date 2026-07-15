@@ -89,32 +89,42 @@ Existing Telethon infrastructure gives big multiplier.
 - cryptojobslist: RSS connector MVP ready (0 items typical).
 - Protocol seeds: loader + minimal fetch stubs (Lido/Optimism/Arbitrum/karpatkey) implemented.
 
-## Protocol / DAO Career Pages + Governance / Contributors Surfaces
+## Protocol / DAO Career Pages + Governance / Contributors Surfaces (Expanded July 2026)
 
-These give **maximum relevance** (direct from target organizations) but lower per-source volume. Many use existing ATS (Greenhouse/Lever/Ashby = already real).
+**Native sources are now the highest priority.** General boards have low precision for the target segment.
 
-**How they typically publish**:
-- Dedicated `/careers`, `/jobs`, `/join`, "Open roles".
-- Governance forums (Snapshot, Discourse, gov.optimism.io, research.lido.fi).
-- Discord (announcements, #jobs, #hiring, contributor channels).
-- X / Telegram posts.
-- Contributor programs, grants, bounties, or "working groups" calls.
-- Sometimes on third-party (jobs.theblockchainassociation.org, aworker, findweb3).
+| Protocol / Org | ops_relevance | typical_roles | careers | governance | Discord/Snapshot | last_checked | notes |
+|----------------|---------------|---------------|---------|------------|------------------|--------------|-------|
+| Lido | high | dao, treasury, governance, staking | https://lido.fi/careers | https://research.lido.fi/, https://snapshot.box/#/s:lido-snapshot.eth | https://discord.gg/lido / https://snapshot.box/#/s:lido-snapshot.eth | 2026-07-15 | Often posts ops, treasury, governance roles. |
+| Optimism | high | l2, governance, collective, ops | https://jobs.theblockchainassociation.org/companies/optimism-foundation-2 | https://gov.optimism.io/, https://docs.optimism.io/governance | https://discord.gg/optimism / - | 2026-07-15 | Foundation roles often include ops/governance. |
+| Arbitrum | high | l2, dao, governance, ops | https://jobs.arbitrum.io/ | https://forum.arbitrum.foundation/, https://snapshot.box/#/s:arbitrum.eth | https://discord.gg/arbitrum / https://snapshot.box/#/s:arbitrum.eth | 2026-07-15 | Foundation and DAO-related ops roles. |
+| Gitcoin | high | dao, grants, public-goods, ops | https://gitcoin.co/careers | https://gov.gitcoin.co/ | https://discord.gg/gitcoin / - | 2026-07-15 | High signal for DAO/Ops roles |
+| karpatkey | high | defi, dao-ops, treasury, governance | https://www.karpatkey.com/careers | https://snapshot.box/#/s:karpatkey.eth | https://discord.gg/karpatkey / https://snapshot.box/#/s:karpatkey.eth | 2026-07-15 | Frequently posts DAO-Ops, Finance & Ops, Governance roles. |
+| Safe | medium | wallet, infra, governance, ops | https://safe.global/careers | https://snapshot.box/#/s:safe.eth | https://discord.gg/safe / https://snapshot.box/#/s:safe.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| dYdX | medium | defi, dao, governance | https://dydx.exchange/careers | https://dydx.forum/ | - / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Aragon | medium | dao, governance, tooling | https://aragon.org/careers | https://forum.aragon.org/ | - / - | 2026-07-15 | High signal for DAO/Ops roles |
+| StableLab | medium | dao, governance, ops | - | https://snapshot.box/#/s:stablelab.eth | - / https://snapshot.box/#/s:stablelab.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| Gitcoin (additional contributor surfaces) | medium | ops, governance, treasury | - | - | - / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Aave | high | defi, lending, governance, dao-ops | https://aave.com/careers | https://governance.aave.com/, https://snapshot.box/#/s:aave.eth | https://discord.gg/aave / https://snapshot.box/#/s:aave.eth | 2026-07-15 | DeFi protocol ops, governance, treasury roles. |
+| Uniswap | high | defi, dex, governance, dao | https://boards.greenhouse.io/uniswap | https://gov.uniswap.org/, https://snapshot.box/#/s:uniswap | https://discord.gg/uniswap / https://snapshot.box/#/s:uniswap | 2026-07-15 | Protocol ops and contributor roles. |
+| MakerDAO | high | defi, stablecoin, governance, treasury | https://www.makerdao.com/en/careers | https://forum.makerdao.com/, https://vote.makerdao.com/ | https://discord.gg/makerdao / - | 2026-07-15 | Core unit ops, governance, treasury. |
+| Polymarket | high | prediction-market, governance, ops | https://boards.greenhouse.io/polymarket | - | - / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Solana Foundation | high | l1, ecosystem, grants, ops | https://jobs.solana.com/ | https://forum.solana.com/ | https://discord.gg/solana / - | 2026-07-15 | Ecosystem ops, grants, contributor programs. |
+| Polygon | high | l2, ecosystem, governance, ops | https://polygon.technology/careers | https://forum.polygon.technology/, https://snapshot.box/#/s:polygon.eth | https://discord.gg/polygon / https://snapshot.box/#/s:polygon.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| Ethereum Foundation | high | l1, research, ecosystem, program-management | https://jobs.ethereum.org/ | - | - / - | 2026-07-15 | Core research, ops, program management. |
+| Base (Coinbase) | high | l2, ecosystem, ops | https://www.coinbase.com/careers | https://base.mirror.xyz/ | https://discord.gg/base / - | 2026-07-15 | Base ecosystem ops roles often posted under Coinbase. |
+| EigenLayer | high | restaking, infra, governance, ops | https://jobs.ashbyhq.com/eigenlayer | https://forum.eigenlayer.xyz/ | https://discord.gg/eigenlayer / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Chainlink | medium | oracle, infra, ecosystem, ops | https://chain.link/careers | https://forum.chain.link/ | https://discord.gg/chainlink / - | 2026-07-15 | High signal for DAO/Ops roles |
+| TON Foundation | high | l1, ecosystem, ops, growth | https://careers.ton.org/ | https://forum.ton.org/ | https://t.me/toncoin / - | 2026-07-15 | Active growth, operations, ecosystem roles. |
+| Blockstream | medium | bitcoin, infra, ops | https://blockstream.com/careers/ | - | - / - | 2026-07-15 | Bitcoin/Web3 infra ops roles. |
+| Balancer DAO | high | defi, dao, governance, ops | https://balancer.fi/about#careers | https://forum.balancer.fi/, https://snapshot.box/#/s:balancer.eth | https://discord.gg/balancer / https://snapshot.box/#/s:balancer.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| Curve DAO | high | defi, dao, governance, treasury | - | https://gov.curve.fi/, https://snapshot.box/#/s:curve.eth | https://discord.gg/curvefi / https://snapshot.box/#/s:curve.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| Sushi DAO | medium | defi, dao, governance | - | https://forum.sushi.com/ | https://discord.gg/sushiswap / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Compound | high | defi, lending, governance, treasury | - | https://forum.compound.finance/, https://snapshot.box/#/s:comp | https://discord.gg/compoundfinance / https://snapshot.box/#/s:comp | 2026-07-15 | High signal for DAO/Ops roles |
+| ENS DAO | high | dao, governance, naming, ops | - | https://discuss.ens.domains/, https://snapshot.box/#/s:ens.eth | https://discord.gg/ens / https://snapshot.box/#/s:ens.eth | 2026-07-15 | High signal for DAO/Ops roles |
+| Decentraland | medium | metaverse, dao, governance, ops | https://decentraland.org/careers | https://forum.decentraland.org/ | https://discord.gg/decentraland / - | 2026-07-15 | High signal for DAO/Ops roles |
+| Mercuryo | medium | crypto-services, ops, remote | https://mercuryo.io/careers | - | - / - | 2026-07-15 | High signal for DAO/Ops roles |
 
-**Specific examples (start here for seeding + targeted fetch)**:
-- Lido (Lido DAO): Governance forum (research.lido.fi), DAO Ops requests, Snapshot (lido-snapshot.eth). Careers often via partners or direct.
-- Optimism Collective: gov.optimism.io (governance), jobs via blockchainassociation or OP Labs postings.
-- Arbitrum: jobs.arbitrum.io (or Foundation board), forum.arbitrum.foundation, Snapshot, Discord.
-- Gitcoin: Site + Discord + grants/contributor paths.
-- karpatkey: Frequently appears in DAO jobs boards; direct or via partners.
-- Safe, dYdX, Aragon, StableLab, Gitcoin, others (L2s/infra): Mix of own pages, Greenhouse/Ashby, Discord governance/ops channels, X.
-- Additional: The Blockchain Association job board, individual protocol sites (e.g. Morpho, Ripple crypto roles, etc.).
-
-**Feasibility**: High for ATS-using ones (already wired). Medium for custom pages (scrape or RSS if available). Discord: alerts or public channel monitoring (more work). Governance forums: often RSS or scrape + manual seed list.
-
-**Risk**: Low volume per page → need many seeds + good dedup. High relevance offsets this. Ghost jobs rare on official pages.
-
-**Status**: Mostly **none** for direct non-ATS pages. Start with seed list + generic or per-protocol fetchers after core boards.
 
 ## Other / Lower for Segment (for completeness)
 
