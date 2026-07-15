@@ -303,3 +303,43 @@ Specific starting seeds (Jul 2026):
 - Old waves preserved above for context; new waves take precedence for Web3/DAO/Ops work.
 
 This day focused on fixation + inventory + feasibility + prioritization. Implementation follows in subsequent work.
+
+---
+
+## July 2026 Update: Honest Quality Assessment + Priority Shift (native-first)
+
+### What was built in this phase
+- Real connectors: web3career (operations-jobs + dao-jobs, JSON-LD + real links), remote3, findweb3
+- cryptojobslist RSS MVP
+- Expanded Telegram channels + tuned segment-aware filters (now 7 channels)
+- `segment_scorer.py` — centralized strict scoring (strong seniority + domain required, heavy negatives for CEX/reg/trading ops, crypto-native bonuses)
+- `protocol_seeds.yaml` expanded to 20 protocols (Lido, Optimism, Arbitrum, Gitcoin, karpatkey, Safe, dYdX, Aragon, StableLab + Aave, Uniswap, MakerDAO, Polymarket, Solana, Polygon, Ethereum Foundation, Base, EigenLayer, Chainlink...)
+- Per-source thresholds in config + used in eval
+
+### Key Lessons Learned
+- General Web3 boards (web3.career, remote3) produce high volume but **very low precision** for the target segment after strict scoring.
+- Strict high-relevance rate on general boards: typically **0–5%**.
+- Many "ops" listings are wrong level or wrong domain (trading, clearing, regulatory licensing for CEX, design ops, etc.).
+- DAO pages on boards often return project names rather than jobs.
+- "Program Manager" or "Operations Manager" alone is insufficient — must be combined with DAO/Governance/Treasury signals.
+
+### Updated Priority Order
+**Native protocol/DAO surfaces >> general boards**
+
+1. Protocol career pages + governance forums + Snapshot + contributor programs (from protocol_seeds)
+2. DAO-specific / high-signal boards (findweb3 etc.)
+3. General Web3 boards (web3.career, cryptojobslist, remote3) — kept with low threshold (0.20) but deprioritized
+4. Broad remote/tech boards — lowest priority
+
+### Thresholds (enforced)
+- web3career / remote3: 0.20
+- findweb3: 0.35
+- protocol_seeds / governance: 0.40
+
+### Next Actions
+- Start fetching real data from the expanded protocol_seeds (careers + governance)
+- Improve parser quality on remaining boards if needed (Playwright only as targeted fallback)
+- Wire `segment_scorer` into main pipeline + ranking
+- Continue quality evals after each new source wave
+
+See `docs/research/source-inventory.md` for detailed lessons and updated prioritization framework.

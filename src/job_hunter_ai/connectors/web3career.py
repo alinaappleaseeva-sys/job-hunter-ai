@@ -12,6 +12,8 @@ Future: can switch to API if discovered or use Playwright for full render.
 """
 
 from __future__ import annotations
+import re
+import json
 
 import re
 from datetime import datetime
@@ -20,6 +22,8 @@ from typing import Any, List
 import httpx
 
 from job_hunter_ai.common.models import RawSourceRecord
+from job_hunter_ai.scoring.segment_scorer import compute_segment_score
+
 from job_hunter_ai.connectors.base import (
     Connector,
     ConnectorSchemaError,
@@ -61,6 +65,45 @@ class Web3CareerConnector(Connector):
             return resp.text
         except Exception as exc:
             raise ConnectorSchemaError(f"Failed to fetch {url}: {exc}") from exc
+
+
+    def _extract_from_json_ld(self, html: str, page_url: str = None) -> list[dict]:
+        """Prefer structured JobPosting data. Build best-effort real URLs when missing."""
+        jobs = []
+        blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.DOTALL)
+        for block in blocks:
+            try:
+                data = json.loads(block.strip())
+                items = data if isinstance(data, list) else [data]
+                for item in items:
+                    if item.get("@type") != "JobPosting":
+                        continue
+                    title = (item.get("title") or "").strip()
+                    if len(title) < 6:
+                        continue
+
+                    company = None
+                    org = item.get("hiringOrganization")
+                    if isinstance(org, dict):
+                        company = org.get("name")
+                    elif isinstance(org, str):
+                        company = org
+
+                    url = item.get("url")
+                    if not url and page_url:
+                        slug = re.sub(r"[^a-z0-9]+", "-", title.lower())[:70]
+                        url = f"{_BASE}/jobs/{slug}"
+
+                    jobs.append({
+                        "title": title,
+                        "company": company or "Unknown",
+                        "url": url,
+                        "date_posted": item.get("datePosted"),
+                        "description": item.get("description", ""),
+                    })
+            except Exception:
+                continue
+        return jobs
 
     def _extract_jobs_from_html(self, html: str, page_url: str) -> List[dict]:
         """Extract job titles + real job detail links.
@@ -151,7 +194,10 @@ class Web3CareerConnector(Connector):
             except Exception:
                 continue
 
-            raw_jobs = self._extract_jobs_from_html(html, page_url)
+            # Prefer JSON-LD (titles + companies + dates), then fall back to real HTML links
+            raw_jobs = self._extract_from_json_ld(html, page_url)
+            if not raw_jobs:
+                raw_jobs = self._extract_jobs_from_html(html, page_url)
 
             for item in raw_jobs:
                 title = item["title"]
@@ -170,6 +216,7 @@ class Web3CareerConnector(Connector):
                     "url": url,
                     "source_page": item.get("source_page"),
                     "segment_relevant": relevant,
+                    "scoring": compute_segment_score(title, "", "web3career"),
                 }
 
                 rec = RawSourceRecord(
@@ -187,6 +234,7 @@ class Web3CareerConnector(Connector):
                         "provider": _PROVIDER,
                         "path": path,
                         "segment_relevant": relevant,
+                    "scoring": compute_segment_score(title, "", "web3career"),
                     },
                 )
                 records.append(rec)

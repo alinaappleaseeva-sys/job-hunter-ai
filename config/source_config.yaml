@@ -54,3 +54,16 @@ remote3:
   - /remote-web3-jobs
   limit_per_path: 10
   note: Remote web3 jobs board
+thresholds:
+  web3career:
+    accepted_relevance_threshold: 0.2
+    notes: General board - accept lower precision initially
+  remote3:
+    accepted_relevance_threshold: 0.2
+    notes: General remote web3 board
+  findweb3:
+    accepted_relevance_threshold: 0.35
+    notes: More DAO-focused
+  protocol_seeds:
+    accepted_relevance_threshold: 0.4
+    notes: Native sources - higher bar expected

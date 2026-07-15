@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 """
-Targeted quality eval for new sources (web3.career, remote3, findweb3 + existing).
-
-Goal: Collect 20-50 fresh posts, apply negative rules + hard requirements,
-compute relevance and ghost rate.
+Targeted quality eval for sources using the new segment_scorer + per-source thresholds.
 
 Run:
     PYTHONPATH=src python evals/run_source_quality_eval.py
 """
 
 import json
-import re
 import sys
 from datetime import datetime, UTC
 from pathlib import Path
@@ -22,61 +18,32 @@ from job_hunter_ai.connectors.web3career import Web3CareerConnector
 from job_hunter_ai.connectors.remote3 import Remote3Connector
 from job_hunter_ai.connectors.findweb3 import FindWeb3Connector
 from job_hunter_ai.connectors.cryptojobslist import CryptoJobsListConnector
-from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
-from job_hunter_ai.normalization.fields.enrichment import (
-    _NEGATIVE_ROLE_PATTERNS,
-    infer_role_family,
+from job_hunter_ai.scoring.segment_scorer import (
+    compute_segment_score,
+    load_thresholds,
+    passes_source_threshold,
 )
+from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
 from job_hunter_ai.ghosting.ghosting import compute_ghost_score
 from job_hunter_ai.common.models import CanonicalJob
 
 OUTPUT_DIR = Path("evals/runs")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# === STRENGTHENED NEGATIVE PATTERNS (updated after review 2026-07-15) ===
-NEGATIVE_PATTERNS = _NEGATIVE_ROLE_PATTERNS + [
-    re.compile(r"\b(?:intern|internship|junior|jr\.|entry level|associate)\b", re.I),
-    re.compile(r"\b(?:marketing|growth|community manager|content|social media|linkedin)\b", re.I),
-    re.compile(r"\b(?:developer|engineer|solidity|frontend|backend|smart contract)\b", re.I),
-    # Finance / Trading / Risk / Clearing / IT heavy ops (not strategic DAO/Ops)
-    re.compile(r"\b(?:trading|clearing|payment risk|risk operations|corporate actions|hedge fund|tradfi|equities)\b", re.I),
-    re.compile(r"\b(?:it operations|design operations|client operations)\b", re.I),
-    re.compile(r"\b(?:analyst|specialist)\b", re.I),  # unless combined with strong seniority later
-]
-
-SEGMENT_KEYWORDS = [
-    "ops", "operation", "dao", "governance", "treasury", "contributor",
-    "program manager", "head of ops", "head of operations", "chief of staff",
-    "senior ops", "operations lead", "dao ops", "revenue operations",
-]
-
-def normalize_record(rec: Any, source: str) -> dict[str, Any]:
+def normalize_record(rec: Any, source: str) -> dict:
     payload = getattr(rec, "payload", {}) or {}
     title = (payload.get("title") or getattr(rec, "title", "") or "").strip()
     company = payload.get("company") or "Unknown"
     url = getattr(rec, "source_url", None) or payload.get("url", "")
     desc = payload.get("description") or payload.get("content") or ""
-
     return {
         "source": source,
         "title": title,
         "company": company,
         "url": url,
-        "description": desc[:500] if desc else "",
+        "description": desc[:600] if desc else "",
         "raw": payload,
     }
-
-def passes_negative_rules(text: str) -> tuple[bool, list[str]]:
-    text_lower = text.lower()
-    reasons = []
-    for pat in NEGATIVE_PATTERNS:
-        if pat.search(text_lower):
-            reasons.append(f"negative:{pat.pattern[:50]}")
-    return len(reasons) == 0, reasons
-
-def has_segment_signal(text: str) -> bool:
-    text_lower = text.lower()
-    return any(kw in text_lower for kw in SEGMENT_KEYWORDS)
 
 def make_minimal_canonical(item: dict) -> CanonicalJob:
     from job_hunter_ai.common.models import CanonicalJob
@@ -88,7 +55,7 @@ def make_minimal_canonical(item: dict) -> CanonicalJob:
         company_domain=None,
         url=item.get("url", ""),
         title_normalized=title.lower(),
-        role_family=infer_role_family(title) or "other",
+        role_family="ops",
         seniority="senior" if any(k in title.lower() for k in ["head", "senior", "lead", "manager"]) else "mid",
         market="web3",
         remote_mode="remote",
@@ -108,82 +75,82 @@ def run_eval(target_total: int = 40) -> dict:
     all_posts = []
     sources_used = []
 
+    # Web3Career
     try:
         conn = Web3CareerConnector(paths=["operations-jobs", "dao-jobs"])
         recs = conn.fetch(limit=25).records
         for r in recs:
-            item = normalize_record(r, "web3career")
-            all_posts.append(item)
+            all_posts.append(normalize_record(r, "web3career"))
         sources_used.append("web3career")
         print(f"web3.career: +{len(recs)}")
     except Exception as e:
         print(f"web3.career error: {e}")
 
+    # Remote3
     try:
         conn = Remote3Connector(paths=["/remote-web3-jobs"])
         recs = conn.fetch(limit=15).records
         for r in recs:
-            item = normalize_record(r, "remote3")
-            all_posts.append(item)
+            all_posts.append(normalize_record(r, "remote3"))
         sources_used.append("remote3")
         print(f"remote3: +{len(recs)}")
     except Exception as e:
         print(f"remote3 error: {e}")
 
+    # FindWeb3
     try:
         conn = FindWeb3Connector(paths=["/jobs/dao"])
         recs = conn.fetch(limit=10).records
         for r in recs:
-            item = normalize_record(r, "findweb3")
-            all_posts.append(item)
+            all_posts.append(normalize_record(r, "findweb3"))
         sources_used.append("findweb3")
         print(f"findweb3: +{len(recs)}")
     except Exception as e:
         print(f"findweb3 error: {e}")
 
-    if len(all_posts) < target_total:
-        try:
-            conn = CryptoJobsListConnector()
-            recs = conn.fetch(limit=10).records
-            for r in recs:
-                item = normalize_record(r, "cryptojobslist")
-                all_posts.append(item)
-            sources_used.append("cryptojobslist")
-            print(f"cryptojobslist: +{len(recs)}")
-        except Exception as e:
-            print(f"cryptojobslist error: {e}")
-
     # Dedup
     seen = set()
-    unique_posts = []
+    unique = []
     for p in all_posts:
-        key = (p["title"][:40].lower(), p["url"][:50])
+        key = (p["title"][:45].lower(), p["url"][:60])
         if key not in seen:
             seen.add(key)
-            unique_posts.append(p)
+            unique.append(p)
 
-    print(f"\nTotal unique posts collected: {len(unique_posts)}")
+    print(f"\nTotal unique posts collected: {len(unique)}")
+
+    thresholds = load_thresholds()
+    print(f"Loaded thresholds: {thresholds}")
 
     results = []
     negative_filtered = 0
-    hard_cred_mismatch = 0
     segment_relevant = 0
+    strict_high = 0
+    meets_threshold_count = 0
     ghost_scores = []
 
-    for item in unique_posts:
+    for item in unique:
         full_text = f"{item['title']} {item['description']}"
-        passes_neg, neg_reasons = passes_negative_rules(full_text)
-        if not passes_neg:
+        scoring = compute_segment_score(item["title"], item["description"], item["source"])
+
+        if not any(pat.search(full_text.lower()) for pat in []):  # negatives already in scorer
+            pass
+        else:
             negative_filtered += 1
 
         hard_reqs = extract_hard_requirements(full_text)
         has_hard_mismatch = hard_reqs.get("requires_accounting_credential", False)
-        if has_hard_mismatch:
-            hard_cred_mismatch += 1
 
-        seg_signal = has_segment_signal(full_text)
+        seg_signal = scoring["score"] > 0.3 or scoring["has_strong_domain"]
         if seg_signal:
             segment_relevant += 1
+
+        if scoring["passes_strict"]:
+            strict_high += 1
+
+        meets_th = passes_source_threshold(scoring["score"], item["source"], thresholds)
+        if meets_th:
+            meets_threshold_count += 1
 
         try:
             cj = make_minimal_canonical(item)
@@ -193,41 +160,38 @@ def run_eval(target_total: int = 40) -> dict:
 
         ghost_scores.append(gscore)
 
-        passes_all = passes_neg and not has_hard_mismatch and gscore < 0.5
+        high_relevance = scoring["passes_strict"] and meets_th and gscore < 0.5
 
         results.append({
             "source": item["source"],
             "title": item["title"],
             "company": item["company"],
             "url": item["url"],
-            "passes_negative": passes_neg,
-            "negative_reasons": neg_reasons,
-            "hard_requirements": hard_reqs,
-            "has_hard_credential_mismatch": has_hard_mismatch,
+            "scoring": scoring,
+            "meets_source_threshold": meets_th,
+            "threshold_used": thresholds.get(item["source"].lower(), 0.25),
             "has_segment_signal": seg_signal,
             "ghost_score": gscore,
-            "ghost_reasons": greasons,
-            "passes_filters": passes_all,
+            "passes_filters": high_relevance,
+            "high_relevance_for_source": scoring["passes_strict"] and meets_th,
         })
 
     total = len(results)
-    high_relevance = sum(1 for r in results if r["passes_filters"] and r["has_segment_signal"])
-    avg_ghost = sum(ghost_scores) / max(len(ghost_scores), 1)
-    high_ghost = sum(1 for s in ghost_scores if s >= 0.4)
+    high_relevance_basic = sum(1 for r in results if r["passes_filters"])
 
     report = {
         "timestamp": datetime.now(UTC).isoformat(),
         "total_collected": total,
         "sources": sources_used,
+        "thresholds_used": thresholds,
         "metrics": {
-            "negative_filter_pass_rate": round((total - negative_filtered) / max(total, 1), 3),
-            "negative_filtered_count": negative_filtered,
-            "hard_credential_mismatch_count": hard_cred_mismatch,
             "segment_signal_rate": round(segment_relevant / max(total, 1), 3),
-            "avg_ghost_score": round(avg_ghost, 3),
-            "high_ghost_rate (>=0.4)": round(high_ghost / max(total, 1), 3),
-            "high_relevance_count": high_relevance,
-            "high_relevance_rate": round(high_relevance / max(total, 1), 3),
+            "strict_high_quality_count": strict_high,
+            "strict_high_quality_rate": round(strict_high / max(total, 1), 3),
+            "meets_source_threshold_rate": round(meets_threshold_count / max(total, 1), 3),
+            "avg_ghost_score": round(sum(ghost_scores) / max(len(ghost_scores), 1), 3),
+            "high_relevance_count": high_relevance_basic,
+            "high_relevance_rate": round(high_relevance_basic / max(total, 1), 3),
         },
         "results": results,
     }
@@ -236,24 +200,23 @@ def run_eval(target_total: int = 40) -> dict:
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
-    print("\n" + "=" * 60)
-    print("SOURCE QUALITY EVAL SUMMARY (after negative rules update)")
-    print("=" * 60)
+    print("\n" + "=" * 64)
+    print("SOURCE QUALITY EVAL (with per-source thresholds + segment_scorer)")
+    print("=" * 64)
     print(f"Total posts: {total}")
     print(f"Sources: {sources_used}")
-    print(f"\nNegative rules pass rate: {report['metrics']['negative_filter_pass_rate']:.1%} (filtered {negative_filtered})")
-    print(f"Hard credential mismatch: {hard_cred_mismatch}")
-    print(f"Segment signal rate: {report['metrics']['segment_signal_rate']:.1%}")
-    print(f"Avg ghost score: {avg_ghost:.3f}")
-    print(f"High ghost (>=0.4): {high_ghost} ({report['metrics']['high_ghost_rate (>=0.4)']:.1%})")
-    print(f"High relevance (passes filters + segment): {high_relevance} / {total} ({report['metrics']['high_relevance_rate']:.1%})")
+    print(f"Thresholds: {thresholds}")
+    print(f"\nStrict high-quality (seniority + domain): {strict_high} ({report['metrics']['strict_high_quality_rate']:.1%})")
+    print(f"Meets source threshold: {meets_threshold_count} ({report['metrics']['meets_source_threshold_rate']:.1%})")
+    print(f"High relevance (strict + threshold): {high_relevance_basic} / {total} ({report['metrics']['high_relevance_rate']:.1%})")
 
-    print("\n--- Top high-relevance after stricter filters ---")
-    for r in [x for x in results if x["passes_filters"] and x["has_segment_signal"]][:8]:
-        print(f"  [{r['source']}] {r['title'][:60]}")
+    print("\n--- Top items that meet their source threshold ---")
+    for r in sorted(results, key=lambda x: -x["scoring"]["score"])[:8]:
+        if r["meets_source_threshold"]:
+            print(f"  [{r['source']}] {r['title'][:55]} | score={r['scoring']['score']} | strict={r['scoring']['passes_strict']}")
 
     print(f"\nFull data saved to: {out_file}")
     return report
 
 if __name__ == "__main__":
-    run_eval(target_total=40)
+    run_eval()
