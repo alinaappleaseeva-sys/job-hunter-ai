@@ -187,28 +187,44 @@ class WellfoundConnector(Connector):
 
 
 def load_sample_wellfound_jobs() -> list[dict]:
-    """Sample jobs (kept for tests and when scraping fails)."""
+    """Sample jobs (kept ONLY for tests and when live scraping fails).
+
+    IMPORTANT (Phase 0 hygiene): These are conservative/neutral placeholders.
+    Do NOT use high-relevance target roles (Head of Ops, DAO Ops, etc.) here,
+    as they can pollute ranking when live fetch is blocked.
+    """
     return [
         {
-            "id": "wf-1001",
-            "title": "Head of Operations",
-            "company": "Axine Labs",
+            "id": "wf-sample-001",
+            "title": "Software Engineer",
+            "company": "Example Startup",
             "location": "Remote",
             "url": "https://wellfound.com/jobs?filter=remote",
-            "description": "Build operational systems for a fast-growing Web3 startup",
-            "compensation": "$140k – $180k",
-            "equity": "0.25% – 0.75%",
+            "description": "General engineering role (sample fallback only)",
+            "compensation": None,
             "remote": True,
-            "posted": "2026-07-13",
+            "posted": "2026-07-10",
         },
         {
-            "id": "wf-1002",
-            "title": "Program Manager, DAO Operations",
-            "company": "Friss Labs",
+            "id": "wf-sample-002",
+            "title": "Frontend Developer",
+            "company": "DesignCo",
             "location": "Remote",
-            "url": "https://wellfound.com/jobs?filter=remote",
-            "compensation": "$130k – $160k",
+            "url": "https://wellfound.com/jobs/wf-sample-002",
+            "description": "Building user interfaces (sample)",
+            "compensation": "$110k",
             "remote": True,
-            "posted": "2026-07-12",
+            "posted": "2026-07-10",
+        },
+        {
+            "id": "wf-sample-003",
+            "title": "Backend Engineer",
+            "company": "Infra Labs",
+            "location": "Remote",
+            "url": "https://wellfound.com/jobs/wf-sample-003",
+            "description": "API and services work (sample fallback)",
+            "compensation": None,
+            "remote": True,
+            "posted": "2026-07-10",
         },
     ]

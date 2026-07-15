@@ -47,8 +47,16 @@ class ArcDevConnector(Connector):
 
 
 def load_sample_arcdev_jobs() -> list[dict]:
+    """Neutral sample (Phase 0 hygiene - no target roles)."""
     return [
-        {"id": "arc-1", "title": "Head of Operations", "company": "Remote Startup", "url": "https://arc.dev/remote"},
-        {"id": "arc-2", "title": "Program Manager - Crypto", "company": "Web3 Co", "url": "https://arc.dev/remote"},
-        {"id": "arc-3", "title": "Senior Project Manager (Remote)", "company": "Tech DAO", "url": "https://arc.dev/remote"},
+        {
+            "title": "Software Engineer",
+            "company": "Example Company",
+            "url": "https://example.com/jobs/1",
+        },
+        {
+            "title": "Product Designer",
+            "company": "Example Startup",
+            "url": "https://example.com/jobs/2",
+        },
     ]
