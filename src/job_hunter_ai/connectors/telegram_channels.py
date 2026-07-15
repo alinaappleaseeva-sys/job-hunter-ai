@@ -40,6 +40,18 @@ WAVE1_CHANNELS = {
         "priority": "high",
         "tags": ["dao", "governance", "ops", "treasury", "contributors"],
     },
+    "cryptojobslist": {
+        "handle": "@cryptojobslist",
+        "description": "Official Cryptojobslist channel - high signal for Web3 ops/DAO",
+        "priority": "high",
+        "tags": ["web3", "ops", "dao", "crypto"],
+    },
+    "web3jobs": {
+        "handle": "@web3jobs",
+        "description": "Web3 Jobs / Unicast - frequent ops, governance, program roles",
+        "priority": "high",
+        "tags": ["web3", "remote", "ops", "dao", "governance"],
+    },
 }
 
 # Sample data per channel (used when no real client is available)
@@ -67,6 +79,16 @@ _SAMPLE_DATA: dict[str, list[dict]] = {
         {"id": 501, "text": "DAO-Ops Manager @ [DAO]. Remote. Strong on proposals and treasury.", "date": "2026-07-15"},
         {"id": 502, "text": "Governance Specialist - Lido ecosystem. Part-time / full remote.", "date": "2026-07-14"},
         {"id": 503, "text": "Treasury Operations Lead for new L2 project. $90-120k + tokens.", "date": "2026-07-12"},
+    ],
+    "cryptojobslist": [
+        {"id": 601, "text": "Head of Ops @ Major Protocol - Remote. Treasury and on-chain governance experience required.", "date": "2026-07-15"},
+        {"id": 602, "text": "Senior Operations role in DAO. Full remote.", "date": "2026-07-14"},
+        {"id": 603, "text": "Program Manager - Web3 Infrastructure. Apply via link.", "date": "2026-07-13"},
+    ],
+    "web3jobs": [
+        {"id": 701, "text": "Hiring: DAO Finance & Ops Lead. Remote, async-first.", "date": "2026-07-15"},
+        {"id": 702, "text": "Governance Lead position at growing L2. Treasury Ops experience big plus.", "date": "2026-07-14"},
+        {"id": 703, "text": "Contributor Coordinator - DAO. Must be comfortable with on-chain voting.", "date": "2026-07-12"},
     ],
 }
 

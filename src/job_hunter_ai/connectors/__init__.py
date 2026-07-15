@@ -32,6 +32,7 @@ from .quality import parse_rate
 from .remoteok import RemoteOKConnector
 from .solana import SolanaJobsConnector, load_sample_solana_jobs
 from .telegram import TelegramConnector, load_sample_telegram_messages, get_wave1_telegram_channels
+from .cryptojobslist import CryptoJobsListConnector
 from .telegram_channels import get_wave1_channels, load_sample_for_channel, WAVE1_CHANNELS
 from .weworkremotely import WeWorkRemotelyConnector, load_sample_weworkremotely_jobs
 from .wellfound import WellfoundConnector, load_sample_wellfound_jobs
@@ -50,6 +51,7 @@ __all__ = [
     "HabrCareerConnector",
     "HhruConnector",
     "TelegramConnector",
+    "CryptoJobsListConnector",
     "load_sample_telegram_messages",
     "load_sample_weworkremotely_jobs",
     "load_sample_workable_jobs",
