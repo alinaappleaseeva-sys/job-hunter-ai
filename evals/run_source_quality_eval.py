@@ -16,7 +16,6 @@ from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
-# Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from job_hunter_ai.connectors.web3career import Web3CareerConnector
@@ -34,20 +33,24 @@ from job_hunter_ai.common.models import CanonicalJob
 OUTPUT_DIR = Path("evals/runs")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# === STRENGTHENED NEGATIVE PATTERNS (updated after review 2026-07-15) ===
 NEGATIVE_PATTERNS = _NEGATIVE_ROLE_PATTERNS + [
-    re.compile(r"\b(?:intern|internship|junior|jr\.|entry level)\b", re.I),
-    re.compile(r"\b(?:marketing|growth|community manager|content|social media)\b", re.I),
+    re.compile(r"\b(?:intern|internship|junior|jr\.|entry level|associate)\b", re.I),
+    re.compile(r"\b(?:marketing|growth|community manager|content|social media|linkedin)\b", re.I),
     re.compile(r"\b(?:developer|engineer|solidity|frontend|backend|smart contract)\b", re.I),
+    # Finance / Trading / Risk / Clearing / IT heavy ops (not strategic DAO/Ops)
+    re.compile(r"\b(?:trading|clearing|payment risk|risk operations|corporate actions|hedge fund|tradfi|equities)\b", re.I),
+    re.compile(r"\b(?:it operations|design operations|client operations)\b", re.I),
+    re.compile(r"\b(?:analyst|specialist)\b", re.I),  # unless combined with strong seniority later
 ]
 
 SEGMENT_KEYWORDS = [
     "ops", "operation", "dao", "governance", "treasury", "contributor",
     "program manager", "head of ops", "head of operations", "chief of staff",
-    "senior ops", "operations lead", "dao ops",
+    "senior ops", "operations lead", "dao ops", "revenue operations",
 ]
 
 def normalize_record(rec: Any, source: str) -> dict[str, Any]:
-    """Turn RawSourceRecord into a simple dict for analysis."""
     payload = getattr(rec, "payload", {}) or {}
     title = (payload.get("title") or getattr(rec, "title", "") or "").strip()
     company = payload.get("company") or "Unknown"
@@ -64,12 +67,11 @@ def normalize_record(rec: Any, source: str) -> dict[str, Any]:
     }
 
 def passes_negative_rules(text: str) -> tuple[bool, list[str]]:
-    """Returns (passes, reasons_if_filtered)"""
     text_lower = text.lower()
     reasons = []
     for pat in NEGATIVE_PATTERNS:
         if pat.search(text_lower):
-            reasons.append(f"negative:{pat.pattern[:40]}")
+            reasons.append(f"negative:{pat.pattern[:50]}")
     return len(reasons) == 0, reasons
 
 def has_segment_signal(text: str) -> bool:
@@ -77,7 +79,6 @@ def has_segment_signal(text: str) -> bool:
     return any(kw in text_lower for kw in SEGMENT_KEYWORDS)
 
 def make_minimal_canonical(item: dict) -> CanonicalJob:
-    """Create a minimal CanonicalJob for ghost scoring."""
     from job_hunter_ai.common.models import CanonicalJob
     title = item["title"]
     return CanonicalJob(
@@ -88,7 +89,7 @@ def make_minimal_canonical(item: dict) -> CanonicalJob:
         url=item.get("url", ""),
         title_normalized=title.lower(),
         role_family=infer_role_family(title) or "other",
-        seniority="senior" if any(x in title.lower() for x in ["head", "senior", "lead", "manager"]) else "mid",
+        seniority="senior" if any(k in title.lower() for k in ["head", "senior", "lead", "manager"]) else "mid",
         market="web3",
         remote_mode="remote",
         employment_type="full-time",
@@ -107,7 +108,6 @@ def run_eval(target_total: int = 40) -> dict:
     all_posts = []
     sources_used = []
 
-    # 1. web3.career (main target)
     try:
         conn = Web3CareerConnector(paths=["operations-jobs", "dao-jobs"])
         recs = conn.fetch(limit=25).records
@@ -119,7 +119,6 @@ def run_eval(target_total: int = 40) -> dict:
     except Exception as e:
         print(f"web3.career error: {e}")
 
-    # 2. remote3
     try:
         conn = Remote3Connector(paths=["/remote-web3-jobs"])
         recs = conn.fetch(limit=15).records
@@ -131,7 +130,6 @@ def run_eval(target_total: int = 40) -> dict:
     except Exception as e:
         print(f"remote3 error: {e}")
 
-    # 3. findweb3
     try:
         conn = FindWeb3Connector(paths=["/jobs/dao"])
         recs = conn.fetch(limit=10).records
@@ -143,7 +141,6 @@ def run_eval(target_total: int = 40) -> dict:
     except Exception as e:
         print(f"findweb3 error: {e}")
 
-    # 4. Supplement with cryptojobslist if needed
     if len(all_posts) < target_total:
         try:
             conn = CryptoJobsListConnector()
@@ -156,7 +153,7 @@ def run_eval(target_total: int = 40) -> dict:
         except Exception as e:
             print(f"cryptojobslist error: {e}")
 
-    # Dedup by title + url
+    # Dedup
     seen = set()
     unique_posts = []
     for p in all_posts:
@@ -167,7 +164,6 @@ def run_eval(target_total: int = 40) -> dict:
 
     print(f"\nTotal unique posts collected: {len(unique_posts)}")
 
-    # Analysis
     results = []
     negative_filtered = 0
     hard_cred_mismatch = 0
@@ -182,7 +178,6 @@ def run_eval(target_total: int = 40) -> dict:
 
         hard_reqs = extract_hard_requirements(full_text)
         has_hard_mismatch = hard_reqs.get("requires_accounting_credential", False)
-
         if has_hard_mismatch:
             hard_cred_mismatch += 1
 
@@ -190,7 +185,6 @@ def run_eval(target_total: int = 40) -> dict:
         if seg_signal:
             segment_relevant += 1
 
-        # Ghost score
         try:
             cj = make_minimal_canonical(item)
             gscore, greasons = compute_ghost_score(cj)
@@ -216,7 +210,6 @@ def run_eval(target_total: int = 40) -> dict:
             "passes_filters": passes_all,
         })
 
-    # Metrics
     total = len(results)
     high_relevance = sum(1 for r in results if r["passes_filters"] and r["has_segment_signal"])
     avg_ghost = sum(ghost_scores) / max(len(ghost_scores), 1)
@@ -239,14 +232,12 @@ def run_eval(target_total: int = 40) -> dict:
         "results": results,
     }
 
-    # Save
     out_file = OUTPUT_DIR / f"source_quality_eval_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
-    # Print summary
     print("\n" + "=" * 60)
-    print("SOURCE QUALITY EVAL SUMMARY")
+    print("SOURCE QUALITY EVAL SUMMARY (after negative rules update)")
     print("=" * 60)
     print(f"Total posts: {total}")
     print(f"Sources: {sources_used}")
@@ -257,13 +248,9 @@ def run_eval(target_total: int = 40) -> dict:
     print(f"High ghost (>=0.4): {high_ghost} ({report['metrics']['high_ghost_rate (>=0.4)']:.1%})")
     print(f"High relevance (passes filters + segment): {high_relevance} / {total} ({report['metrics']['high_relevance_rate']:.1%})")
 
-    print("\n--- Sample high-relevance ---")
-    for r in [x for x in results if x["passes_filters"] and x["has_segment_signal"]][:5]:
-        print(f"  [{r['source']}] {r['title'][:55]}")
-
-    print("\n--- Sample filtered by negative ---")
-    for r in [x for x in results if not x["passes_negative"]][:3]:
-        print(f"  [{r['source']}] {r['title'][:55]} | {r['negative_reasons'][:1]}")
+    print("\n--- Top high-relevance after stricter filters ---")
+    for r in [x for x in results if x["passes_filters"] and x["has_segment_signal"]][:8]:
+        print(f"  [{r['source']}] {r['title'][:60]}")
 
     print(f"\nFull data saved to: {out_file}")
     return report

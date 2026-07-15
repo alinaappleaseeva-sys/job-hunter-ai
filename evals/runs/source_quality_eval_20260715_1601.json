@@ -1,0 +1,866 @@
+{
+  "timestamp": "2026-07-15T13:01:10.816671+00:00",
+  "total_collected": 40,
+  "sources": [
+    "web3career",
+    "remote3",
+    "findweb3"
+  ],
+  "metrics": {
+    "negative_filter_pass_rate": 0.525,
+    "negative_filtered_count": 19,
+    "hard_credential_mismatch_count": 0,
+    "segment_signal_rate": 0.475,
+    "avg_ghost_score": 0.0,
+    "high_ghost_rate (>=0.4)": 0.0,
+    "high_relevance_count": 7,
+    "high_relevance_rate": 0.175
+  },
+  "results": [
+    {
+      "source": "web3career",
+      "title": "Operations Associate",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/operations-associate",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:intern|internship|junior|jr\\.|entry level|ass"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Tether Operations Limited",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/tether-operations-limited",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Focal Operations Manager",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/focal-operations-manager",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Lead Revenue Operations",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/lead-revenue-operations",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Junior Property Operations Associate",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/junior-property-operations-associate",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:intern|internship|junior|jr\\.|entry level|ass"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Client Operations Associate",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/client-operations-associate",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:intern|internship|junior|jr\\.|entry level|ass",
+        "negative:\\b(?:it operations|design operations|client operat"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Copperco",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/copperco",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Specialist Trading Operations Night Shift",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/specialist-trading-operations-night-shift",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:trading|clearing|payment risk|risk operations",
+        "negative:\\b(?:analyst|specialist)\\b"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Bitpanda",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/bitpanda",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Specialist Payment Risk Operations",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/specialist-payment-risk-operations",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:trading|clearing|payment risk|risk operations",
+        "negative:\\b(?:analyst|specialist)\\b"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "IT Operations Specialist",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/it-operations-specialist",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:it operations|design operations|client operat",
+        "negative:\\b(?:analyst|specialist)\\b"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Clearing Operations Associate",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/clearing-operations-associate",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:intern|internship|junior|jr\\.|entry level|ass",
+        "negative:\\b(?:trading|clearing|payment risk|risk operations"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "LinkedIn Operations",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/linkedin-operations",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:marketing|growth|community manager|content|so"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Senior Operations Manager",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/senior-operations-manager",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Design Operations Manager",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/design-operations-manager",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:it operations|design operations|client operat"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Trading Operations Analyst",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/trading-operations-analyst",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:trading|clearing|payment risk|risk operations",
+        "negative:\\b(?:analyst|specialist)\\b"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "Dvtrading",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/dvtrading",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Operations Specialist",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/operations-specialist",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:analyst|specialist)\\b"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "CoFounder",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/cofounder",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "R&amp;DAO",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/r-amp-dao",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Backend Engineer Solana",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/backend-engineer-solana",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "web3career",
+      "title": "CoFounder Opportunity",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/cofounder-opportunity",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Chief Technology Officer",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/chief-technology-officer",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Magenta DAO",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/magenta-dao",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "web3career",
+      "title": "Junior Backend Engineer web3",
+      "company": "Unknown",
+      "url": "https://web3.career/jobs/junior-backend-engineer-web3",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:intern|internship|junior|jr\\.|entry level|ass",
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Web3 Solidity Bootcamp - Job Guaranteed 💯",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#web3-solidity-bootcamp-job-guaranteed-",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Super Hackathon with $20,000 USDT Prize Pool",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#super-hackathon-with-20-000-usdt-prize-pool",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Halliday Jobs",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#halliday-jobs",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Enter the war room",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#enter-the-war-room",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Product Manager - Growth",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#product-manager-growth",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:marketing|growth|community manager|content|so"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Quant Researcher",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#quant-researcher",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "3D Motion &amp; Marketing Designer",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#3d-motion-amp-marketing-designer",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:marketing|growth|community manager|content|so"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Program Manager - Centralized Exchange / Licensing",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#program-manager-centralized-exchange-licensing",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Join Our Talent Network",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#join-our-talent-network",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Backend Engineer (Data Platform)",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#backend-engineer-data-platform-",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Blockchain Solutions Architect",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#blockchain-solutions-architect",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "SecOps Engineer",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#secops-engineer",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": true,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Senior Blockchain Engineer",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#senior-blockchain-engineer",
+      "passes_negative": false,
+      "negative_reasons": [
+        "negative:\\b(?:developer|engineer|solidity|frontend|backend|"
+      ],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": false
+    },
+    {
+      "source": "remote3",
+      "title": "Business Development Manager",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#business-development-manager",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    },
+    {
+      "source": "remote3",
+      "title": "Fraud Lead (Scam Hunter)",
+      "company": "Unknown",
+      "url": "https://remote3.co/remote-web3-jobs#fraud-lead-scam-hunter-",
+      "passes_negative": true,
+      "negative_reasons": [],
+      "hard_requirements": {
+        "credentials": [],
+        "requires_accounting_credential": false,
+        "raw_signals": []
+      },
+      "has_hard_credential_mismatch": false,
+      "has_segment_signal": false,
+      "ghost_score": 0.0,
+      "ghost_reasons": [
+        "ghost_calc_failed"
+      ],
+      "passes_filters": true
+    }
+  ]
+}

@@ -63,48 +63,80 @@ class Web3CareerConnector(Connector):
             raise ConnectorSchemaError(f"Failed to fetch {url}: {exc}") from exc
 
     def _extract_jobs_from_html(self, html: str, page_url: str) -> List[dict]:
-        """Extract job titles from the page.
+        """Extract job titles + real job detail links.
 
-        web3.career pages surface job titles in h2/h3 elements.
-        We also capture any nearby company-like text.
+        web3.career uses real links in the form:
+            /some-long-slug-with-company/151374
+
+        The h2/h3 titles sit inside or next to <a href=".../ID">.
+        We prioritize capturing the actual href.
         """
         jobs = []
 
-        # Primary: h2 and h3 as titles (these are the visible job headings)
-        headings = re.findall(r"<h[2-3][^>]*>(.*?)</h[2-3]>", html, re.DOTALL | re.I)
+        # Best: capture <a href=".../NUMBER"> containing an h2/h3
+        link_title_pairs = re.findall(
+            r'<a[^>]+href="(/[^"]+/\d+)"[^>]*>.*?<h[23][^>]*>(.*?)</h[23]>',
+            html,
+            re.DOTALL | re.I
+        )
 
-        for raw_title in headings:
+        for href, raw_title in link_title_pairs:
             title = re.sub(r"<[^>]+>", " ", raw_title).strip()
             title = re.sub(r"\s+", " ", title).strip()
 
             if len(title) < 8:
                 continue
 
-            # Heuristic company extraction (often appears near title or in meta)
-            company = None
-            company_match = re.search(r"at ([A-Z][A-Za-z0-9\s&\.]+)", title)
-            if company_match:
-                company = company_match.group(1).strip()
+            # Light cleanup of polluted titles
+            clean_title = title
+            m = re.search(r"^(.*? (?:Manager|Lead|Head|Director|Officer|Coordinator))", title, re.I)
+            if m and len(m.group(1)) > 8:
+                clean_title = m.group(1).strip()
 
-            # Construct a usable link (web3.career often uses /jobs/<slug> or the page itself)
-            slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60]
-            link = f"{page_url}#{slug}"   # best-effort deep link; real links may be JS-driven
+            full_url = f"https://web3.career{href}"
+
+            # Try to pull company from the slug (part before the final /ID)
+            company = None
+            parts = href.strip("/").split("/")
+            if len(parts) >= 2:
+                company_part = parts[-2]
+                cm = re.search(r"([A-Za-z0-9]+)$", company_part)
+                if cm:
+                    company = cm.group(1).title()
 
             jobs.append({
-                "title": title,
+                "title": clean_title,
+                "raw_title": title,
                 "company": company or "Unknown",
-                "url": link,
+                "url": full_url,
                 "source_page": page_url,
+                "real_href": href,
             })
 
-        # Deduplicate
+        # Dedup by real URL
         seen = set()
         unique = []
         for j in jobs:
-            key = j["title"][:50]
-            if key not in seen:
-                seen.add(key)
+            if j["url"] not in seen:
+                seen.add(j["url"])
                 unique.append(j)
+
+        # Fallback (should rarely trigger)
+        if not unique:
+            for raw_title in re.findall(r"<h[2-3][^>]*>(.*?)</h[2-3]>", html, re.DOTALL | re.I):
+                title = re.sub(r"<[^>]+>", " ", raw_title).strip()
+                if len(title) < 8: continue
+                slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:70]
+                jobs.append({
+                    "title": title,
+                    "company": "Unknown",
+                    "url": f"https://web3.career/jobs/{slug}",
+                    "source_page": page_url,
+                })
+            for j in jobs:
+                if j["url"] not in seen:
+                    seen.add(j["url"])
+                    unique.append(j)
 
         return unique
 
