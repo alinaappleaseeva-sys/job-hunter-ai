@@ -3,9 +3,13 @@ protocols:
   slug: lido
   website: https://lido.fi
   careers:
+  - url: https://lido.fi/opportunities
+    type: careers_page
+    notes: Main active opportunities page. Contains Strategic Project Manager - Operations
+      and other Ops/Gov roles.
   - url: https://lido.fi/careers
     type: careers_page
-    notes: Often posts ops, treasury, governance roles.
+    notes: Legacy / possibly dead link (returns 404). Kept for reference.
   governance:
   - url: https://research.lido.fi/
     type: governance_forum
@@ -21,6 +25,13 @@ protocols:
   - staking
   - ops
   priority: high
+  opportunities:
+  - url: https://lido.fi/opportunities/strategic-project-manager-operations
+    type: specific_role
+    notes: Strategic Project Manager - Operations - perfect fit for target segment
+  - url: https://lido.fi/opportunities
+    type: opportunities_page
+    notes: Primary active jobs/opportunities listing page
 - name: Optimism
   slug: optimism
   website: https://optimism.io
@@ -179,6 +190,7 @@ protocols:
   - governance
   - dao-ops
   priority: high
+  opportunities: []
 - name: Uniswap
   slug: uniswap
   website: https://uniswap.org
@@ -327,4 +339,143 @@ protocols:
   - infra
   - ecosystem
   - ops
+  priority: medium
+- name: TON Foundation
+  slug: ton
+  website: https://ton.org
+  careers:
+  - url: https://careers.ton.org/
+    type: careers_page
+    notes: Active growth, operations, ecosystem roles.
+  governance:
+  - url: https://forum.ton.org/
+    type: governance_forum
+  discord: https://t.me/toncoin
+  tags:
+  - l1
+  - ecosystem
+  - ops
+  - growth
+  priority: high
+- name: Blockstream
+  slug: blockstream
+  website: https://blockstream.com
+  careers:
+  - url: https://blockstream.com/careers/
+    type: careers_page
+    notes: Bitcoin/Web3 infra ops roles.
+  governance: []
+  discord: ''
+  tags:
+  - bitcoin
+  - infra
+  - ops
+  priority: medium
+- name: Balancer DAO
+  slug: balancer
+  website: https://balancer.fi
+  careers:
+  - url: https://balancer.fi/about#careers
+    type: careers_page
+  governance:
+  - url: https://forum.balancer.fi/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:balancer.eth
+    type: snapshot
+  discord: https://discord.gg/balancer
+  tags:
+  - defi
+  - dao
+  - governance
+  - ops
+  priority: high
+- name: Curve DAO
+  slug: curve
+  website: https://curve.fi
+  careers: []
+  governance:
+  - url: https://gov.curve.fi/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:curve.eth
+    type: snapshot
+  discord: https://discord.gg/curvefi
+  tags:
+  - defi
+  - dao
+  - governance
+  - treasury
+  priority: high
+- name: Sushi DAO
+  slug: sushi
+  website: https://sushi.com
+  careers: []
+  governance:
+  - url: https://forum.sushi.com/
+    type: governance_forum
+  discord: https://discord.gg/sushiswap
+  tags:
+  - defi
+  - dao
+  - governance
+  priority: medium
+- name: Compound
+  slug: compound
+  website: https://compound.finance
+  careers: []
+  governance:
+  - url: https://forum.compound.finance/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:comp
+    type: snapshot
+  discord: https://discord.gg/compoundfinance
+  tags:
+  - defi
+  - lending
+  - governance
+  - treasury
+  priority: high
+- name: ENS DAO
+  slug: ens
+  website: https://ens.domains
+  careers: []
+  governance:
+  - url: https://discuss.ens.domains/
+    type: governance_forum
+  - url: https://snapshot.box/#/s:ens.eth
+    type: snapshot
+  discord: https://discord.gg/ens
+  tags:
+  - dao
+  - governance
+  - naming
+  - ops
+  priority: high
+- name: Decentraland
+  slug: decentraland
+  website: https://decentraland.org
+  careers:
+  - url: https://decentraland.org/careers
+    type: careers_page
+  governance:
+  - url: https://forum.decentraland.org/
+    type: governance_forum
+  discord: https://discord.gg/decentraland
+  tags:
+  - metaverse
+  - dao
+  - governance
+  - ops
+  priority: medium
+- name: Mercuryo
+  slug: mercuryo
+  website: https://mercuryo.io
+  careers:
+  - url: https://mercuryo.io/careers
+    type: careers_page
+  governance: []
+  discord: ''
+  tags:
+  - crypto-services
+  - ops
+  - remote
   priority: medium
