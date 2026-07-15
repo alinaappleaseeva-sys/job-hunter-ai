@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
 from job_hunter_ai.common.models import (
     CandidateProfile,
     CanonicalJob,
@@ -239,6 +240,34 @@ def _score_recency_fit(job: CanonicalJob) -> tuple[float, list[str]]:
 
     return round(score, 3), reasons
 
+
+def _score_requirements_mismatch(profile: CandidateProfile, job: CanonicalJob) -> tuple[float, list[str]]:
+    """Basic hard credential mismatch penalty.
+
+    Looks for obvious accounting/CPA/SOX requirements in available description text.
+    Returns low score + explanation when mismatch is detected for our profile.
+    """
+    reasons = []
+    # Try to find raw description in common places
+    desc = ""
+    if hasattr(job, "description") and job.description:
+        desc = job.description
+    if not desc and hasattr(job, "payload") and isinstance(getattr(job, "payload", None), dict):
+        desc = job.payload.get("description", "") or ""
+    if not desc and hasattr(job, "raw_description"):
+        desc = getattr(job, "raw_description", "") or ""
+
+    req = extract_hard_requirements(desc)
+    if req.get("requires_accounting_credential"):
+        reasons.append("hard credential mismatch (CPA/Big 4/SOX/GAAP/public accounting required)")
+        return 0.15, reasons   # strong penalty
+
+    if req.get("raw_signals"):
+        reasons.append("some credential signals present but not blocking")
+        return 0.7, reasons
+
+    return 0.95, ["no strong credential mismatch detected"]
+
 def compute_score_breakdown(
     profile: CandidateProfile, job: CanonicalJob, weights: dict[str, float] | None = None
 ) -> JobScoreBreakdown:
@@ -250,8 +279,11 @@ def compute_score_breakdown(
     sal_s, sal_r = _score_salary_fit(profile, job)
     mkt_s, mkt_r = _score_market_fit(profile, job)
     rec_s, rec_r = _score_recency_fit(job)
+    req_s, req_r = _score_requirements_mismatch(profile, job)   # from PR
 
     rec_w = weights.get("recency_fit", 0.0)
+    req_weight = 0.10   # modest weight for requirements mismatch penalty
+
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
@@ -259,6 +291,7 @@ def compute_score_breakdown(
         + sal_s * weights["salary_fit"]
         + mkt_s * weights["market_fit"]
         + rec_s * rec_w
+        + req_s * req_weight
     )
 
     explanations: list[ScoreExplanation] = [
@@ -268,6 +301,7 @@ def compute_score_breakdown(
         ScoreExplanation(component="salary_fit", score=sal_s, reasons=sal_r),
         ScoreExplanation(component="market_fit", score=mkt_s, reasons=mkt_r),
         ScoreExplanation(component="recency_fit", score=rec_s, reasons=rec_r),
+        ScoreExplanation(component="requirements_mismatch", score=req_s, reasons=req_r),
     ]
 
     return JobScoreBreakdown(
@@ -277,6 +311,7 @@ def compute_score_breakdown(
         salary_fit=sal_s,
         market_fit=mkt_s,
         recency_fit=rec_s,
+        requirements_mismatch=req_s,
         total_score=round(total, 3),
         explanations=explanations,
     )
