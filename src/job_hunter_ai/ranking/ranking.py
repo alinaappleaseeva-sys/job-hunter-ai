@@ -285,6 +285,8 @@ def compute_score_breakdown(
     rec_w = weights.get("recency_fit", 0.0)
     req_weight = 0.10   # modest weight for requirements mismatch penalty
 
+
+    rec_w = weights.get("recency_fit", 0.0)
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
@@ -293,6 +295,7 @@ def compute_score_breakdown(
         + mkt_s * weights["market_fit"]
         + rec_s * rec_w
         + req_s * req_weight
+
     )
 
     explanations: list[ScoreExplanation] = [
@@ -303,6 +306,7 @@ def compute_score_breakdown(
         ScoreExplanation(component="market_fit", score=mkt_s, reasons=mkt_r),
         ScoreExplanation(component="recency_fit", score=rec_s, reasons=rec_r),
         ScoreExplanation(component="requirements_mismatch", score=req_s, reasons=req_r),
+
     ]
 
     return JobScoreBreakdown(
@@ -313,6 +317,7 @@ def compute_score_breakdown(
         market_fit=mkt_s,
         recency_fit=rec_s,
         requirements_mismatch=req_s,
+
         total_score=round(total, 3),
         explanations=explanations,
     )
