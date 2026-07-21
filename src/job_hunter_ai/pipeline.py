@@ -23,6 +23,7 @@ from typing import Any
 import yaml
 
 from job_hunter_ai.common.models import CanonicalJob, CandidateProfile
+from job_hunter_ai.profiles.alina import get_alina_profile
 from job_hunter_ai.connectors.arcdev import ArcDevConnector
 from job_hunter_ai.connectors.ashby import AshbyConnector
 from job_hunter_ai.connectors.greenhouse import GreenhouseConnector
@@ -53,26 +54,6 @@ def _load_source_config() -> dict:
         return DEFAULT_CONFIG.copy()
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f) or {}
-
-
-def get_alina_profile() -> CandidateProfile:
-    """Single source of truth for Alina's profile (Phase 1/2 baseline). Derived from CV Alina_Aseeva_CV_14.07.2026.md."""
-    return CandidateProfile(
-        profile_id="alina-aseeva-head-ops-web3",
-        target_role_families=["operations", "program_management", "head_of_ops", "dao_ops", "chief_of_staff"],
-        target_seniorities=["head", "lead", "senior", "chief"],
-        target_title_keywords=[
-            "operations", "program", "head of", "dao", "governance",
-            "project management", "ops lead", "web3 ops", "program manager",
-            "chief of staff", "head of operations", "chief of", "ops manager",
-        ],
-        remote_preference="remote",
-        preferred_locations=["remote", "any"],
-        min_compensation=120000,
-        compensation_currency="USD",
-        preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
-        notes="Head of Operations. 10+ years building ops from scratch in Web3/DAO/DeFi. Strong on governance, treasury, cross-functional alignment, AI automation. Returning to full-time in June 2026. CV: 14.07.2026",
-    )
 
 
 def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
