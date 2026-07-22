@@ -193,6 +193,10 @@ class TestEnrichment:
             ("Engineering Manager, EU", "Engineering", "engineering"),
             ("Senior Product Designer", None, "design"),
             ("AbelsonTaylor Writer", None, None),
+            # Negative patterns for finance/accounting ops (regression for Phase 1 quality)
+            ("Accounting Manager, GL Operations", None, "finance_ops"),
+            ("Financial Controller", None, "finance_ops"),
+            ("GL Accountant at Protocol", None, "finance_ops"),
         ],
     )
     def test_infer_role_family(
