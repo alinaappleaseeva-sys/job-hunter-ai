@@ -14,6 +14,8 @@ _NEGATIVE_ROLE_PATTERNS = [
     re.compile(r"(?:associate|analyst|specialist)", re.I),
     re.compile(r"(?:trading|clearing|payment risk|risk operations|corporate actions|hedge fund|tradfi|equities)", re.I),
     re.compile(r"(?:it operations|design operations|client operations|linkedin operations)", re.I),
+    # Additional negative patterns for common non-target finance/accounting ops roles (Phase 1 quality)
+    re.compile(r"(?:accounting manager|gl accountant|financial controller|payroll manager|finance controller)", re.I),
 ]
 
 _SENIORITY_RULES: list[tuple[re.Pattern[str], str]] = [
