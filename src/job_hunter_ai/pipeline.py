@@ -24,6 +24,9 @@ import yaml
 
 from job_hunter_ai.common.models import CanonicalJob, CandidateProfile
 from job_hunter_ai.profiles.alina import get_alina_profile
+
+# Re-export so callers (including scripts) can treat pipeline as the single source for the profile.
+# Phase 1 unification: get_alina_profile() is the canonical entry point.
 from job_hunter_ai.connectors.arcdev import ArcDevConnector
 from job_hunter_ai.connectors.ashby import AshbyConnector
 from job_hunter_ai.connectors.greenhouse import GreenhouseConnector
@@ -97,18 +100,40 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
     seniority = "senior" if any(k in title_lower for k in ["senior", "lead", "head", "manager", "chief"]) else "mid"
 
     comp_min = None
-    salary = str(payload.get("salary") or payload.get("compensation") or payload.get("salary_range") or "")
-    salary_lower = salary.lower()
-    for num in ["160", "150", "180", "170", "140", "130", "120", "110"]:
-        if num in salary_lower:
-            comp_min = int(num) * 1000
-            break
-    if comp_min is None:
-        m = re.search(r'\$?\s*(\d{2,3})\s*[kK]', desc)
-        if m:
-            val = int(m.group(1))
-            if val >= 100:
-                comp_min = val * 1000
+    # Phase 1 improved extraction: more payload fields + description scan + range + undisclosed handling
+    salary_fields = [
+        payload.get("salary"),
+        payload.get("compensation"),
+        payload.get("salary_range"),
+        payload.get("salary_min"),
+        payload.get("comp"),
+    ]
+    salary_text = " ".join(str(s) for s in salary_fields if s).lower()
+    full_salary = f"{salary_text} {desc}"
+
+    if any(x in full_salary for x in ["undisclosed", "not disclosed", "n/a", "competitive", "doe"]):
+        comp_min = None
+    else:
+        for num in ["160", "150", "180", "170", "140", "130", "120", "110", "100"]:
+            if num in full_salary:
+                comp_min = int(num) * 1000
+                break
+        if comp_min is None:
+            m = re.search(r'\$?\s*(\d{2,3})\s*[kK]', full_salary)
+            if m:
+                val = int(m.group(1))
+                if val >= 100:
+                    comp_min = val * 1000
+            else:
+                m2 = re.search(r'(\d{5,6})', full_salary.replace(",", ""))
+                if m2:
+                    val = int(m2.group(1))
+                    if 80000 <= val <= 400000:
+                        comp_min = val
+        if comp_min is None:
+            m_range = re.search(r'(\d{2,3})\s*[-–]\s*\d{2,3}\s*[kK]', desc)
+            if m_range:
+                comp_min = int(m_range.group(1)) * 1000
 
     return CanonicalJob(
         canonical_job_id=f"{source}-{rec.external_id}",

@@ -33,7 +33,8 @@ from job_hunter_ai.ghosting.ghosting import (
     compute_ghost_score,
 )
 from job_hunter_ai.ranking.ranking import rank_jobs
-from job_hunter_ai.profiles.alina import get_alina_profile as build_profile_from_alina_cv
+from job_hunter_ai.pipeline import get_alina_profile
+# Note: use get_alina_profile() from pipeline as single source of truth (per AGENTS.md)
 
 
 
@@ -51,6 +52,13 @@ def remoteok_to_canonical_jobs(limit: int = 25) -> list[CanonicalJob]:
         location = payload.get("location") or "Remote"
         tags = payload.get("tags", []) or []
         salary = payload.get("salary") or ""
+        url = (
+            getattr(rec, "source_url", None)
+            or payload.get("url")
+            or payload.get("link")
+            or payload.get("absolute_url")
+            or payload.get("application_url")
+        )
 
         # Very lightweight mapping
         market = "web3" if any(t.lower() in ("crypto", "web3", "blockchain", "defi", "dao") for t in tags) else "saas"
@@ -60,6 +68,7 @@ def remoteok_to_canonical_jobs(limit: int = 25) -> list[CanonicalJob]:
             primary_posting_id=rec.external_id,
             company_name=company,
             company_domain=None,
+            url=url,
             title_normalized=title.lower(),
             role_family="operations" if any(k in title.lower() for k in ["ops", "operations", "program"]) else "engineering",
             seniority="senior" if "senior" in title.lower() or "lead" in title.lower() else "mid",
@@ -69,7 +78,7 @@ def remoteok_to_canonical_jobs(limit: int = 25) -> list[CanonicalJob]:
             location_country="Remote",
             location_region=None,
             location_city=None,
-            compensation_min=150000 if "150" in salary or "160" in salary else 120000,
+            compensation_min=None,  # do not fabricate; removed hard-coded 120k/150k. Use main profile + improved extraction in _to_canonical
             compensation_max=None,
             compensation_currency="USD",
             canonical_posted_at=rec.discovered_at or datetime.utcnow(),
@@ -89,7 +98,7 @@ def remoteok_to_canonical_jobs(limit: int = 25) -> list[CanonicalJob]:
 def main() -> None:
     print("=== Phase 10 Pipeline on Real CV (Alina Aseeva) ===\n")
 
-    profile = build_profile_from_alina_cv()
+    profile = get_alina_profile()
     print(f"Profile: {profile.profile_id}")
     print(f"Target families: {profile.target_role_families}")
     print(f"Markets: {profile.preferred_markets}")
