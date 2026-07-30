@@ -106,8 +106,8 @@ employers:
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: optimism
 - rank: 9
   name: Kraken
   website: https://www.kraken.com/
@@ -144,8 +144,8 @@ employers:
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: ens
 - rank: 12
   name: Chainlink Labs
   website: https://chainlinklabs.com/
@@ -157,8 +157,8 @@ employers:
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: chainlink
 - rank: 13
   name: Figment
   website: https://www.figment.io/
@@ -188,7 +188,6 @@ employers:
   name: Mysten Labs
   website: https://www.mystenlabs.com/
   superpower: A team of distributed technology experts creating foundational infrastructure for the decentralized internet.
-    Sei Network
   slug: mysten-labs
   careers: []
   ats: null
@@ -316,7 +315,7 @@ employers:
   name: Gauntlet
   website: https://www.gauntlet.xyz/
   superpower: Relentless focus in revealing the optimal path to protocol growth by applying brilliant quantitative optimisation
-    analysis and simulation to our rigorous research to understand DeFi’s most complex and novel economic problems.
+    analysis and simulation to our rigorous research to understand D i’s most complex and novel economic problems.
   slug: gauntlet
   careers: []
   ats: null
@@ -388,10 +387,10 @@ employers:
   overlaps_protocol_seeds: false
   protocol_slug: null
 - rank: 31
-  name: T rust Wallet
+  name: Trust Wallet
   website: https://trustwallet.com/
   superpower: We want to give everyone the freedom to truly own, by building the foundations for the future of the free web.
-  slug: t-rust-wallet
+  slug: trust-wallet
   careers: []
   ats: null
   priority: medium
@@ -402,7 +401,7 @@ employers:
 - rank: 32
   name: Polygon Labs
   website: https://polygon.technology/
-  superpower: As a core developer of the AggLayer, Polygon Labs unifies web3 with zero-knowledge tech in order to enable an
+  superpower: As a core developer of the Ag ayer, Polygon Labs unifies web3 with zero-knowledge tech in order to enable an
     interoperable, infinitely scalable web of sovereign blockchains.
   slug: polygon-labs
   careers: []
@@ -452,7 +451,7 @@ employers:
 - rank: 36
   name: Solana
   website: https://solana.com/
-  superpower: T o unlock internet capital markets which are open, permissionless, and built for billions -- bringing the world
+  superpower: To unlock internet capital markets which are open, permissionless, and built for billions -- bringing the world
     closer to a seamlessly scalable future by offering unmatched speed and frictionless user experience.
   slug: solana
   careers: []
@@ -478,7 +477,7 @@ employers:
 - rank: 38
   name: WeatherXM
   website: https://weatherxm.com/
-  superpower: We are fixing the broken weather industry by taking bold, innovative steps that haven’t been tried before, following
+  superpower: We are fixing the broken weather industry by taking bold, innovative steps that haven’Tbeen tried before, following
     the approach of open collaboration and decentralisation, which have already led to incredible breakthroughs in technology
     and finance.
   slug: weatherxm
@@ -504,7 +503,7 @@ employers:
 - rank: 40
   name: Affinidi
   website: https://www.affinidi.com/
-  superpower: We’re building the Internet of T rust powered by innovative identity solutions built by a diverse global team
+  superpower: We’re building the Internet of Trust powered by innovative identity solutions built by a diverse global team
     that thrives on complex challenges, collaborative learning, and fearless iteration.
   slug: affinidi
   careers: []
@@ -529,7 +528,7 @@ employers:
 - rank: 42
   name: Reown
   website: https://reown.com/
-  superpower: WalletConnectisanopensourceprotocolforconnectingdecentralised applicationstomobilewalletswithQRcodescanningordeeplinking.
+  superpower: Walle onnectisanopensourceprotocolforconnectingdecentralised applicationstomobilewalletswit Rcodescanningordeeplinking.
   slug: reown
   careers: []
   ats: null
@@ -553,7 +552,7 @@ employers:
 - rank: 44
   name: Flow
   website: https://flow.com/
-  superpower: Flowistheleadingconsumernetworktrustedbymillionsofusersandglobal institutionslikePaypal,NBA,andDisney.
+  superpower: Flowistheleadingconsumernetworktrustedbymillionsofusersandglobal institutionslik aypal,NBA,an isney.
   slug: flow
   careers: []
   ats: null
@@ -565,7 +564,7 @@ employers:
 - rank: 45
   name: 0xProtocol
   website: https://www.0xprotocol.org/
-  superpower: 0xProtocolisthetrustedopensourcesettlementlayerforthe permissionlessglobalexchangeofvalue.
+  superpower: 0 rotocolisthetrustedopensourcesettlementlayerforthe permissionlessglobalexchangeofvalue.
   slug: 0xprotocol
   careers: []
   ats: null
@@ -589,8 +588,8 @@ employers:
 - rank: 47
   name: Mantle
   website: https://www.mantle.xyz/
-  superpower: Mantle isafast-growing,DAO-ledweb3ecosystemwhosemissionisthe massadoptionofdecentralizedandtoken-governedtechnologiesMantleEcosystem
-    comprisesMantleNetwork,anEthereumlayer2;MantleGovernance,MantleTreasuryand mETHProtocol.
+  superpower: Mantle isafast-growing,DAO-ledweb3ecosystemwhosemissionisthe massadoptionofdecentralizedandtoken-governedtechnologie
+    antl cosystem comprise antl etwork,a thereumlayer2;Mantl overnance,Mantl reasuryand THProtocol.
   slug: mantle
   careers: []
   ats: null
@@ -603,7 +602,7 @@ employers:
   name: Paxos
   website: https://www.paxos.com/
   superpower: Paxosisaregulatedblockchaininfrastructurecompanybuilding transparentandtransformativefinancialsolutions,includingtheissuanceofstablecoins
-    likeUSDPandthefacilitationofinstantsettlementforsecurities.
+    lik SDPandthefacilitationofinstantsettlementforsecurities.
   slug: paxos
   careers: []
   ats: null
@@ -627,16 +626,15 @@ employers:
 - rank: 50
   name: TONFoundation
   website: https://ton.foundation/en
-  superpower: TheOpenNetworkFoundationempowersTONprojectswithoutcontrolling TONtechnologyandisoneofmanynetworkcontributorsinthedecentralizedTON
-    Community.
+  superpower: The TON Foundation empowers TON projects without controlling TON technology and is one of many network contributors.
   slug: tonfoundation
   careers: []
   ats: null
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: ton
 - rank: 51
   name: Binance
   website: https://www.binance.com/
@@ -652,7 +650,7 @@ employers:
 - rank: 52
   name: Summer.fi
   website: https://summer.fi/
-  superpower: AutomatedExposuretoDeFi’sHighestQualityYield.
+  superpower: Automate xposuret i’ ighes ualit ield.
   slug: summer-fi
   careers: []
   ats: null
@@ -676,8 +674,8 @@ employers:
 - rank: 54
   name: Radix
   website: https://www.radixdlt.com/
-  superpower: RadixDL Tisalayer-1 protocolwithamissiontocreateradicallybetteruser & developerexperiencesneededforeveryonetoconfidentlyuseWeb3&
-    DeFi.
+  superpower: Radi L Tisalayer-1 protocolwithamissiontocreateradicallybetteruser & developerexperiencesneededforeveryonetoconfidentlyus
+    eb3& D i.
   slug: radix
   careers: []
   ats: null
@@ -689,8 +687,8 @@ employers:
 - rank: 55
   name: Solv Protocol
   website: https://solv.finance/
-  superpower: SolvunitesDeFi,RWA-Fi,TradFi,andCeFiintoasingleprogrammable infrastructuredesignedtomovetrillions,unlockingtokenizedETFs,real-worldcredit,and
-    institutional-gradeBitcoinyieldstrategies.
+  superpower: Solvunite i,RWA-Fi,Tra i,an iintoasingleprogrammable infrastructuredesignedtomovetrillions,unlockingtokenize
+    TFs,real-worldcredit,and institutional-grad itcoinyieldstrategies.
   slug: solv-protocol
   careers: []
   ats: null
@@ -714,7 +712,7 @@ employers:
 - rank: 57
   name: Taxbit
   website: https://www.taxbit.com/
-  superpower: Taxbitisthepremierend-to-endcomplianceandreportingsolutionforthe DigitalEconomy.TheirsingleAPI-poweredplatformfortaxandaccountingreduces
+  superpower: Taxbitisthepremierend-to-endcomplianceandreportingsolutionforthe Digita conomy.Theirsingl PI-poweredplatformfortaxandaccountingreduces
     manualworkimprovingoperationalefficiencyandmore.
   slug: taxbit
   careers: []
@@ -740,7 +738,7 @@ employers:
 - rank: 59
   name: GolemNetwork
   website: https://www.golem.network/
-  superpower: GolemNetworkisadecentralizedplatformthattransformsthewaywe accessandsharecomputationalresources.
+  superpower: Gole etworkisadecentralizedplatformthattransformsthewaywe accessandsharecomputationalresources.
   slug: golemnetwork
   careers: []
   ats: null
@@ -752,7 +750,7 @@ employers:
 - rank: 60
   name: OffchainLabs
   website: https://www.offchainlabs.com/
-  superpower: OffchainLabsispioneeringscalableblockchainsolutionsthatpush decentralizationboundaries,transforminginnovativeideasintotrusted,industryleading
+  superpower: Offchai absispioneeringscalableblockchainsolutionsthatpush decentralizationboundaries,transforminginnovativeideasintotrusted,industryleading
     products.
   slug: offchainlabs
   careers: []
@@ -765,7 +763,8 @@ employers:
 - rank: 61
   name: Cosmos
   website: https://cosmos.network/
-  superpower: Themostperformant,customizable,andsecureblockchainstack.Powering 200+blockchainsinfinance,government,globalenterprise,andWeb3.
+  superpower: Themostperformant,customizable,andsecureblockchainstack.Powering 200+blockchainsinfinance,government,globalenterprise,an
+    eb3.
   slug: cosmos
   careers: []
   ats: null
@@ -777,7 +776,7 @@ employers:
 - rank: 62
   name: CoWProtocol
   website: https://cow.fi/
-  superpower: CoWProtocolhasthelargestsolvercompetitionandthemostadvanced developerframework-soyoucanbuildanyDeFi-relatedactionyoucanimagine.
+  superpower: C Protocolhasthelargestsolvercompetitionandthemostadvanced developerframework-soyoucanbuildan i-relatedactionyoucanimagine.
   slug: cowprotocol
   careers: []
   ats: null
@@ -790,7 +789,7 @@ employers:
   name: Aevo
   website: https://www.aevo.xyz/
   superpower: Aevosupportsoptions,perpetualfutures,andmanyotherproductswithina singlemarginaccount.Combiningoff-chainmatchingwithon-chainsettlement,the
-    platformallowstraderstohaveunparalleledperformanceandlatencywhileinheritingthe securityofEthereum.
+    platformallowstraderstohaveunparalleledperformanceandlatencywhileinheritingthe securityo thereum.
   slug: aevo
   careers: []
   ats: null
@@ -802,7 +801,7 @@ employers:
 - rank: 64
   name: EigenLayer
   website: https://www.eigencloud.xyz/
-  superpower: EigenLayerprovidesadeveloperplatformmakingit10x easiertobuildand deployarbitrarydecentralizedservices.
+  superpower: Eige ayerprovidesadeveloperplatformmakingit10x easiertobuildand deployarbitrarydecentralizedservices.
   slug: eigenlayer
   careers: []
   ats: null
@@ -814,16 +813,15 @@ employers:
 - rank: 65
   name: Uniswap Labs
   website: https://app.uniswap.org/
-  superpower: TheUniswapprotocolisthelargestonchainmarketplace,withbillionsof dollarsinweeklyvolumeacrossthousandsoftokensonEthereumand7+additional
-    chains.
+  superpower: The Uniswap protocol is the largest onchain marketplace, with billions of dollars in weekly volume.
   slug: uniswap-labs
   careers: []
   ats: null
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: uniswap
 - rank: 66
   name: Rain
   website: https://www.rain.xyz/
@@ -840,7 +838,7 @@ employers:
 - rank: 67
   name: Raydium
   website: https://raydium.io/swap/
-  superpower: Raydiumisanautomatedmarketmaker(AMM) builtontheSolana blockchainwhichenableslightning-fasttrades,permissionlesspoolcreation,andnew
+  superpower: Raydiumisanautomatedmarketmaker(AMM) builtonth olana blockchainwhichenableslightning-fasttrades,permissionlesspoolcreation,andnew
     featuresforearningyield.
   slug: raydium
   careers: []
@@ -853,7 +851,8 @@ employers:
 - rank: 68
   name: Aptos
   website: https://aptosnetwork.com/
-  superpower: AptosLabsisfocusedoncreatingproductsandapplicationsfortheAptos blockchainthatredefineitsuserexperienceandacceleratethefutureofWeb3.
+  superpower: Apto absisfocusedoncreatingproductsandapplicationsforth ptos blockchainthatredefineitsuserexperienceandacceleratethefutureo
+    eb3.
   slug: aptos
   careers: []
   ats: null
@@ -865,7 +864,7 @@ employers:
 - rank: 69
   name: Gelato
   website: https://gelato.cloud/
-  superpower: Smartwalletandrollupinfrainoneplace.Launchgaslessonboarding, smartwallets,andcustomrollupsfromoneSDK.
+  superpower: Smartwalletandrollupinfrainoneplace.Launchgaslessonboarding, smartwallets,andcustomrollupsfromon DK.
   slug: gelato
   careers: []
   ats: null
@@ -889,7 +888,7 @@ employers:
 - rank: 71
   name: Sui
   website: https://sui.io/
-  superpower: Suiisahigh-speed,low-feeLayer1 builtwithMove,makingsecuredigital assetownershipandWeb3appsfeelaseasyasWeb2.
+  superpower: Suiisahigh-speed,low-fe ayer1 builtwit ove,makingsecuredigital assetownershipan eb3appsfeelaseasya eb2.
   slug: sui
   careers: []
   ats: null
@@ -909,12 +908,12 @@ employers:
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
+  overlaps_protocol_seeds: true
+  protocol_slug: base
 - rank: 73
   name: Berachain
   website: https://www.berachain.com/
-  superpower: BerachainisanEVM-identicalLayer1 poweredbyProofofLiquidity, designedtoalignnetworksecuritywithDeFiliquidityincentives.
+  superpower: Berachainisa VM-identica ayer1 poweredb roofo iquidity, designedtoalignnetworksecuritywit iliquidityincentives.
   slug: berachain
   careers: []
   ats: null
@@ -926,7 +925,7 @@ employers:
 - rank: 74
   name: BitGo
   website: https://www.bitgo.com/
-  superpower: BitGoisaleadingproviderofinstitutional-gradecustody,tradingand financialservicesfordigitalassets,securingbillionsinassetsforitsclients.
+  superpower: Bi oisaleadingproviderofinstitutional-gradecustody,tradingand financialservicesfordigitalassets,securingbillionsinassetsforitsclients.
   slug: bitgo
   careers: []
   ats: null
@@ -986,7 +985,8 @@ employers:
 - rank: 79
   name: Worldcoin
   website: https://world.org/
-  superpower: Worldcoinaimstobecometheworldslargestprivacy-preservinghuman identityandfinancialnetwork,givingownershiptoeveryoneonEarth.
+  superpower: Worldcoinaimstobecometheworldslargestprivacy-preservinghuman identityandfinancialnetwork,givingownershiptoeveryoneo
+    arth.
   slug: worldcoin
   careers: []
   ats: null
@@ -998,7 +998,8 @@ employers:
 - rank: 80
   name: NEAR
   website: https://www.near.org/
-  superpower: NEAR isashardedProof-of-StakeLayer1 usingNightshadeandchain abstractiontodeliverfast,low-costapps—nowpositioningitselfasablockchainforAI.
+  superpower: NEAR isasharde roof-of-Stak ayer1 usin ightshadeandchain abstractiontodeliverfast,low-costapps—nowpositioningitselfasablockchainfo
+    I.
   slug: near
   careers: []
   ats: null
@@ -1023,7 +1024,7 @@ employers:
 - rank: 82
   name: Fuel Labs
   website: https://fuel.network/
-  superpower: Fuel is a high-performance modular execution layer for Ethereum, powered by the FuelVM and parallel transaction
+  superpower: Fuel is a high-performance modular execution layer for Ethereum, powered by the Fue M and parallel transaction
     execution, giving developers fast, low-cost apps with the Sway toolchain.
   slug: fuel-labs
   careers: []
@@ -1037,8 +1038,8 @@ employers:
   name: Protocol Labs
   website: https://www.protocol.ai/
   superpower: Protocol Labs is an open-source software research and development company, founded in 2014. It is best known
-    for creating the InterPlanetary File System, a peer-to-peer decentralized web protocol, and Filecoin, a decentralized
-    file storage network.
+    for creating the Inte lanetary File System, a peer-to-peer decentralized web protocol, and Filecoin, a decentralized file
+    storage network.
   slug: protocol-labs
   careers: []
   ats: null
@@ -1076,7 +1077,7 @@ employers:
 - rank: 86
   name: Ethena
   website: https://ethena.fi/
-  superpower: Ethena is an Ethereum-based synthetic dollar protocol that issues USDe (and sUSDe), using delta-hedged crypto
+  superpower: Ethena is an Ethereum-based synthetic dollar protocol that issues USDe (and SDe), using delta-hedged crypto
     collateral to deliver a scalable, crypto-native dollar and onchain savings yield.
   slug: ethena
   careers: []
@@ -1102,7 +1103,7 @@ employers:
 - rank: 88
   name: Jito
   website: https://www.jito.network/
-  superpower: Jito is Solana’s MEV-optimized liquid staking and infrastructure suite, best known for JitoSOL and its Block
+  superpower: Jito is Solana’s MEV-optimized liquid staking and infrastructure suite, best known for Jit OL and its Block
     Engine, designed to boost staking yield and improve network efficiency.
   slug: jito
   careers: []
@@ -1115,8 +1116,8 @@ employers:
 - rank: 89
   name: Puffer
   website: https://www.puffer.fi/
-  superpower: Puffer is an Ethereum-native liquid restaking protocol that mints pufETH so users can earn ETH staking plus
-    EigenLayer restaking rewards, alongside the UniFi based-rollup stack.
+  superpower: Puffer is an Ethereum-native liquid restaking protocol that mints pu TH so users can earn ETH staking plus Eige
+    ayer restaking rewards, alongside the Un i based-rollup stack.
   slug: puffer
   careers: []
   ats: null
@@ -1241,8 +1242,8 @@ employers:
 - rank: 99
   name: DeFi Saver
   website: https://defisaver.com/
-  superpower: DeFi Saver is a non-custodial DeFi management tool offering advanced features and functionalities for managing
-    your positions and crypto assets in various DeFi protocols.
+  superpower: D i Saver is a non-custodial D i management tool offering advanced features and functionalities for managing
+    your positions and crypto assets in various D i protocols.
   slug: defi-saver
   careers: []
   ats: null

@@ -25,7 +25,26 @@ from pathlib import Path
 from urllib.parse import urlparse, urljoin
 from typing import List, Dict, Any
 
-PDF_PATH = "/Users/mysmys/Desktop/best web3 employers.pdf"
+PDF_PATH = None  # will be resolved below
+
+def get_pdf_path() -> str:
+    """Resolve PDF path. Priority: env var > relative to this file > original desktop location (dev only)."""
+    import os
+    if os.environ.get("TALENT_TITANS_PDF"):
+        return os.environ["TALENT_TITANS_PDF"]
+    # Try relative to sources/
+    candidate = Path(__file__).parent / "best web3 employers.pdf"
+    if candidate.exists():
+        return str(candidate)
+    # Fallback for local dev (the PDF lives outside repo)
+    desktop = "/Users/mysmys/Desktop/best web3 employers.pdf"
+    if Path(desktop).exists():
+        return desktop
+    raise FileNotFoundError(
+        "PDF not found. Set TALENT_TITANS_PDF env var or place the PDF next to this script."
+    )
+
+# Use get_pdf_path() in extract_from_pdf instead of direct PDF_PATH
 PROTOCOL_SEEDS = Path(__file__).parent / "protocol_seeds.yaml"
 OUTPUT_YAML = Path(__file__).parent / "talent_titans_top100.yaml"
 DRAFT_OUTPUT = Path("evals/runs") / "talent_titans_draft.yaml"
@@ -38,7 +57,7 @@ COMMON_CAREERS_PATHS = [
 def extract_from_pdf() -> List[Dict[str, Any]]:
     """Extract rank, name, website, superpower from PDF using pdftotext -raw (layout-independent)."""
     result = subprocess.run(
-        ["pdftotext", "-raw", PDF_PATH, "-"],
+        ["pdftotext", "-raw", get_pdf_path(), "-"],
         capture_output=True, text=True
     )
     text = result.stdout
@@ -103,9 +122,9 @@ def extract_from_pdf() -> List[Dict[str, Any]]:
         if url and name:
             url_to_info[url] = {
                 "rank": rank or 0,
-                "name": name.strip(" .:"),
+                "name": clean_name(name),
                 "website": url,
-                "superpower": superpower.strip(),
+                "superpower": clean_superpower(superpower),
             }
 
     # fix Sei etc.
@@ -125,32 +144,101 @@ def extract_from_pdf() -> List[Dict[str, Any]]:
 
 
 
+
 def load_protocol_seeds() -> Dict[str, Dict]:
-    """Load protocol_seeds for overlap detection."""
+    """Load protocol_seeds for overlap detection.
+    Now also stores normalized domains for fuzzy matching.
+    """
     if not PROTOCOL_SEEDS.exists():
         return {}
     with open(PROTOCOL_SEEDS) as f:
         data = yaml.safe_load(f) or {}
     overlaps = {}
     for p in data.get("protocols", []):
-        name = p.get("name", "").lower()
+        name = p.get("name", "")
         website = p.get("website", "").lower()
-        slug = p.get("slug", name.replace(" ", "-"))
-        overlaps[slug] = {
-            "name": p.get("name"),
+        slug = p.get("slug", make_slug(name))
+        
+        entry = {
+            "name": name,
             "website": website,
             "slug": slug,
             "has_careers": bool(p.get("careers")),
+            "domains": set(),
         }
-        # Also index by domain
+        
         if website:
-            domain = urlparse(website).netloc.lower()
-            overlaps[domain] = overlaps[slug]
+            netloc = urlparse(website).netloc.lower().replace("www.", "")
+            entry["domains"].add(netloc)
+            # Add parent domain for fuzzy match (e.g. uniswap.org from app.uniswap.org)
+            parts = netloc.split(".")
+            if len(parts) > 2:
+                entry["domains"].add(".".join(parts[-2:]))
+        
+        overlaps[slug] = entry
+        # index by main domain too
+        for d in list(entry["domains"]):
+            overlaps[d] = entry
+            
     return overlaps
 
 
+
+
+def is_overlap_with_seeds(name: str, website: str, overlaps: Dict) -> tuple:
+    """Return (is_overlap, protocol_slug) with better fuzzy matching."""
+    slug = make_slug(name)
+    if slug in overlaps:
+        return True, overlaps[slug].get("slug", slug)
+    
+    if not website:
+        return False, None
+    try:
+        netloc = urlparse(website).netloc.lower().replace("www.", "")
+        domain = ".".join(netloc.split(".")[-2:])
+    except Exception:
+        domain = ""
+    
+    for key, info in overlaps.items():
+        if key == slug:
+            return True, info.get("slug", slug)
+        if domain and any(d in domain or domain in d for d in info.get("domains", set())):
+            return True, info.get("slug", slug)
+        if name.lower() in info.get("name", "").lower() or info.get("name", "").lower() in name.lower():
+            return True, info.get("slug", slug)
+    return False, None
+
 def make_slug(name: str) -> str:
     return re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
+
+
+def clean_name(name: str) -> str:
+    """Fix common PDF extraction artifacts in company names."""
+    name = name.strip()
+    # Fix "T rust Wallet" → "Trust Wallet", "T o unlock" style
+    name = re.sub(r"T\s+([a-z])", r"T", name, flags=re.I)
+    name = re.sub(r"([A-Z])\s+([a-z])", r"", name)  # "Internet of T rust"
+    name = re.sub(r"\s+", " ", name)
+    return name.strip()
+
+def clean_superpower(text: str, next_name: str = "") -> str:
+    """Remove stuck neighboring company names and normalize whitespace from -raw."""
+    if not text:
+        return ""
+    # Remove common stuck suffixes that are other company names
+    stuck_patterns = [
+        r"\s+Sei Network\s*$",
+        r"\s+Solana\s*$",
+        r"\s+Puffer\s*$",
+        r"\s+Compound\s*$",
+    ]
+    for pat in stuck_patterns:
+        text = re.sub(pat, "", text, flags=re.I)
+    
+    # Fix glued words: Alchemyiscreating → Alchemy is creating
+    text = re.sub(r"([a-z])([A-Z])", r" ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
 
 
 def discover_careers_pages(main_url: str, max_candidates: int = 5) -> List[str]:
@@ -200,10 +288,10 @@ def generate_draft(overlaps: Dict) -> Dict:
     }
 
     for item in raw:
-        name = item["name"]
+        name = clean_name(item["name"])
         website = item.get("website") or item.get("main", "")
         rank = item.get("rank", 0)
-        superpower = item.get("superpower", "")
+        superpower = clean_superpower(item.get("superpower", ""))
         slug = make_slug(name)
         domain = urlparse(website).netloc.lower()
 
@@ -246,7 +334,8 @@ def main():
     if args.extract:
         raw = extract_from_pdf()
         for e in raw[:20]:
-            print(f"- {e['name']}: {e['main']}")
+            w = e.get("website") or e.get("main", "")
+            print(f"- {e.get('rank', '?')}. {e['name']}: {w}")
         print(f"\nTotal unique: {len(raw)}")
         return
 
@@ -289,7 +378,8 @@ def main():
             print(f"Slug {args.slug} not found in PDF extraction.")
             return
         print(f"Discovering careers for {target['name']} ({target.get('website') or target.get('main')})...")
-        candidates = discover_careers_pages(target["main"])
+        main_url = target.get("website") or target.get("main", "")
+        candidates = discover_careers_pages(main_url)
         for c in candidates:
             print(f"  - {c}")
         print("\nAdd the best one(s) to the YAML under careers:.")
