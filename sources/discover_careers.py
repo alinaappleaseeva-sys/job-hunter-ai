@@ -212,7 +212,7 @@ def has_job_signals(html: str, final_url: str, is_ats: bool = False) -> bool:
     # For ATS pages require stronger evidence (postings, not just landing)
     strong_indicators = ["position", "role", "opening", "apply now", "/jobs/", "job posting"]
     strong = sum(1 for ind in strong_indicators if ind in text)
-    has_structured = "/job/" in text or "apply" in text and link_count >= 1
+    has_structured = ("/job/" in text) or ("apply" in text and link_count >= 1)
 
     if "workable.com" in final_url:
         # Workable is noisy on unknown slugs - require extra evidence
@@ -232,13 +232,23 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
             ats_info = detect_ats(final_url)
             html = resp.text if status < 400 else ""
 
-            signals = has_job_signals(html, final_url, bool(ats_info))
+            is_real_ats = bool(ats_info) and status == 200
+
+            if status >= 400 and ats_info:
+                type_ = "probe_miss"
+            elif is_real_ats:
+                type_ = "ats"
+            elif status == 200:
+                type_ = "careers_page"
+            else:
+                type_ = "error"
+
+            signals = has_job_signals(html, final_url, is_real_ats)
 
             confidence = "low"
-            if ats_info and status == 200 and signals:
+            if is_real_ats and signals:
                 confidence = "high"
-            elif ats_info and status == 200:
-                # ATS page exists but no strong signals -> medium (still useful)
+            elif is_real_ats:
                 confidence = "medium"
             elif status == 200 and signals:
                 confidence = "medium"
@@ -247,8 +257,8 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
                 "url": final_url,
                 "status": status,
                 "type": type_,
-                "ats": ats_info["ats"] if is_real_ats else None,
-                "board_slug": ats_info["board_slug"] if is_real_ats else None,
+                "ats": ats_info["ats"] if ats_info else None,
+                "board_slug": ats_info["board_slug"] if ats_info else None,
                 "has_job_signals": signals,
                 "confidence": confidence,
             }
