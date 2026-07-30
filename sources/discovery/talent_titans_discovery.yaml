@@ -11,42 +11,42 @@ employers:
   careers_candidates:
   - url: https://job-boards.greenhouse.io/aztec
     status: 404
-    type: ats
+    type: probe_miss
     ats: greenhouse
     board_slug: aztec
     has_job_signals: false
     confidence: low
   - url: https://jobs.lever.co/aztec
     status: 404
-    type: ats
+    type: probe_miss
     ats: lever
     board_slug: aztec
     has_job_signals: false
     confidence: low
   - url: https://jobs.workable.com/aztec
     status: 404
-    type: ats
+    type: probe_miss
     ats: workable
     board_slug: aztec
     has_job_signals: false
     confidence: low
   - url: https://job-boards.greenhouse.io/aztec-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: greenhouse
     board_slug: aztec-labs
     has_job_signals: false
     confidence: low
   - url: https://jobs.lever.co/aztec-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: lever
     board_slug: aztec-labs
     has_job_signals: false
     confidence: low
   - url: https://jobs.workable.com/aztec-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: workable
     board_slug: aztec-labs
     has_job_signals: false
@@ -77,42 +77,42 @@ employers:
   careers_candidates:
   - url: https://job-boards.greenhouse.io/aave-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: greenhouse
     board_slug: aave-labs
     has_job_signals: false
     confidence: low
   - url: https://jobs.lever.co/aave-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: lever
     board_slug: aave-labs
     has_job_signals: false
     confidence: low
   - url: https://jobs.workable.com/aave-labs
     status: 404
-    type: ats
+    type: probe_miss
     ats: workable
     board_slug: aave-labs
     has_job_signals: false
     confidence: low
   - url: https://job-boards.greenhouse.io/aave
     status: 404
-    type: ats
+    type: probe_miss
     ats: greenhouse
     board_slug: aave
     has_job_signals: false
     confidence: low
   - url: https://jobs.lever.co/aave
     status: 404
-    type: ats
+    type: probe_miss
     ats: lever
     board_slug: aave
     has_job_signals: false
     confidence: low
   - url: https://jobs.workable.com/aave
     status: 404
-    type: ats
+    type: probe_miss
     ats: workable
     board_slug: aave
     has_job_signals: false
@@ -130,7 +130,7 @@ employers:
     ats: workable
     board_slug: oops
     has_job_signals: true
-    confidence: high
+    confidence: medium
   best_guess:
     ats: ashby
     board_slug: aave-labs
@@ -143,21 +143,21 @@ employers:
   careers_candidates:
   - url: https://job-boards.greenhouse.io/phantom
     status: 404
-    type: ats
+    type: probe_miss
     ats: greenhouse
     board_slug: phantom
     has_job_signals: false
     confidence: low
   - url: https://jobs.lever.co/phantom
     status: 404
-    type: ats
+    type: probe_miss
     ats: lever
     board_slug: phantom
     has_job_signals: false
     confidence: low
   - url: https://jobs.workable.com/phantom
     status: 404
-    type: ats
+    type: probe_miss
     ats: workable
     board_slug: phantom
     has_job_signals: false

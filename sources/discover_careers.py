@@ -140,6 +140,7 @@ def probe_known_ats(slugs: List[str]) -> List[str]:
     probes = []
     for s in slugs:
         probes.append(f"https://jobs.ashbyhq.com/{s}")
+        probes.append(f"https://job-boards.greenhouse.io/{s}")
         probes.append(f"https://boards.greenhouse.io/{s}")
         probes.append(f"https://jobs.lever.co/{s}")
         probes.append(f"https://apply.workable.com/{s}")
@@ -168,7 +169,7 @@ def detect_ats(url: str) -> Optional[Dict[str, str]]:
     host = parsed.netloc.lower()
     path = parsed.path.strip("/")
 
-    if "boards.greenhouse.io" in host:
+    if "greenhouse.io" in host:
         match = ATS_PATTERNS["greenhouse"].search(url)
         if match:
             return {"ats": "greenhouse", "board_slug": match.group(1)}
@@ -192,19 +193,32 @@ def detect_ats(url: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def has_job_signals(html: str, final_url: str) -> bool:
-    """Light signal: 200 + enough job-related content or links."""
+def has_job_signals(html: str, final_url: str, is_ats: bool = False) -> bool:
+    """Signal for jobs. Stricter for ATS pages to avoid marketing/404 noise."""
     if not html:
         return False
 
     text = (html + " " + final_url).lower()
     count = sum(1 for word in JOB_SIGNAL_WORDS if word in text)
 
-    # Count job-like links
     links = re.findall(r'href=["\']([^"\']*(?:job|role|career|apply|hire|position|opening)[^"\']*)["\']', html, re.I)
     link_count = len(links)
 
-    return (count + link_count) >= 2
+    base_ok = (count + link_count) >= 2
+
+    if not is_ats:
+        return base_ok
+
+    # For ATS pages require stronger evidence (postings, not just landing)
+    strong_indicators = ["position", "role", "opening", "apply now", "/jobs/", "job posting"]
+    strong = sum(1 for ind in strong_indicators if ind in text)
+    has_structured = "/job/" in text or "apply" in text and link_count >= 1
+
+    if "workable.com" in final_url:
+        # Workable is noisy on unknown slugs - require extra evidence
+        return base_ok and strong >= 1 and has_structured
+
+    return base_ok and (strong >= 1 or has_structured)
 
 
 def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
@@ -218,7 +232,7 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
             ats_info = detect_ats(final_url)
             html = resp.text if status < 400 else ""
 
-            signals = has_job_signals(html, final_url)
+            signals = has_job_signals(html, final_url, bool(ats_info))
 
             confidence = "low"
             if ats_info and status == 200 and signals:
@@ -232,9 +246,9 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
             return {
                 "url": final_url,
                 "status": status,
-                "type": "ats" if ats_info else "careers_page",
-                "ats": ats_info["ats"] if ats_info else None,
-                "board_slug": ats_info["board_slug"] if ats_info else None,
+                "type": type_,
+                "ats": ats_info["ats"] if is_real_ats else None,
+                "board_slug": ats_info["board_slug"] if is_real_ats else None,
                 "has_job_signals": signals,
                 "confidence": confidence,
             }
@@ -254,10 +268,13 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
     return {"url": url, "status": 0, "confidence": "low"}
 
 
-def discover_for_employer(employer: Dict, client: httpx.Client) -> Dict[str, Any]:
+def discover_for_employer(employer: Dict, client: httpx.Client, overlaps_cache: Dict = None) -> Dict[str, Any]:
     name = employer.get("name", "")
     website = employer.get("website", "") or employer.get("main", "")
     rank = employer.get("rank")
+
+    if overlaps_cache is None:
+        overlaps_cache = {}
 
     if not website:
         return {
@@ -278,17 +295,18 @@ def discover_for_employer(employer: Dict, client: httpx.Client) -> Dict[str, Any
     # 1. ATS slug probes first (high leverage)
     slugs = generate_candidate_slugs(name, website)
     ats_probes = probe_known_ats(slugs)
+    found_strong_ats = False
     for url in ats_probes:
         if url in seen_urls:
             continue
         seen_urls.add(url)
         res = check_url(url, client)
-        if res.get("status") in (200, 301, 302) or res.get("ats"):
+        if (res.get("status") in (200, 301, 302) and res.get("type") != "probe_miss") or (res.get("ats") and res.get("status") == 200):
             all_results.append(res)
-            # If we got a clear high ATS, we can stop probing more for this employer
-            if res.get("ats") and res.get("status") == 200:
-                # still collect a couple more if needed, but prioritize
-                pass
+            if res.get("ats") and res.get("status") == 200 and res.get("confidence") == "high":
+                found_strong_ats = True
+                # Early stop for strong ATS to save requests
+                break
 
     # 2. Common paths
     candidates = []
@@ -303,7 +321,7 @@ def discover_for_employer(employer: Dict, client: httpx.Client) -> Dict[str, Any
 
     for url in candidates[:12]:
         res = check_url(url, client)
-        if res.get("status") in (200, 301, 302) or res.get("has_job_signals"):
+        if res.get("status") in (200, 301, 302) or (res.get("has_job_signals") and res.get("status") < 400):
             all_results.append(res)
 
     # 3. Light ATS link harvest on any 200 careers pages we already have
@@ -333,14 +351,20 @@ def discover_for_employer(employer: Dict, client: httpx.Client) -> Dict[str, Any
 
     # Strong priority to ATS high
     def score(r):
-        if r.get("ats"):
-            return (0, r.get("status") == 200, 0)
+        is_ats_200 = bool(r.get("ats")) and r.get("status") == 200
+        is_ats = bool(r.get("ats"))
+        is_good_status = r.get("status") == 200 or r.get("status") in (301, 302)
         conf = r.get("confidence", "low")
+
+        if is_ats_200:
+            return (0, 0)
+        if is_ats:
+            return (1, 0 if is_good_status else 1)
         if conf == "high":
-            return (1, r.get("status") == 200, 0)
+            return (2, 0 if is_good_status else 1)
         if conf == "medium":
-            return (2, r.get("status") == 200, 0)
-        return (3, False, 1)
+            return (3, 0 if is_good_status else 1)
+        return (4, 1)
 
     results.sort(key=score)
 
@@ -368,8 +392,7 @@ def discover_for_employer(employer: Dict, client: httpx.Client) -> Dict[str, Any
                 best = {"ats": r.get("ats"), "board_slug": r.get("board_slug"), "careers_url": r.get("url"), "confidence": "medium"}
                 break
 
-    overlaps = load_protocol_seeds_for_overlap()
-    already = is_already_in_protocol_seeds(name, website, overlaps)
+    already = is_already_in_protocol_seeds(name, website, overlaps_cache)
 
     return {
         "rank": rank,
@@ -484,6 +507,8 @@ def main():
         except Exception as ex:
             print(f"Resume load warning: {ex}")
 
+    overlaps_cache = load_protocol_seeds_for_overlap()
+
     employers = [e for e in all_employers if e.get("rank") not in processed_ranks]
     if args.limit > 0:
         employers = employers[:args.limit]
@@ -491,17 +516,16 @@ def main():
 
     if not employers:
         print("Nothing new to process.")
-        # still regenerate report if data exists
         if OUTPUT_YAML.exists():
             data = yaml.safe_load(open(OUTPUT_YAML)) or {}
             generate_report(data, Path("sources/discovery/REPORT.md"))
         return
 
-    results = list(existing_results)  # start with previous
+    results = list(existing_results)
 
     with httpx.Client(follow_redirects=True, timeout=TIMEOUT) as client:
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            future_to_emp = {executor.submit(discover_for_employer, emp, client): emp for emp in employers}
+            future_to_emp = {executor.submit(discover_for_employer, emp, client, overlaps_cache): emp for emp in employers}
             for i, future in enumerate(as_completed(future_to_emp), 1):
                 emp = future_to_emp[future]
                 try:

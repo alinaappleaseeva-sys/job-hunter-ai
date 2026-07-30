@@ -14,15 +14,14 @@
 - greenhouse: 0
 - ashby: 3
 - lever: 0
-- workable: 3
+- workable: 2
 
 ## Top High-Confidence ATS
 1. Aztec Labs (rank 1) — ashby / aztec — https://jobs.ashbyhq.com/aztec
 2. Aztec Labs (rank 1) — workable / aztec — https://apply.workable.com/aztec
 3. Aave Labs (rank 3) — ashby / aave-labs — https://jobs.ashbyhq.com/aave-labs
-4. Aave Labs (rank 3) — workable / oops — https://apply.workable.com/oops
-5. Phantom (rank 4) — ashby / phantom — https://jobs.ashbyhq.com/phantom
-6. Phantom (rank 4) — workable / phantom — https://apply.workable.com/phantom
+4. Phantom (rank 4) — ashby / phantom — https://jobs.ashbyhq.com/phantom
+5. Phantom (rank 4) — workable / phantom — https://apply.workable.com/phantom
 
 ## Notes
 - Run with `--limit` + resume for full 100.

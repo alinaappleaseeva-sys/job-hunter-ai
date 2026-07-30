@@ -24,3 +24,4 @@ reports/
 reports/telemetry_*.json
 tmp/
 venv/
+sources/discovery/*_raw.json
