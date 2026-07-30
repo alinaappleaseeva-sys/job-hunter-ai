@@ -35,48 +35,94 @@ COMMON_CAREERS_PATHS = [
     "/about/careers", "/company/careers", "/about/jobs", "/join-us",
 ]
 
-def extract_from_pdf() -> List[Dict[str, str]]:
-    """Extract candidate name + main URL from PDF using pdftotext -layout."""
+def extract_from_pdf() -> List[Dict[str, Any]]:
+    """Extract rank, name, website, superpower from PDF using pdftotext -raw (layout-independent)."""
     result = subprocess.run(
-        ["pdftotext", "-layout", PDF_PATH, "-"],
+        ["pdftotext", "-raw", PDF_PATH, "-"],
         capture_output=True, text=True
     )
     text = result.stdout
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
 
-    entries = []
-    lines = text.splitlines()
-    i = 0
-    while i < len(lines):
-        line = lines[i].strip()
-        url_match = re.search(r'(https?://[^\s<>"\)\]]+)', line)
-        if url_match:
-            url = url_match.group(1).rstrip('.,;:)')
-            # Look backwards for company name
-            name = None
-            for j in range(1, 6):
-                if i - j < 0:
-                    break
-                prev = lines[i - j].strip()
-                if prev and 3 <= len(prev) <= 55:
-                    if not any(bad in prev.lower() for bad in ["superpower", "top", "http"]):
-                        if not re.match(r"^\d+\.?$", prev):
-                            name = prev.strip(" .:")
-                            break
-            if not name:
-                name = urlparse(url).netloc.replace("www.", "").split(".")[0].title()
+    url_to_info: Dict[str, Dict] = {}
+    for idx, line in enumerate(lines):
+        if not line.startswith("http"):
+            continue
+        url = line
+        rank = None
+        name = None
+        for k in range(1, 6):
+            if idx - k < 0:
+                break
+            prev = lines[idx - k]
+            m = re.match(r"^(\d{1,3})\.\s*(.+)$", prev)
+            if m:
+                rank = int(m.group(1))
+                name = m.group(2).strip()
+                break
+            m2 = re.match(r"^(\d{1,3})\.?$", prev)
+            if m2:
+                rank = int(m2.group(1))
+                if idx - k - 1 >= 0:
+                    name_cand = lines[idx - k - 1]
+                    if (not name_cand.startswith("http") and "Superpower" not in name_cand
+                            and len(name_cand) > 2 and not re.match(r"^\d", name_cand)):
+                        name = name_cand.strip()
+                        break
+                break
+            if (not name and not re.match(r"^\d", prev) and not prev.startswith("http")
+                    and "Superpower" not in prev and "Top" not in prev and "Employers" not in prev
+                    and len(prev) > 3 and len(prev) < 50):
+                name = prev.strip()
+                if idx - k - 1 >= 0:
+                    m3 = re.match(r"^(\d{1,3})\.?", lines[idx - k - 1])
+                    if m3:
+                        rank = int(m3.group(1))
+                break
 
-            entries.append({"name": name, "main": url})
-        i += 1
+        superpower = ""
+        for k in range(1, 8):
+            if idx + k >= len(lines):
+                break
+            nextl = lines[idx + k]
+            if nextl.startswith("http") or re.match(r"^\d{1,3}\.?\s*$", nextl):
+                break
+            if "Superpower:" in nextl:
+                superpower = re.sub(r".*Superpower:\s*", "", nextl).strip()
+                for m in range(1, 6):
+                    if idx + k + m >= len(lines):
+                        break
+                    nl = lines[idx + k + m]
+                    if (nl.startswith("http") or re.match(r"^\d{1,3}\.", nl)
+                            or re.match(r"^\d{1,3}$", nl) or "Superpower" in nl):
+                        break
+                    if nl and not nl.startswith("Top") and "Employers" not in nl and len(nl) > 5:
+                        superpower += " " + nl
+                break
 
-    # Dedup by domain
-    seen = set()
-    unique = []
-    for e in entries:
-        domain = urlparse(e["main"]).netloc.lower()
-        if domain and domain not in seen:
-            seen.add(domain)
-            unique.append(e)
+        if url and name:
+            url_to_info[url] = {
+                "rank": rank or 0,
+                "name": name.strip(" .:"),
+                "website": url,
+                "superpower": superpower.strip(),
+            }
+
+    # fix Sei etc.
+    for e in url_to_info.values():
+        if e["name"] == "Sei Network" and e["rank"] == 0:
+            e["rank"] = 16
+
+    # dedup by rank, prefer richer superpower
+    by_rank: Dict[int, Dict] = {}
+    for e in url_to_info.values():
+        r = e.get("rank") or 0
+        if r and (r not in by_rank or len(by_rank[r].get("superpower", "")) < len(e.get("superpower", ""))):
+            by_rank[r] = e
+
+    unique = sorted([e for e in by_rank.values() if e.get("rank")], key=lambda x: x["rank"])
     return unique
+
 
 
 def load_protocol_seeds() -> Dict[str, Dict]:
@@ -139,35 +185,41 @@ def discover_careers_pages(main_url: str, max_candidates: int = 5) -> List[str]:
 
 
 def generate_draft(overlaps: Dict) -> Dict:
-    """Generate structured draft YAML from PDF extraction + overlap flags."""
+    """Generate structured draft YAML from PDF extraction + overlap flags.
+    Structure: rank + name + website + superpower (from PDF, source of truth) + enrichment slots.
+    """
     raw = extract_from_pdf()
     draft = {
         "meta": {
             "source": "best web3 employers.pdf",
             "extracted_at": str(date.today()),
             "total_unique": len(raw),
-            "note": "This is a draft for Phase 000 enrichment. Fill careers[], ats, priority, ops_relevance manually or via --discover."
+            "note": "Source of truth from PDF (Phase 0). careers/ats/priority/ops_relevance to be enriched via discovery or manual. Discovery results go to separate discovery/ file."
         },
         "employers": []
     }
 
     for item in raw:
         name = item["name"]
-        main = item["main"]
+        website = item.get("website") or item.get("main", "")
+        rank = item.get("rank", 0)
+        superpower = item.get("superpower", "")
         slug = make_slug(name)
-        domain = urlparse(main).netloc.lower()
+        domain = urlparse(website).netloc.lower()
 
         overlap_info = overlaps.get(slug) or overlaps.get(domain) or {}
         is_overlap = bool(overlap_info)
 
         entry = {
+            "rank": rank,
             "name": name,
+            "website": website,
+            "superpower": superpower,
             "slug": slug,
-            "main": main,
-            "careers": [],          # To be filled in enrichment
-            "ats": None,            # e.g. {"type": "greenhouse", "board": "aave"} or {"type": "ashby", "org": "li.fi"}
+            "careers": [],          # To be filled in Phase 1/2
+            "ats": None,            # e.g. {"type": "greenhouse", "board": "..."}
             "priority": "medium",
-            "ops_relevance": "unknown",  # high / medium / low / unknown
+            "ops_relevance": "unknown",
             "notes": "",
             "overlaps_protocol_seeds": is_overlap,
             "protocol_slug": overlap_info.get("slug") if is_overlap else None,
@@ -175,6 +227,8 @@ def generate_draft(overlaps: Dict) -> Dict:
         draft["employers"].append(entry)
 
     return draft
+
+
 
 
 def main():
@@ -201,7 +255,7 @@ def main():
         print("Overlaps with protocol_seeds.yaml:")
         count = 0
         for e in raw:
-            domain = urlparse(e["main"]).netloc.lower()
+            domain = urlparse(e.get("website") or e.get("main")).netloc.lower()
             slug = make_slug(e["name"])
             if slug in overlaps or domain in overlaps:
                 info = overlaps.get(slug) or overlaps.get(domain, {})
@@ -234,7 +288,7 @@ def main():
         if not target:
             print(f"Slug {args.slug} not found in PDF extraction.")
             return
-        print(f"Discovering careers for {target['name']} ({target['main']})...")
+        print(f"Discovering careers for {target['name']} ({target.get('website') or target.get('main')})...")
         candidates = discover_careers_pages(target["main"])
         for c in candidates:
             print(f"  - {c}")
