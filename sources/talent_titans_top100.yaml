@@ -1,12 +1,16 @@
 meta:
   source: best web3 employers.pdf
-  extracted_at: '2026-07-29'
-  total_unique: 66
-  note: This is a draft for Phase 000 enrichment. Fill careers[], ats, priority, ops_relevance manually or via --discover.
+  extracted_at: '2026-07-30'
+  total_unique: 100
+  note: Source of truth from PDF (Phase 0). careers/ats/priority/ops_relevance to be enriched via discovery or manual. Discovery
+    results go to separate discovery/ file.
 employers:
-- name: Aztec Labs
+- rank: 1
+  name: Aztec Labs
+  website: https://aztec.network/
+  superpower: Aztec runs on visionary builders unafraid to break boundaries - using privacy as the spark that rewrites how
+    the world transacts and collaborates.
   slug: aztec-labs
-  main: https://aztec.network/
   careers: []
   ats: null
   priority: medium
@@ -14,9 +18,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Hacken
+- rank: 2
+  name: Hacken
+  website: https://hacken.io/
+  superpower: People who hack the norm — ethical, brave, united by the commitment to secure the future of Web3.
   slug: hacken
-  main: https://hacken.io/
   careers: []
   ats: null
   priority: medium
@@ -24,9 +30,13 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Aave Labs
+- rank: 3
+  name: Aave Labs
+  website: https://aave.com/
+  superpower: We're building trusted, resilient infrastructure and intuitive products that give individuals and institutions
+    worldwide access to powerful financial tools - driven by the dedication of our people and an unwavering commitment to
+    quality.
   slug: aave-labs
-  main: https://aave.com/
   careers: []
   ats: null
   priority: medium
@@ -34,9 +44,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: true
   protocol_slug: aave
-- name: Phantom
+- rank: 4
+  name: Phantom
+  website: https://phantom.com/
+  superpower: We pair world-class design with deep web3 engineering to bring the next billion users onchain.
   slug: phantom
-  main: https://phantom.com/
   careers: []
   ats: null
   priority: medium
@@ -44,9 +56,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Tenderly
+- rank: 5
+  name: Tenderly
+  website: https://tenderly.co/
+  superpower: Working at the forefront of the industry with the most innovative teams shaping the future of the internet.
   slug: tenderly
-  main: https://tenderly.co/
   careers: []
   ats: null
   priority: medium
@@ -54,9 +68,13 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: o1Labs
+- rank: 6
+  name: o1Labs
+  website: https://www.o1labs.org/
+  superpower: o1Labs embodies the values of decentralization and fairness through co-op-like governance in their employee-run
+    Board and globally equitable compensation. The team’s belief in the company culture speaks for itself, with 75% of recent
+    hires coming through employee referrals.
   slug: o1labs
-  main: https://www.o1labs.org/
   careers: []
   ats: null
   priority: medium
@@ -64,9 +82,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: LI.FI
+- rank: 7
+  name: LI.FI
+  website: https://li.fi/
+  superpower: LI.FI is engineering the backbone of the crypto ecosystem, empowering teams to build without boundaries in a
+    simple, secure way as the world comes onchain.
   slug: li-fi
-  main: https://li.fi/
   careers: []
   ats: null
   priority: medium
@@ -74,19 +95,25 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: OP Labs PBC
+- rank: 8
+  name: OP Labs PBC
+  website: https://www.oplabs.co/
+  superpower: Optimism, the blockchain infrastructure provider powering 65% of all Layer 2 transactions. Our open-source OP
+    Stack enables developers and enterprises to launch scalable, secure, and customizable onchain networks with ease.
   slug: op-labs-pbc
-  main: https://www.oplabs.co/
   careers: []
   ats: null
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Kraken
+  overlaps_protocol_seeds: true
+  protocol_slug: optimism
+- rank: 9
+  name: Kraken
+  website: https://www.kraken.com/
+  superpower: Kraken is a leading cryptocurrency exchange known for its robust security features and wide selection of cryptocurrencies
+    for trading, staking and futures.
   slug: kraken
-  main: https://www.kraken.com/
   careers: []
   ats: null
   priority: medium
@@ -94,9 +121,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Messari
+- rank: 10
+  name: Messari
+  website: https://messari.io/
+  superpower: Empowering the world to build a more transparent, data-driven, and accountable crypto economy through uncompromising
+    research, intelligence, and industry-leading data standards.
   slug: messari
-  main: https://messari.io/
   careers: []
   ats: null
   priority: medium
@@ -104,29 +134,36 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Consensys
+- rank: 11
+  name: Consensys
+  website: https://consensys.io/
+  superpower: To build the infrastructure, tools, and protocols that power the world’s largest decentralized ecosystem.
   slug: consensys
-  main: https://consensys.io/
   careers: []
   ats: null
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Chainlinklabs
-  slug: chainlinklabs
-  main: https://chainlinklabs.com/
+  overlaps_protocol_seeds: true
+  protocol_slug: ens
+- rank: 12
+  name: Chainlink Labs
+  website: https://chainlinklabs.com/
+  superpower: To boldly lead the adoption of blockchain technology by building the infrastructure that powers the world’s
+    next financial system.
+  slug: chainlink-labs
   careers: []
   ats: null
   priority: medium
   ops_relevance: unknown
   notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Figment
+  overlaps_protocol_seeds: true
+  protocol_slug: chainlink
+- rank: 13
+  name: Figment
+  website: https://www.figment.io/
+  superpower: To accelerate and sustain global adoption of digital assets with secure staking infrastructure.
   slug: figment
-  main: https://www.figment.io/
   careers: []
   ats: null
   priority: medium
@@ -134,9 +171,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: efficiently
-  slug: efficiently
-  main: https://www.parity.io/
+- rank: 14
+  name: Parity Technologies
+  website: https://www.parity.io/
+  superpower: 'World-class engineers, bold products, and empowered communities relentlessly pushing the limits of blockchain
+    innovation: building a fairer tomorrow through people, participation, and technology.'
+  slug: parity-technologies
   careers: []
   ats: null
   priority: medium
@@ -144,9 +184,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Mystenlabs
-  slug: mystenlabs
-  main: https://www.mystenlabs.com/
+- rank: 15
+  name: Mysten Labs
+  website: https://www.mystenlabs.com/
+  superpower: A team of distributed technology experts creating foundational infrastructure for the decentralized internet.
+  slug: mysten-labs
   careers: []
   ats: null
   priority: medium
@@ -154,9 +196,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: infrastructure for the decentralized internet
-  slug: infrastructure-for-the-decentralized-internet
-  main: https://www.ether.fi/
+- rank: 16
+  name: Sei Network
+  website: https://www.sei.io/
+  superpower: Scaling the world's fastest EVM to power the next billion users and apps in Web3.
+  slug: sei-network
   careers: []
   ats: null
   priority: medium
@@ -164,9 +208,76 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Morpho
+- rank: 17
+  name: Kiln
+  website: https://www.kiln.fi/
+  superpower: We make onchain yield secure, simple, and scalable for institutions, empowering the world to unlock more value
+    from digital assets.
+  slug: kiln
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 18
+  name: Request Finance
+  website: https://www.request.finance/
+  superpower: Request Finance is an all-in-one finance platform for invoicing and payment in cryptocurrencies, helping businesses
+    manage crypto finances easily and efficiently.
+  slug: request-finance
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 19
+  name: Ava Labs
+  website: https://www.avalabs.org/
+  superpower: Ava Labs is the team behind Avalanche. Avalanche is the fastest smart contracts platform in the blockchain industry,
+    as measured by time-to-finality. Avalanche is blazingly fast, low cost, and ecofriendly.
+  slug: ava-labs
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 20
+  name: Hashgraph
+  website: https://www.hashgraph.com/
+  superpower: Hashgraph powers a digital future built on trust.
+  slug: hashgraph
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 21
+  name: ether.fi
+  website: https://www.ether.fi/
+  superpower: An unmatched work ethic with a laser focus on building decentralized products that billions of people can actually
+    use to make their lives better.
+  slug: ether-fi
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 22
+  name: Morpho
+  website: https://morpho.org/
+  superpower: A low-ego, ambitious team laser-focused on building open financial infrastructure that can benefit every person
+    globally.
   slug: morpho
-  main: https://morpho.org/
   careers: []
   ats: null
   priority: medium
@@ -174,9 +285,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Chiliz
+- rank: 23
+  name: Chiliz
+  website: https://www.chiliz.com/
+  superpower: Chiliz is where top talent advances the global sports blockchain ecosystem, connecting elite clubs with millions
+    of fans through industry- defining Fan Tokens™.
   slug: chiliz
-  main: https://www.chiliz.com/
   careers: []
   ats: null
   priority: medium
@@ -184,9 +298,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Mythicalgames
-  slug: mythicalgames
-  main: https://mythicalgames.com/
+- rank: 24
+  name: Mythical Games
+  website: https://mythicalgames.com/
+  superpower: Mythical Games is revolutionizing gaming by building a next- generation game technology studio focused on enabling
+    true player ownership of digital assets.
+  slug: mythical-games
   careers: []
   ats: null
   priority: medium
@@ -194,9 +311,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Gauntlet
+- rank: 25
+  name: Gauntlet
+  website: https://www.gauntlet.xyz/
+  superpower: Relentless focus in revealing the optimal path to protocol growth by applying brilliant quantitative optimisation
+    analysis and simulation to our rigorous research to understand D i’s most complex and novel economic problems.
   slug: gauntlet
-  main: https://www.gauntlet.xyz/
   careers: []
   ats: null
   priority: medium
@@ -204,9 +324,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Rampnetwor
-  slug: rampnetwor
-  main: https://rampnetwor
+- rank: 26
+  name: Nethermind
+  website: https://www.nethermind.io/
+  superpower: Nethermind empowers enterprises and developers worldwide to access and build on decentralised systems with market-leading
+    solutions.
+  slug: nethermind
   careers: []
   ats: null
   priority: medium
@@ -214,9 +337,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: problems
-  slug: problems
-  main: https://trustwallet.com/
+- rank: 27
+  name: Circle
+  website: https://www.circle.com/
+  superpower: Circlers are a core part of unlocking opportunities for people and businesses globally as we build a new internet
+    financial system.
+  slug: circle
   careers: []
   ats: null
   priority: medium
@@ -224,9 +350,60 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Polygon
-  slug: polygon
-  main: https://polygon.technology/
+- rank: 28
+  name: 0x
+  website: https://0x.org/
+  superpower: We are a globally-remote team of veteran crypto builders shaping the future of decentralized finance.
+  slug: 0x
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 29
+  name: Biconomy
+  website: https://www.biconomy.io/
+  superpower: With Biconomy, applications can reduce the number of steps in their user journey by almost 50%!
+  slug: biconomy
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 30
+  name: Ramp Network
+  website: https://rampnetwork.com/
+  superpower: The power to connect the world to crypto—safely, simply, and instantly.
+  slug: ramp-network
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 31
+  name: Trust Wallet
+  website: https://trustwallet.com/
+  superpower: We want to give everyone the freedom to truly own, by building the foundations for the future of the free web.
+  slug: trust-wallet
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 32
+  name: Polygon Labs
+  website: https://polygon.technology/
+  superpower: As a core developer of the Ag ayer, Polygon Labs unifies web3 with zero-knowledge tech in order to enable an
+    interoperable, infinitely scalable web of sovereign blockchains.
+  slug: polygon-labs
   careers: []
   ats: null
   priority: medium
@@ -234,9 +411,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: true
   protocol_slug: polygon
-- name: finance applications
-  slug: finance-applications
-  main: https://across.to/
+- rank: 33
+  name: Across Protocol
+  website: https://across.to/
+  superpower: Across Protocol has a values-driven culture that pairs fearless curiosity with uncompromising integrity to build
+    the best products and deliver what’s needed to move the industry forward.
+  slug: across-protocol
   careers: []
   ats: null
   priority: medium
@@ -244,9 +424,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: breakthroughs in technology and finance
-  slug: breakthroughs-in-technology-and-finance
-  main: https://eco.com/
+- rank: 34
+  name: Eco
+  website: https://eco.com/
+  superpower: The team at Eco expects better from our money, and we want you to as well. That's what drives us every day.
+  slug: eco
   careers: []
   ats: null
   priority: medium
@@ -254,9 +436,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Aragon
+- rank: 35
+  name: Aragon
+  website: https://www.aragon.org/
+  superpower: Aragon gives organizations the tools to build, govern, and accrue value effectively onchain.
   slug: aragon
-  main: https://www.aragon.org/
   careers: []
   ats: null
   priority: medium
@@ -264,9 +448,76 @@ employers:
   notes: ''
   overlaps_protocol_seeds: true
   protocol_slug: aragon
-- name: Alchemy
+- rank: 36
+  name: Solana
+  website: https://solana.com/
+  superpower: To unlock internet capital markets which are open, permissionless, and built for billions -- bringing the world
+    closer to a seamlessly scalable future by offering unmatched speed and frictionless user experience.
+  slug: solana
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: true
+  protocol_slug: solana
+- rank: 37
+  name: Injective Labs
+  website: https://injectivelabs.org/
+  superpower: Injective Labs is a research and development company focused on creating Web3 infrastructure and finance solutions.
+    It is one of the core contributors to Injective, a layer one blockchain optimized for building Web3 finance applications.
+  slug: injective-labs
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 38
+  name: WeatherXM
+  website: https://weatherxm.com/
+  superpower: We are fixing the broken weather industry by taking bold, innovative steps that haven’Tbeen tried before, following
+    the approach of open collaboration and decentralisation, which have already led to incredible breakthroughs in technology
+    and finance.
+  slug: weatherxm
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 39
+  name: Moonpay
+  website: https://www.moonpay.com/
+  superpower: The global leader in crypto payments, making crypto ownership easy and accessible for millions since 2019.
+  slug: moonpay
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 40
+  name: Affinidi
+  website: https://www.affinidi.com/
+  superpower: We’re building the Internet of Trust powered by innovative identity solutions built by a diverse global team
+    that thrives on complex challenges, collaborative learning, and fearless iteration.
+  slug: affinidi
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 41
+  name: Alchemy
+  website: https://www.alchemy.com/
+  superpower: Alchemyiscreatingtheplatformlayerneededtoempowerdevelopersto buildgreatapplicationsthattapintotheblockchainrevolution.
   slug: alchemy
-  main: https://www.alchemy.com/
   careers: []
   ats: null
   priority: medium
@@ -274,9 +525,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: S                f
-  slug: s-f
-  main: https://reown.com/
+- rank: 42
+  name: Reown
+  website: https://reown.com/
+  superpower: Walle onnectisanopensourceprotocolforconnectingdecentralised applicationstomobilewalletswit Rcodescanningordeeplinking.
+  slug: reown
   careers: []
   ats: null
   priority: medium
@@ -284,9 +537,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Immutable
-  slug: immutable
-  main: https://www.immutable.com/
+- rank: 43
+  name: CategoryLabs
+  website: https://www.category.xyz/
+  superpower: Webuildhigh-performancedecentralizedsystems.
+  slug: categorylabs
   careers: []
   ats: null
   priority: medium
@@ -294,19 +549,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Category
-  slug: category
-  main: https://www.category.xyz/
-  careers: []
-  ats: null
-  priority: medium
-  ops_relevance: unknown
-  notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Flow
+- rank: 44
+  name: Flow
+  website: https://flow.com/
+  superpower: Flowistheleadingconsumernetworktrustedbymillionsofusersandglobal institutionslik aypal,NBA,an isney.
   slug: flow
-  main: https://flow.com/
   careers: []
   ats: null
   priority: medium
@@ -314,9 +561,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: S    v
-  slug: s-v
-  main: https://www.0xprotocol.org/
+- rank: 45
+  name: 0xProtocol
+  website: https://www.0xprotocol.org/
+  superpower: 0 rotocolisthetrustedopensourcesettlementlayerforthe permissionlessglobalexchangeofvalue.
+  slug: 0xprotocol
   careers: []
   ats: null
   priority: medium
@@ -324,9 +573,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: D    pp
-  slug: d-pp
-  main: https://1inch.com/
+- rank: 46
+  name: 1inch
+  website: https://1inch.com/
+  superpower: Swapcryptotokensatthebestrates.
+  slug: 1inch
   careers: []
   ats: null
   priority: medium
@@ -334,9 +585,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 47. Mantle
-  slug: 47-mantle
-  main: https://www.mantle.xyz/
+- rank: 47
+  name: Mantle
+  website: https://www.mantle.xyz/
+  superpower: Mantle isafast-growing,DAO-ledweb3ecosystemwhosemissionisthe massadoptionofdecentralizedandtoken-governedtechnologie
+    antl cosystem comprise antl etwork,a thereumlayer2;Mantl overnance,Mantl reasuryand THProtocol.
+  slug: mantle
   careers: []
   ats: null
   priority: medium
@@ -344,9 +598,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 47. Mantle
-  slug: 47-mantle
-  main: https://www.taxbit.com/
+- rank: 48
+  name: Paxos
+  website: https://www.paxos.com/
+  superpower: Paxosisaregulatedblockchaininfrastructurecompanybuilding transparentandtransformativefinancialsolutions,includingtheissuanceofstablecoins
+    lik SDPandthefacilitationofinstantsettlementforsecurities.
+  slug: paxos
   careers: []
   ats: null
   priority: medium
@@ -354,9 +611,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: manual work improving operational efficiency and more
-  slug: manual-work-improving-operational-efficiency-and-more
-  main: https://www.paxos.com/
+- rank: 49
+  name: Hedera
+  website: https://hedera.com/
+  superpower: Astheworld’sonlypublicnetworkgovernedbyknowninstitutions,Hederais thetrustedplatformforbuildingfast,secure,andcompliantdecentralizedapplications.
+  slug: hedera
   careers: []
   ats: null
   priority: medium
@@ -364,19 +623,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: G                        k
-  slug: g-k
-  main: https://hedera.com/
-  careers: []
-  ats: null
-  priority: medium
-  ops_relevance: unknown
-  notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Ton
-  slug: ton
-  main: https://ton.foundation/en
+- rank: 50
+  name: TONFoundation
+  website: https://ton.foundation/en
+  superpower: The TON Foundation empowers TON projects without controlling TON technology and is one of many network contributors.
+  slug: tonfoundation
   careers: []
   ats: null
   priority: medium
@@ -384,9 +635,137 @@ employers:
   notes: ''
   overlaps_protocol_seeds: true
   protocol_slug: ton
-- name: Cosmos
+- rank: 51
+  name: Binance
+  website: https://www.binance.com/
+  superpower: Binanceisthelargestcryptocurrencyexchangebytradingvolume,serving 185M+ usersacross180+ countries.
+  slug: binance
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 52
+  name: Summer.fi
+  website: https://summer.fi/
+  superpower: Automate xposuret i’ ighes ualit ield.
+  slug: summer-fi
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 53
+  name: Immutable
+  website: https://www.immutable.com/
+  superpower: Immutableisagloballeaderingamingonamissiontobringdigital ownershiptoeveryplayerbymakingitsafeandeasytobuildgreatweb3games.
+  slug: immutable
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 54
+  name: Radix
+  website: https://www.radixdlt.com/
+  superpower: Radi L Tisalayer-1 protocolwithamissiontocreateradicallybetteruser & developerexperiencesneededforeveryonetoconfidentlyus
+    eb3& D i.
+  slug: radix
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 55
+  name: Solv Protocol
+  website: https://solv.finance/
+  superpower: Solvunite i,RWA-Fi,Tra i,an iintoasingleprogrammable infrastructuredesignedtomovetrillions,unlockingtokenize
+    TFs,real-worldcredit,and institutional-grad itcoinyieldstrategies.
+  slug: solv-protocol
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 56
+  name: DapperLabs
+  website: https://www.dapperlabs.com/
+  superpower: Wearebuildingnewbusinessmodelsforcreators,brands,andcommunities ontheinternet.
+  slug: dapperlabs
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 57
+  name: Taxbit
+  website: https://www.taxbit.com/
+  superpower: Taxbitisthepremierend-to-endcomplianceandreportingsolutionforthe Digita conomy.Theirsingl PI-poweredplatformfortaxandaccountingreduces
+    manualworkimprovingoperationalefficiencyandmore.
+  slug: taxbit
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 58
+  name: Dune
+  website: https://dune.com/home
+  superpower: Duneprovidesapowerfulanalyticsplatformforqueryingandvisualizing blockchaindata,anditscommunity-drivenreportshavebeenkeytotrackingthegrowth
+    oftheblockchainecosystem.
+  slug: dune
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 59
+  name: GolemNetwork
+  website: https://www.golem.network/
+  superpower: Gole etworkisadecentralizedplatformthattransformsthewaywe accessandsharecomputationalresources.
+  slug: golemnetwork
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 60
+  name: OffchainLabs
+  website: https://www.offchainlabs.com/
+  superpower: Offchai absispioneeringscalableblockchainsolutionsthatpush decentralizationboundaries,transforminginnovativeideasintotrusted,industryleading
+    products.
+  slug: offchainlabs
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 61
+  name: Cosmos
+  website: https://cosmos.network/
+  superpower: Themostperformant,customizable,andsecureblockchainstack.Powering 200+blockchainsinfinance,government,globalenterprise,an
+    eb3.
   slug: cosmos
-  main: https://cosmos.network/
   careers: []
   ats: null
   priority: medium
@@ -394,9 +773,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: S                           L       1               M
-  slug: s-l-1-m
-  main: https://cow.fi/
+- rank: 62
+  name: CoWProtocol
+  website: https://cow.fi/
+  superpower: C Protocolhasthelargestsolvercompetitionandthemostadvanced developerframework-soyoucanbuildan i-relatedactionyoucanimagine.
+  slug: cowprotocol
   careers: []
   ats: null
   priority: medium
@@ -404,9 +785,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Aevo
+- rank: 63
+  name: Aevo
+  website: https://www.aevo.xyz/
+  superpower: Aevosupportsoptions,perpetualfutures,andmanyotherproductswithina singlemarginaccount.Combiningoff-chainmatchingwithon-chainsettlement,the
+    platformallowstraderstohaveunparalleledperformanceandlatencywhileinheritingthe securityo thereum.
   slug: aevo
-  main: https://www.aevo.xyz/
   careers: []
   ats: null
   priority: medium
@@ -414,9 +798,36 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 7 3. Berachain
-  slug: 7-3-berachain
-  main: https://www.berachain.com/
+- rank: 64
+  name: EigenLayer
+  website: https://www.eigencloud.xyz/
+  superpower: Eige ayerprovidesadeveloperplatformmakingit10x easiertobuildand deployarbitrarydecentralizedservices.
+  slug: eigenlayer
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: true
+  protocol_slug: eigenlayer
+- rank: 65
+  name: Uniswap Labs
+  website: https://app.uniswap.org/
+  superpower: The Uniswap protocol is the largest onchain marketplace, with billions of dollars in weekly volume.
+  slug: uniswap-labs
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: true
+  protocol_slug: uniswap
+- rank: 66
+  name: Rain
+  website: https://www.rain.xyz/
+  superpower: Rain’sinfrastructurepowersamorefluidfinancialsystem.Ourend-to-end platformletsyouunlockthebenefitsofstablecoin-backedcardsandpaymentswith
+    speed,flexibility,andglobalreach.
+  slug: rain
   careers: []
   ats: null
   priority: medium
@@ -424,9 +835,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Eigencloud
-  slug: eigencloud
-  main: https://www.eigencloud.xyz/
+- rank: 67
+  name: Raydium
+  website: https://raydium.io/swap/
+  superpower: Raydiumisanautomatedmarketmaker(AMM) builtonth olana blockchainwhichenableslightning-fasttrades,permissionlesspoolcreation,andnew
+    featuresforearningyield.
+  slug: raydium
   careers: []
   ats: null
   priority: medium
@@ -434,9 +848,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: nosis
-  slug: nosis
-  main: https://app.uniswap.org/
+- rank: 68
+  name: Aptos
+  website: https://aptosnetwork.com/
+  superpower: Apto absisfocusedoncreatingproductsandapplicationsforth ptos blockchainthatredefineitsuserexperienceandacceleratethefutureo
+    eb3.
+  slug: aptos
   careers: []
   ats: null
   priority: medium
@@ -444,9 +861,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: nosis
-  slug: nosis
-  main: https://www.gnosis.io/
+- rank: 69
+  name: Gelato
+  website: https://gelato.cloud/
+  superpower: Smartwalletandrollupinfrainoneplace.Launchgaslessonboarding, smartwallets,andcustomrollupsfromon DK.
+  slug: gelato
   careers: []
   ats: null
   priority: medium
@@ -454,9 +873,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: chains
-  slug: chains
-  main: https://www.rain.xyz/
+- rank: 70
+  name: OndoFinance
+  website: https://ondo.finance/
+  superpower: Ourmissionistoprovideinstitutional-grade,blockchain-enabled investmentproductsandservices.
+  slug: ondofinance
   careers: []
   ats: null
   priority: medium
@@ -464,9 +885,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 6 . ay i m
-  slug: 6-ay-i-m
-  main: https://raydium.io/swap/
+- rank: 71
+  name: Sui
+  website: https://sui.io/
+  superpower: Suiisahigh-speed,low-fe ayer1 builtwit ove,makingsecuredigital assetownershipan eb3appsfeelaseasya eb2.
+  slug: sui
   careers: []
   ats: null
   priority: medium
@@ -474,9 +897,24 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 8       p
-  slug: 8-p
-  main: https://www.kucoin.com/
+- rank: 72
+  name: Coinbase
+  website: https://www.coinbase.com/
+  superpower: Coinbaseisoneofthelargestcryptocurrencyexchangesintheworld, knownforitsuser-friendlyplatformforbuying,selling,transferringandstoring
+    cryptocurrency.
+  slug: coinbase
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: true
+  protocol_slug: base
+- rank: 73
+  name: Berachain
+  website: https://www.berachain.com/
+  superpower: Berachainisa VM-identica ayer1 poweredb roofo iquidity, designedtoalignnetworksecuritywit iliquidityincentives.
+  slug: berachain
   careers: []
   ats: null
   priority: medium
@@ -484,9 +922,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 8       p
-  slug: 8-p
-  main: https://aptosnetwork.com/
+- rank: 74
+  name: BitGo
+  website: https://www.bitgo.com/
+  superpower: Bi oisaleadingproviderofinstitutional-gradecustody,tradingand financialservicesfordigitalassets,securingbillionsinassetsforitsclients.
+  slug: bitgo
   careers: []
   ats: null
   priority: medium
@@ -494,9 +934,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 79              d
-  slug: 79-d
-  main: https://world.org/
+- rank: 75
+  name: Gnosis
+  website: https://www.gnosis.io/
+  superpower: Gnosisisacollectiveofalignedprojectsrevolutionizingpayments infrastructuretomakedecentralizedfinancialtoolsaccessibleandusableforall.
+  slug: gnosis
   careers: []
   ats: null
   priority: medium
@@ -504,9 +946,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: 79              d
-  slug: 79-d
-  main: https://gelato.cloud/
+- rank: 76
+  name: Blockchain.com
+  website: https://www.blockchain.com/
+  superpower: Blockchain.comisaworld-leadingcryptocurrencyfinancialservices companyservingpeople,projects,protocolsandinstitutionssince2011.
+  slug: blockchain-com
   careers: []
   ats: null
   priority: medium
@@ -514,9 +958,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: smart wallets, and custom rollups from one DK
-  slug: smart-wallets-and-custom-rollups-from-one-dk
-  main: https://ondo.finance/
+- rank: 77
+  name: Ledger
+  website: https://www.ledger.com/
+  superpower: Ledgerdevelopsavarietyofproductsandservicestoenableindividuals andcompaniestosecurelybuy,store,swapandmanagetheirdigitalassets.
+  slug: ledger
   careers: []
   ats: null
   priority: medium
@@ -524,9 +970,11 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: R                      S        L           1
-  slug: r-s-l-1
-  main: https://starkware.co/
+- rank: 78
+  name: Kucoin
+  website: https://www.kucoin.com/
+  superpower: Kucoinisaglobalcryptocurrencyexchangeofferingawidevarietyof tradingservices,includingspot,margin,andfuturestrading.
+  slug: kucoin
   careers: []
   ats: null
   priority: medium
@@ -534,9 +982,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Fuel
-  slug: fuel
-  main: https://fuel.network/
+- rank: 79
+  name: Worldcoin
+  website: https://world.org/
+  superpower: Worldcoinaimstobecometheworldslargestprivacy-preservinghuman identityandfinancialnetwork,givingownershiptoeveryoneo
+    arth.
+  slug: worldcoin
   careers: []
   ats: null
   priority: medium
@@ -544,9 +995,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Protocol
-  slug: protocol
-  main: https://www.protocol.ai/
+- rank: 80
+  name: NEAR
+  website: https://www.near.org/
+  superpower: NEAR isasharde roof-of-Stak ayer1 usin ightshadeandchain abstractiontodeliverfast,low-costapps—nowpositioningitselfasablockchainfo
+    I.
+  slug: near
   careers: []
   ats: null
   priority: medium
@@ -554,9 +1008,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Euler
-  slug: euler
-  main: https://www.euler.finance/
+- rank: 81
+  name: Starkware
+  website: https://starkware.co/
+  superpower: Starkware builds cryptographic proofs to scale blockchains, providing zero-knowledge rollups that enhance Ethereum’s
+    scalability and privacy.
+  slug: starkware
   careers: []
   ats: null
   priority: medium
@@ -564,9 +1021,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Thirdweb
-  slug: thirdweb
-  main: https://thirdweb.com/
+- rank: 82
+  name: Fuel Labs
+  website: https://fuel.network/
+  superpower: Fuel is a high-performance modular execution layer for Ethereum, powered by the Fue M and parallel transaction
+    execution, giving developers fast, low-cost apps with the Sway toolchain.
+  slug: fuel-labs
   careers: []
   ats: null
   priority: medium
@@ -574,9 +1034,13 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Maple
-  slug: maple
-  main: https://maple.finance/
+- rank: 83
+  name: Protocol Labs
+  website: https://www.protocol.ai/
+  superpower: Protocol Labs is an open-source software research and development company, founded in 2014. It is best known
+    for creating the Inte lanetary File System, a peer-to-peer decentralized web protocol, and Filecoin, a decentralized file
+    storage network.
+  slug: protocol-labs
   careers: []
   ats: null
   priority: medium
@@ -584,9 +1048,38 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Ethena
+- rank: 84
+  name: Third Web
+  website: https://thirdweb.com/
+  superpower: Third Web is a full-stack, open-source web3 development platform providing frontend, backend and onchain tools
+    to build complete web3 apps on every EVM chain.
+  slug: third-web
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 85
+  name: Maple Finance
+  website: https://maple.finance/
+  superpower: Maple Finance is an onchain credit and asset management platform connecting capital providers with institutional
+    borrowers, offering curated, transparent yield.
+  slug: maple-finance
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 86
+  name: Ethena
+  website: https://ethena.fi/
+  superpower: Ethena is an Ethereum-based synthetic dollar protocol that issues USDe (and SDe), using delta-hedged crypto
+    collateral to deliver a scalable, crypto-native dollar and onchain savings yield.
   slug: ethena
-  main: https://ethena.fi/
   careers: []
   ats: null
   priority: medium
@@ -594,9 +1087,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Synthetix
+- rank: 87
+  name: Synthetix
+  website: https://www.synthetix.io/
+  superpower: Synthetix is a decentralised derivatives liquidity protocol powering synthetic assets and now CEX-like perps
+    with on-chain custody on Ethereum.
   slug: synthetix
-  main: https://www.synthetix.io/
   careers: []
   ats: null
   priority: medium
@@ -604,19 +1100,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Kamino
-  slug: kamino
-  main: https://kamino.com/
-  careers: []
-  ats: null
-  priority: medium
-  ops_relevance: unknown
-  notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: Jito
+- rank: 88
+  name: Jito
+  website: https://www.jito.network/
+  superpower: Jito is Solana’s MEV-optimized liquid staking and infrastructure suite, best known for Jit OL and its Block
+    Engine, designed to boost staking yield and improve network efficiency.
   slug: jito
-  main: https://www.jito.network/
   careers: []
   ats: null
   priority: medium
@@ -624,9 +1113,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Puffer
+- rank: 89
+  name: Puffer
+  website: https://www.puffer.fi/
+  superpower: Puffer is an Ethereum-native liquid restaking protocol that mints pu TH so users can earn ETH staking plus Eige
+    ayer restaking rewards, alongside the Un i based-rollup stack.
   slug: puffer
-  main: https://www.puffer.fi/
   careers: []
   ats: null
   priority: medium
@@ -634,19 +1126,12 @@ employers:
   notes: ''
   overlaps_protocol_seeds: false
   protocol_slug: null
-- name: Defisaver
-  slug: defisaver
-  main: https://defisaver.com/
-  careers: []
-  ats: null
-  priority: medium
-  ops_relevance: unknown
-  notes: ''
-  overlaps_protocol_seeds: false
-  protocol_slug: null
-- name: 90 C . ompound
-  slug: 90-c-ompound
-  main: https://compound.finance/
+- rank: 90
+  name: Compound
+  website: https://compound.finance/
+  superpower: Compound is a decentralized, algorithmic money market where users supply crypto to earn interest and borrow
+    against collateral, with Compound III streamlining markets around a single base asset.
+  slug: compound
   careers: []
   ats: null
   priority: medium
@@ -654,9 +1139,125 @@ employers:
   notes: ''
   overlaps_protocol_seeds: true
   protocol_slug: compound
-- name: 100. Hashflow
-  slug: 100-hashflow
-  main: https://www.hashflow.com/
+- rank: 91
+  name: Goldfinch
+  website: https://www.goldfinch.finance/
+  superpower: Goldfinch is an onchain private credit protocol bringing real-world and institutional lending to crypto.
+  slug: goldfinch
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 92
+  name: Avail
+  website: https://availproject.org/
+  superpower: Shaping an era of connectivity, where value flows freely and access is unlimited.
+  slug: avail
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 93
+  name: Shardeum
+  website: https://shardeum.org/
+  superpower: Shardeum is a fast, low-cost, EVM-compatible Layer 1 blockchain built for India, empowering millions to transact
+    and thrive in a secure on-chain ecosystem.
+  slug: shardeum
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 94
+  name: Euler
+  website: https://www.euler.finance/
+  superpower: Euler is a modular lending platform that enables users to lend, borrow and build without limits.
+  slug: euler
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 95
+  name: Zilliqa
+  website: https://zilliqa.com/
+  superpower: Zilliqa is a high-performance smart contract platform designed for decentralized applications, known for its
+    use of sharding to improve scalability.
+  slug: zilliqa
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 96
+  name: OKX
+  website: https://www.okx.com/
+  superpower: OKX is a global cryptocurrency spot and derivatives exchange and the second biggest crypto exchange by trading
+    volume, serving over 50 million people globally.
+  slug: okx
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 97
+  name: Kamino Finance
+  website: https://kamino.com/
+  superpower: Kamino is an open source credit and liquidity protocol built on Solana.
+  slug: kamino-finance
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 98
+  name: Zama
+  website: https://www.zama.org/
+  superpower: Zama is an open source cryptography company that builds state-of-the-art Fully Homomorphic Encryption (FHE)
+    solutions for blockchain and AI.
+  slug: zama
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 99
+  name: DeFi Saver
+  website: https://defisaver.com/
+  superpower: D i Saver is a non-custodial D i management tool offering advanced features and functionalities for managing
+    your positions and crypto assets in various D i protocols.
+  slug: defi-saver
+  careers: []
+  ats: null
+  priority: medium
+  ops_relevance: unknown
+  notes: ''
+  overlaps_protocol_seeds: false
+  protocol_slug: null
+- rank: 100
+  name: Hashflow
+  website: https://www.hashflow.com/
+  superpower: Tap into the largest RFQ network in crypto—tight spreads, zero slippage, and top-tier market makers at your
+    fingertips.
+  slug: hashflow
   careers: []
   ats: null
   priority: medium
