@@ -1,7 +1,7 @@
 meta:
   source: talent_titans_top100.yaml
   generated_at: '2026-07-30'
-  total: 4
+  total: 3
   concurrency: 2
 employers:
 - rank: 1
@@ -9,53 +9,173 @@ employers:
   website: https://aztec.network/
   already_in_protocol_seeds: false
   careers_candidates:
-  - url: https://aztec.network/
+  - url: https://job-boards.greenhouse.io/aztec
+    status: 404
+    type: ats
+    ats: greenhouse
+    board_slug: aztec
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.lever.co/aztec
+    status: 404
+    type: ats
+    ats: lever
+    board_slug: aztec
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.workable.com/aztec
+    status: 404
+    type: ats
+    ats: workable
+    board_slug: aztec
+    has_job_signals: false
+    confidence: low
+  - url: https://job-boards.greenhouse.io/aztec-labs
+    status: 404
+    type: ats
+    ats: greenhouse
+    board_slug: aztec-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.lever.co/aztec-labs
+    status: 404
+    type: ats
+    ats: lever
+    board_slug: aztec-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.workable.com/aztec-labs
+    status: 404
+    type: ats
+    ats: workable
+    board_slug: aztec-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.ashbyhq.com/aztec
     status: 200
-    type: careers_page
-    ats: null
-    board_slug: null
+    type: ats
+    ats: ashby
+    board_slug: aztec
     has_job_signals: true
-    confidence: medium
+    confidence: high
+  - url: https://apply.workable.com/aztec
+    status: 200
+    type: ats
+    ats: workable
+    board_slug: aztec
+    has_job_signals: true
+    confidence: high
   best_guess:
-    ats: null
-    board_slug: null
-    careers_url: https://aztec.network/
-    confidence: medium
-- rank: 2
-  name: Hacken
-  website: https://hacken.io/
-  already_in_protocol_seeds: false
-  careers_candidates: []
-  best_guess: null
+    ats: ashby
+    board_slug: aztec
+    careers_url: https://jobs.ashbyhq.com/aztec
+    confidence: high
 - rank: 3
   name: Aave Labs
   website: https://aave.com/
   already_in_protocol_seeds: true
   careers_candidates:
-  - url: https://aave.com/
+  - url: https://job-boards.greenhouse.io/aave-labs
+    status: 404
+    type: ats
+    ats: greenhouse
+    board_slug: aave-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.lever.co/aave-labs
+    status: 404
+    type: ats
+    ats: lever
+    board_slug: aave-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.workable.com/aave-labs
+    status: 404
+    type: ats
+    ats: workable
+    board_slug: aave-labs
+    has_job_signals: false
+    confidence: low
+  - url: https://job-boards.greenhouse.io/aave
+    status: 404
+    type: ats
+    ats: greenhouse
+    board_slug: aave
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.lever.co/aave
+    status: 404
+    type: ats
+    ats: lever
+    board_slug: aave
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.workable.com/aave
+    status: 404
+    type: ats
+    ats: workable
+    board_slug: aave
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.ashbyhq.com/aave-labs
     status: 200
-    type: careers_page
-    ats: null
-    board_slug: null
+    type: ats
+    ats: ashby
+    board_slug: aave-labs
     has_job_signals: true
-    confidence: medium
-  - url: https://aave.com/careers
+    confidence: high
+  - url: https://apply.workable.com/oops
     status: 200
-    type: careers_page
-    ats: null
-    board_slug: null
+    type: ats
+    ats: workable
+    board_slug: oops
     has_job_signals: true
-    confidence: medium
+    confidence: high
   best_guess:
-    ats: null
-    board_slug: null
-    careers_url: https://aave.com/
-    confidence: medium
+    ats: ashby
+    board_slug: aave-labs
+    careers_url: https://jobs.ashbyhq.com/aave-labs
+    confidence: high
 - rank: 4
   name: Phantom
   website: https://phantom.com/
   already_in_protocol_seeds: false
   careers_candidates:
+  - url: https://job-boards.greenhouse.io/phantom
+    status: 404
+    type: ats
+    ats: greenhouse
+    board_slug: phantom
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.lever.co/phantom
+    status: 404
+    type: ats
+    ats: lever
+    board_slug: phantom
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.workable.com/phantom
+    status: 404
+    type: ats
+    ats: workable
+    board_slug: phantom
+    has_job_signals: false
+    confidence: low
+  - url: https://jobs.ashbyhq.com/phantom
+    status: 200
+    type: ats
+    ats: ashby
+    board_slug: phantom
+    has_job_signals: true
+    confidence: high
+  - url: https://apply.workable.com/phantom
+    status: 200
+    type: ats
+    ats: workable
+    board_slug: phantom
+    has_job_signals: true
+    confidence: high
   - url: https://phantom.com/
     status: 200
     type: careers_page
@@ -70,15 +190,8 @@ employers:
     board_slug: null
     has_job_signals: true
     confidence: medium
-  - url: https://phantom.com/careers
-    status: 200
-    type: careers_page
-    ats: null
-    board_slug: null
-    has_job_signals: true
-    confidence: medium
   best_guess:
-    ats: null
-    board_slug: null
-    careers_url: https://phantom.com/
-    confidence: medium
+    ats: ashby
+    board_slug: phantom
+    careers_url: https://jobs.ashbyhq.com/phantom
+    confidence: high
