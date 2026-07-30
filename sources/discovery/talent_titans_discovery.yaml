@@ -1,0 +1,113 @@
+meta:
+  source: talent_titans_top100.yaml
+  generated_at: '2026-07-30'
+  total: 3
+  concurrency: 1
+employers:
+- rank: 1
+  name: Aztec Labs
+  website: https://aztec.network/
+  already_in_protocol_seeds: false
+  careers_candidates:
+  - url: https://jobs.ashbyhq.com/aztec
+    status: 200
+    type: ats
+    ats: ashby
+    board_slug: aztec
+    has_job_signals: false
+    confidence: medium
+  - url: https://apply.workable.com/aztec
+    status: 200
+    type: ats
+    ats: workable
+    board_slug: aztec
+    has_job_signals: true
+    confidence: high
+  - url: https://aztec.network/
+    status: 200
+    type: careers_page
+    ats: null
+    board_slug: null
+    has_job_signals: true
+    confidence: medium
+  best_guess:
+    ats: ashby
+    board_slug: aztec
+    careers_url: https://jobs.ashbyhq.com/aztec
+    confidence: high
+- rank: 3
+  name: Aave Labs
+  website: https://aave.com/
+  already_in_protocol_seeds: false
+  careers_candidates:
+  - url: https://jobs.ashbyhq.com/aave
+    status: 200
+    type: ats
+    ats: ashby
+    board_slug: aave
+    has_job_signals: false
+    confidence: medium
+  - url: https://apply.workable.com/oops
+    status: 200
+    type: ats
+    ats: workable
+    board_slug: oops
+    has_job_signals: true
+    confidence: high
+  - url: https://aave.com/
+    status: 200
+    type: careers_page
+    ats: null
+    board_slug: null
+    has_job_signals: true
+    confidence: medium
+  - url: https://aave.com/careers
+    status: 200
+    type: careers_page
+    ats: null
+    board_slug: null
+    has_job_signals: true
+    confidence: medium
+  best_guess:
+    ats: ashby
+    board_slug: aave
+    careers_url: https://jobs.ashbyhq.com/aave
+    confidence: high
+- rank: 4
+  name: Phantom
+  website: https://phantom.com/
+  already_in_protocol_seeds: false
+  careers_candidates:
+  - url: https://jobs.ashbyhq.com/phantom
+    status: 200
+    type: ats
+    ats: ashby
+    board_slug: phantom
+    has_job_signals: false
+    confidence: medium
+  - url: https://apply.workable.com/phantom
+    status: 200
+    type: ats
+    ats: workable
+    board_slug: phantom
+    has_job_signals: true
+    confidence: high
+  - url: https://phantom.com/
+    status: 200
+    type: careers_page
+    ats: null
+    board_slug: null
+    has_job_signals: true
+    confidence: medium
+  - url: https://phantom.com/careers
+    status: 200
+    type: careers_page
+    ats: null
+    board_slug: null
+    has_job_signals: true
+    confidence: medium
+  best_guess:
+    ats: ashby
+    board_slug: phantom
+    careers_url: https://jobs.ashbyhq.com/phantom
+    confidence: high
