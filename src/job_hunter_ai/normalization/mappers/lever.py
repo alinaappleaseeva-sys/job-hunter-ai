@@ -60,6 +60,7 @@ class LeverMapper(BaseMapper):
             workplace_type=job.get("workplaceType"),
             categories_remote=categories.get("remote"),
             location_raw=location_raw,
+            description=description_text,
         )
 
         employment_raw = categories.get("commitment")
