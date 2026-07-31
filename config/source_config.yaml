@@ -1,20 +1,78 @@
 ats:
   greenhouse:
     boards:
+    # Core / known good
     - stripe
     - coinbase
     - a16z
+    # Talent Titans Discovery — high confidence only (Phase 1.2)
+    - messari   # Messari (rank 10)
+    - consensys   # Consensys (rank 11)
+    - figment   # Figment (rank 13)
+    - sei   # Sei Network (rank 16)
+    - mythicalgames   # Mythical Games (rank 24)
+    - rampnetwork   # Ramp Network (rank 30)
+    - ecoinc   # Eco (rank 34)
+    - affinidi   # Affinidi (rank 40)
+    - summer   # Summer.fi (rank 52)
+    - taxbit   # Taxbit (rank 57)
+    - ondofinance   # OndoFinance (rank 70)
+    - bitgo   # BitGo (rank 74)
+    - blockchain   # Blockchain.com (rank 76)
+    - okx   # OKX (rank 96)
     limit_per_board: 10
+
   lever:
     sites:
+    # Core / known good
     - stripe
     - coinbase
+    # Talent Titans Discovery — high confidence only (Phase 1.2)
+    - gauntlet   # Gauntlet (rank 25)
+    - moonpay   # Moonpay (rank 39)
+    - 1inch   # 1inch (rank 46)
+    - immutable   # Immutable (rank 53)
+    - offchainlabs   # OffchainLabs (rank 60)
+    - ethena   # Ethena (rank 86)
+    - jito   # Jito (rank 88)
     limit_per_site: 8
+
   ashby:
     boards:
+    # Core / known good
     - stripe
     - coinbase
+    # Talent Titans Discovery — high confidence only (Phase 1.2)
+    - aztec-labs   # Aztec Labs (rank 1)
+    - phantom   # Phantom (rank 4)
+    - tenderly   # Tenderly (rank 5)
+    - oplabs   # OP Labs PBC (rank 8)
+    - kraken   # Kraken (rank 9)
+    - parity   # Parity Technologies (rank 14)
+    - mystenlabs   # Mysten Labs (rank 15)
+    - ava-labs   # Ava Labs (rank 19)
+    - hashgraph   # Hashgraph (rank 20)
+    - morpho   # Morpho (rank 22)
+    - nethermind   # Nethermind (rank 26)
+    - 0x   # 0x (rank 28)
+    - biconomy   # Biconomy (rank 29)
+    - trust-wallet   # Trust Wallet (rank 31)
+    - polygon-labs   # Polygon Labs (rank 32)
+    - injective-labs   # Injective Labs (rank 37)
+    - alchemy   # Alchemy (rank 41)
+    - mantle   # Mantle (rank 47)
+    - paxos   # Paxos (rank 48)
+    - binance   # Binance (rank 51)
+    - dune   # Dune (rank 58)
+    - uniswap   # Uniswap Labs (rank 65)
+    - rain   # Rain (rank 66)
+    - gelato   # Gelato (rank 69)
+    - ledger   # Ledger (rank 77)
+    - protocol   # Protocol Labs (rank 83)
+    - maple   # Maple Finance (rank 85)
+    - compound   # Compound (rank 90)
     limit_per_board: 8
+
 telegram:
   channels:
   - cryptohiring_1
@@ -37,8 +95,7 @@ success_metrics:
   - program_management
 recency:
   hard_max_age_days: 40
-  comment: Jobs older than this are dropped before ranking. Part of recency filter
-    feature.
+  comment: Jobs older than this are dropped before ranking. Part of recency filter feature.
 web3career:
   paths:
   - operations-jobs
