@@ -247,7 +247,11 @@ def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
 
             confidence = "low"
             if is_real_ats and signals:
-                confidence = "high"
+                if ats_info and ats_info.get("ats") == "workable":
+                    # Workable slug probes are very noisy — never trust as high from direct probe
+                    confidence = "medium"
+                else:
+                    confidence = "high"
             elif is_real_ats:
                 confidence = "medium"
             elif status == 200 and signals:
