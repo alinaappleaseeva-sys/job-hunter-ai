@@ -61,6 +61,35 @@ JOB_SIGNAL_WORDS = [
     "join", "team", "work with us",
 ]
 
+# Slugs that produce too many false-positive 200s on probes (Workable especially).
+# Filtered at generation time to avoid noisy requests.
+BLACKLISTED_SLUGS: set[str] = {
+    "oops",
+    "aztec",
+    "generic",
+    "test",
+    "demo",
+    "example",
+    "placeholder",
+    "sample",
+    "acme",
+    "company",
+    "yourcompany",
+    "mycompany",
+    "careers",
+    "jobs",
+    "apply",
+    "hiring",
+    "team",
+    "join",
+    "open",
+    "roles",
+    "positions",
+    "talent",
+    "hr",
+    "recruit",
+}
+
 
 def load_talent_titans() -> List[Dict[str, Any]]:
     with open(TALENT_TITANS_PATH) as f:
@@ -133,18 +162,25 @@ def generate_candidate_slugs(name: str, website: str) -> List[str]:
                         slugs.add(root[:-len(suf)])
         except Exception:
             pass
-    return list(dict.fromkeys([s for s in slugs if s]))
+    candidates = list(dict.fromkeys([s for s in slugs if s and s not in BLACKLISTED_SLUGS]))
+    return candidates
 
 def probe_known_ats(slugs: List[str]) -> List[str]:
-    """Direct ATS slug probes - highest ROI."""
+    """Direct ATS slug probes using API endpoints for Ashby/Greenhouse/Lever.
+
+    This gives real board existence (200 + structure) instead of noisy HTML 200s.
+    Workable removed entirely from slug-probe (too many oops/aztec-style fakes);
+    real Workable boards are still found via link harvest if they exist.
+    """
     probes = []
     for s in slugs:
-        probes.append(f"https://jobs.ashbyhq.com/{s}")
-        probes.append(f"https://job-boards.greenhouse.io/{s}")
-        probes.append(f"https://boards.greenhouse.io/{s}")
-        probes.append(f"https://jobs.lever.co/{s}")
-        probes.append(f"https://apply.workable.com/{s}")
-        probes.append(f"https://jobs.workable.com/{s}")
+        if not s or s in BLACKLISTED_SLUGS:
+            continue
+        # API probes for real validation (instead of HTML 200)
+        probes.append(f"https://api.ashbyhq.com/posting-api/job-board/{s}")
+        probes.append(f"https://boards-api.greenhouse.io/v1/boards/{s}/jobs?content=true")
+        probes.append(f"https://api.lever.co/v0/postings/{s}?mode=json")
+        # NO workable - removed per quality fix
     return probes
 
 def extract_ats_links(html: str, base_url: str) -> List[str]:
@@ -193,6 +229,52 @@ def detect_ats(url: str) -> Optional[Dict[str, str]]:
     return None
 
 
+def detect_ats_api(url: str) -> Optional[Dict[str, str]]:
+    """Detect ATS type and board_slug from API probe URL (for Ashby/Greenhouse/Lever)."""
+    u = url.lower()
+    if "api.ashbyhq.com/posting-api/job-board/" in u:
+        parts = url.rstrip("/").split("/")
+        try:
+            idx = parts.index("job-board")
+            slug = parts[idx + 1].split("?")[0]
+            return {"ats": "ashby", "board_slug": slug}
+        except (ValueError, IndexError):
+            pass
+    if "boards-api.greenhouse.io/v1/boards/" in u:
+        try:
+            parts = url.split("/")
+            bidx = parts.index("boards")
+            slug = parts[bidx + 1]
+            return {"ats": "greenhouse", "board_slug": slug}
+        except (ValueError, IndexError):
+            pass
+    if "api.lever.co/v0/postings/" in u:
+        slug = url.rstrip("/").split("/")[-1].split("?")[0]
+        return {"ats": "lever", "board_slug": slug}
+    return None
+
+
+def _is_valid_ats_board(ats: str, data: Any, status: int) -> bool:
+    """Return True if the API response confirms a real existing ATS board for the slug."""
+    if status != 200 or not data:
+        return False
+    if ats == "greenhouse":
+        if isinstance(data, dict):
+            return "jobs" in data or "meta" in data
+        return False
+    if ats == "ashby":
+        if isinstance(data, dict):
+            return "jobs" in data or "apiVersion" in data or bool(data.get("jobs"))
+        return False
+    if ats == "lever":
+        if isinstance(data, list):
+            return True  # board exists (may be empty list)
+        if isinstance(data, dict):
+            return "data" in data or bool(data)
+        return False
+    return False
+
+
 def has_job_signals(html: str, final_url: str, is_ats: bool = False) -> bool:
     """Signal for jobs. Stricter for ATS pages to avoid marketing/404 noise."""
     if not html:
@@ -222,28 +304,64 @@ def has_job_signals(html: str, final_url: str, is_ats: bool = False) -> bool:
 
 
 def check_url(url: str, client: httpx.Client) -> Dict[str, Any]:
-    """Perform one check with retries + backoff."""
+    """Perform one check with retries + backoff.
+
+    For Ashby/Greenhouse/Lever we now prefer API probes (real board validation)
+    instead of HTML 200 (which produces many fake "high" on Workable etc.).
+    """
     for attempt in range(MAX_RETRIES + 1):
         try:
             resp = client.get(url, timeout=TIMEOUT, follow_redirects=True)
             status = resp.status_code
             final_url = str(resp.url)
-
-            ats_info = detect_ats(final_url)
             html = resp.text if status < 400 else ""
 
-            is_real_ats = bool(ats_info) and status == 200
+            # Support both HTML public URLs and new API probes
+            ats_info = detect_ats(final_url) or detect_ats_api(final_url)
 
-            if status >= 400 and ats_info:
-                type_ = "probe_miss"
-            elif is_real_ats:
-                type_ = "ats"
-            elif status == 200:
-                type_ = "careers_page"
+            # Fixup slug for Ashby API URLs (sometimes split picks wrong segment)
+            if ats_info and ats_info.get("ats") == "ashby" and "job-board/" in final_url:
+                try:
+                    slug = final_url.split("job-board/")[-1].split("/")[0].split("?")[0]
+                    if slug and slug != ats_info.get("board_slug"):
+                        ats_info = {"ats": "ashby", "board_slug": slug}
+                except Exception:
+                    pass
+
+            is_api_probe = bool(detect_ats_api(final_url)) or                 any(x in final_url for x in ["posting-api", "boards-api.greenhouse", "api.lever.co/v0/postings"])
+
+            data = None
+            if is_api_probe and status < 400:
+                try:
+                    data = resp.json()
+                except Exception:
+                    data = None
+
+            if is_api_probe:
+                is_real_ats = _is_valid_ats_board(ats_info["ats"] if ats_info else "", data, status) if ats_info else False
+                if status >= 400 or not is_real_ats:
+                    type_ = "probe_miss"
+                else:
+                    type_ = "ats"
             else:
-                type_ = "error"
+                is_real_ats = bool(ats_info) and status == 200
+                if status >= 400 and ats_info:
+                    type_ = "probe_miss"
+                elif is_real_ats:
+                    type_ = "ats"
+                elif status == 200:
+                    type_ = "careers_page"
+                else:
+                    type_ = "error"
 
-            signals = has_job_signals(html, final_url, is_real_ats)
+            # Signals: for API a successful real board response is itself a strong signal
+            if is_api_probe:
+                signals = is_real_ats  # API success == real board (high confidence)
+                if data and is_real_ats:
+                    # Optional: require at least some jobs for "high" feel, but board existence is already good
+                    pass
+            else:
+                signals = has_job_signals(html, final_url, is_real_ats)
 
             confidence = "low"
             if is_real_ats and signals:
@@ -380,26 +498,39 @@ def discover_for_employer(employer: Dict, client: httpx.Client, overlaps_cache: 
 
     careers_candidates = results[:8]
 
-    # best_guess: strongly prefer ATS high
+    # best_guess: copy confidence from the actual check result.
+    # High only when there were real signals (or successful API board probe).
+    # This eliminates the "100 fake high" problem.
     best = None
     for r in results:
         if r.get("ats") and r.get("status") == 200:
+            conf = r.get("confidence", "low")
             best = {
                 "ats": r.get("ats"),
                 "board_slug": r.get("board_slug"),
                 "careers_url": r.get("url"),
-                "confidence": "high",
+                "confidence": conf,
             }
             break
     if not best:
         for r in results:
             if r.get("confidence") == "high":
-                best = {"ats": r.get("ats"), "board_slug": r.get("board_slug"), "careers_url": r.get("url"), "confidence": "high"}
+                best = {
+                    "ats": r.get("ats"),
+                    "board_slug": r.get("board_slug"),
+                    "careers_url": r.get("url"),
+                    "confidence": "high"
+                }
                 break
     if not best:
         for r in results:
             if r.get("confidence") == "medium":
-                best = {"ats": r.get("ats"), "board_slug": r.get("board_slug"), "careers_url": r.get("url"), "confidence": "medium"}
+                best = {
+                    "ats": r.get("ats"),
+                    "board_slug": r.get("board_slug"),
+                    "careers_url": r.get("url"),
+                    "confidence": "medium"
+                }
                 break
 
     already = is_already_in_protocol_seeds(name, website, overlaps_cache)
@@ -429,25 +560,28 @@ def generate_report(discovery_data: Dict, output_path: Path):
     top_high = []
 
     for e in employers:
-        cands = e.get("careers_candidates", [])
+        # Use best_guess for honest reporting (not optimistic careers_candidates)
+        best = e.get("best_guess") or {}
         has_high_ats = False
-        for cand in cands:
-            if cand.get("ats") and cand.get("confidence") == "high":
-                ats_counts[cand["ats"]] = ats_counts.get(cand["ats"], 0) + 1
-                has_high_ats = True
-                top_high.append({
-                    "rank": e["rank"],
-                    "name": e["name"],
-                    "ats": cand["ats"],
-                    "board_slug": cand.get("board_slug"),
-                    "url": cand["url"],
-                })
+        if best.get("ats") and best.get("confidence") == "high":
+            ats = best["ats"]
+            ats_counts[ats] = ats_counts.get(ats, 0) + 1
+            has_high_ats = True
+            top_high.append({
+                "rank": e.get("rank"),
+                "name": e.get("name"),
+                "ats": best["ats"],
+                "board_slug": best.get("board_slug"),
+                "url": best.get("careers_url"),
+            })
         if has_high_ats:
             high_ats.append(e)
-        elif any(c.get("confidence") == "medium" for c in cands):
-            medium += 1
         else:
-            low_empty += 1
+            bconf = best.get("confidence")
+            if bconf == "medium":
+                medium += 1
+            else:
+                low_empty += 1
 
         if e.get("already_in_protocol_seeds"):
             in_seeds += 1
@@ -568,7 +702,7 @@ def main():
     # Auto-generate REPORT from real data
     generate_report(output_data, Path("sources/discovery/REPORT.md"))
 
-    high_count = sum(1 for r in results if any(c.get("confidence") == "high" and c.get("ats") for c in r.get("careers_candidates", [])))
+    high_count = sum(1 for r in results if (b := r.get("best_guess") or {}) and b.get("confidence") == "high" and b.get("ats"))
     print(f"High-confidence ATS found: {high_count}")
 
 if __name__ == "__main__":
