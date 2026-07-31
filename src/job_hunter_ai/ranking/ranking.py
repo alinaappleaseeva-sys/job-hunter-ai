@@ -144,12 +144,16 @@ def _score_location_remote_fit(profile: CandidateProfile, job: CanonicalJob) -> 
         if job_remote == "remote":
             score = 1.0
             reasons.append("exact remote match")
-        elif job_remote in ("hybrid", "unknown"):
-            score = 0.6
-            reasons.append("hybrid/unknown when remote preferred")
+        elif job_remote == "hybrid":
+            score = 0.25
+            reasons.append("hybrid when remote preferred")
+        elif job_remote == "unknown":
+            score = 0.50
+            reasons.append("unknown remote mode when remote preferred")
         else:
-            score = 0.2
-            reasons.append("onsite conflicts remote preference")
+            # onsite
+            score = 0.05
+            reasons.append("onsite strongly conflicts with remote preference")
     elif pref == job_remote:
         score = 0.9
         reasons.append(f"remote mode {job_remote} matches preference")
@@ -338,6 +342,10 @@ def rank_jobs(
     weights = weights or DEFAULT_WEIGHTS
     ranked: list[RankedJob] = []
     for job in jobs:
+        # Hard gate for remote-preferring profiles: completely drop onsite roles
+        if profile.remote_preference == "remote" and (job.remote_mode or "").lower() == "onsite":
+            continue
+
         breakdown = compute_score_breakdown(profile, job, weights)
         ranked.append(RankedJob(canonical_job=job, score_breakdown=breakdown))
 

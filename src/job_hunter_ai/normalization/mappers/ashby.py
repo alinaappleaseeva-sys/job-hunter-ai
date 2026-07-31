@@ -61,6 +61,7 @@ class AshbyMapper(BaseMapper):
             workplace_type=job.get("workplaceType"),
             is_remote=job.get("isRemote"),
             location_raw=location_raw,
+            description=description_text,
         )
 
         posting.employment_type = normalize_employment_type(job.get("employmentType"))

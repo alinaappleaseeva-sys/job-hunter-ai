@@ -48,7 +48,10 @@ class GreenhouseMapper(BaseMapper):
         posting.location_region = parsed_location.location_region
         posting.location_city = parsed_location.location_city
 
-        posting.remote_mode = normalize_remote_mode(location_raw=location_raw)
+        posting.remote_mode = normalize_remote_mode(
+            location_raw=location_raw,
+            description=description_text,
+        )
         posting.employment_type = None
         warnings.append("employment_type_missing")
 
