@@ -24,6 +24,7 @@ import yaml
 
 from job_hunter_ai.common.models import CanonicalJob, CandidateProfile
 from job_hunter_ai.profiles.alina import get_alina_profile
+from job_hunter_ai.normalization.fields.remote import normalize_remote_mode
 
 # Re-export so callers (including scripts) can treat pipeline as the single source for the profile.
 # Phase 1 unification: get_alina_profile() is the canonical entry point.
@@ -135,6 +136,52 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
             if m_range:
                 comp_min = int(m_range.group(1)) * 1000
 
+    # === Unify remote_mode: always use normalize_remote_mode, pass location + description + provider signals ===
+    # Stop hardcoding remote. Enables remote filters (#69), Singapore/Malta etc, visa signals.
+    # concrete city/country w/o remote-signal → onsite
+    payload = rec.payload or {}
+    desc_text = str(payload.get("description") or payload.get("content") or "")
+
+    # Extract location signals (robust)
+    loc_name = None
+    loc_obj = payload.get("location")
+    if isinstance(loc_obj, dict):
+        loc_name = loc_obj.get("name")
+    elif isinstance(loc_obj, str):
+        loc_name = loc_obj
+    if not loc_name:
+        loc_name = payload.get("location_name")
+
+    offices = payload.get("offices") or []
+    if isinstance(offices, list):
+        offices = [o.get("name") if isinstance(o, dict) else str(o) for o in offices if o]
+    location_raw = loc_name or (", ".join(offices) if offices else None)
+
+    # Provider signals when present in payload
+    workplace_type = payload.get("workplaceType") or payload.get("workplace_type") or payload.get("remote_mode")
+    is_remote = payload.get("isRemote") or payload.get("is_remote")
+    categories = payload.get("categories") or {}
+    categories_remote = categories.get("remote") if isinstance(categories, dict) else None
+
+    try:
+        rm = normalize_remote_mode(
+            workplace_type=workplace_type,
+            is_remote=is_remote,
+            location_raw=location_raw,
+            categories_remote=categories_remote,
+            description=desc_text,
+        )
+        remote_mode = rm or "unknown"
+    except Exception:
+        remote_mode = "unknown"
+
+    if not remote_mode or remote_mode == "":
+        remote_mode = "unknown"
+
+    # Populate location for geo penalties / ranking
+    location_country = location_raw
+    location_city = None
+
     return CanonicalJob(
         canonical_job_id=f"{source}-{rec.external_id}",
         primary_posting_id=rec.external_id,
@@ -145,11 +192,11 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
         role_family=role_family,
         seniority=seniority,
         market=market,
-        remote_mode="remote",
+        remote_mode=remote_mode,
         employment_type="full-time",
-        location_country="Remote",
+        location_country=location_country,
         location_region=None,
-        location_city=None,
+        location_city=location_city,
         compensation_min=comp_min,
         compensation_max=None,
         compensation_currency="USD",
@@ -163,8 +210,6 @@ def _to_canonical(rec: Any, source: str) -> CanonicalJob | None:
         merge_confidence=0.75,
         merge_reasons=[f"{source}-direct"],
     )
-
-
 def _fetch_with_retry(fetcher, name: str, max_retries: int = 2, backoff: float = 1.5):
     """Simple exponential backoff + error recovery."""
     for attempt in range(max_retries + 1):

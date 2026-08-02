@@ -1,8 +1,39 @@
-"""Remote / hybrid / onsite mode normalization."""
+"""Remote / hybrid / onsite mode normalization.
+
+Three-layer defense (priority order):
+1. Real signals from location/offices + description (called from _to_canonical)
+2. Hard rules on specific office cities/countries
+3. Visa/sponsorship signals → onsite when combined with office location
+"""
 
 from __future__ import annotations
 
 _ALLOWED = frozenset({"remote", "hybrid", "onsite", "unknown"})
+
+# Layer 2: Cities/countries that almost always mean physical office unless explicit remote is stated
+OFFICE_CITIES = [
+    "singapore", "dubai", "hong kong", "hongkong", "malta", "london", "new york",
+    "san francisco", "tokyo", "seoul", "shanghai", "beijing", "mumbai", "bangalore",
+    "amsterdam", "berlin", "paris", "zurich", "geneva", "tel aviv", "abu dhabi",
+    # Additional common office hubs (Web3 / finance)
+    "sydney", "australia", "taiwan", "taipei", "kuala lumpur", "malaysia", "sliema",
+    "estonia", "tallinn", "lisbon", "portugal", "switzerland", "germany", "toronto",
+    "vancouver", "usa", "united states", "uk", "united kingdom"
+]
+
+# Explicit remote trust signals (these override office heuristics)
+EXPLICIT_REMOTE_PHRASES = [
+    "remote roles – cis", "remote – emea", "ukraine (remote)", "remote only",
+    "fully remote", "100% remote", "work from anywhere", "remote-first",
+    "remote role", "distributed team", "remote position"
+]
+
+# Layer 3: Visa / work authorization signals — strong indicator of onsite requirement
+VISA_SPONSORSHIP_PHRASES = [
+    "visa sponsorship", "eligible to work in", "work authorization required",
+    "must be based in", "relocation to", "work permit", "sponsorship",
+    "legally authorized to work", "no visa sponsorship"
+]
 
 
 def normalize_remote_mode(
@@ -13,11 +44,16 @@ def normalize_remote_mode(
     categories_remote: str | bool | None = None,
     description: str | None = None,
 ) -> str:
-    """Infer canonical ``remote_mode`` from provider signals.
+    """Infer canonical remote_mode.
 
-    Enhanced to also scan description text for remote/hybrid/onsite signals
-    when other signals are weak.
+    Priority (highest first):
+    1. Strong explicit remote phrases in description/location
+    2. Workplace / is_remote from provider
+    3. Description signals (strong remote/hybrid/onsite)
+    4. Location signals + office city rules (Layer 2)
+    5. Visa/sponsorship + office location → onsite (Layer 3)
     """
+    # 0. Direct provider signals
     wt = (workplace_type or "").strip().lower().replace("_", "-")
     if wt == "remote":
         return "remote"
@@ -39,16 +75,51 @@ def normalize_remote_mode(
     if wt == "unspecified":
         return "unknown"
 
+    loc_lower = (location_raw or "").lower()
+    desc_lower = (description or "").lower()
+    combined = f"{loc_lower} {desc_lower}"
+
+    # Layer 1 priority: explicit remote trust phrases
+    for phrase in EXPLICIT_REMOTE_PHRASES:
+        if phrase in combined:
+            return "remote"
+
+    # Location-based signal
     loc_signal = _remote_signal_from_location(location_raw)
     if loc_signal:
         return loc_signal
 
+    # Description-based signal
     desc_signal = _remote_signal_from_description(description)
     if desc_signal:
         return desc_signal
 
-    if location_raw and str(location_raw).strip():
+    # === Layer 2: Specific office cities without explicit remote → onsite ===
+    has_office_city = any(city in loc_lower for city in OFFICE_CITIES)
+    has_explicit_remote = any(p in combined for p in EXPLICIT_REMOTE_PHRASES)
+
+    if has_office_city and not has_explicit_remote:
         return "onsite"
+
+    # === Layer 3: Visa/sponsorship + office location ===
+    has_visa_signal = any(phrase in desc_lower for phrase in VISA_SPONSORSHIP_PHRASES)
+    if has_visa_signal and has_office_city:
+        return "onsite"
+
+    # Fallbacks
+    # Broad rule per plan: concrete city/country without remote-signal → onsite
+    if location_raw and str(location_raw).strip() and not has_explicit_remote:
+        l = str(location_raw).lower()
+        has_remote_indicator = (
+            "remote" in l or
+            "remote" in desc_lower or
+            any(p in combined for p in ["distributed", "work from anywhere", "anywhere"])
+        )
+        if not has_remote_indicator:
+            if "," in l or any(c.isalpha() for c in l):
+                return "onsite"
+        if any(x in l for x in ["office", "hq", "headquarters"]):
+            return "onsite"
 
     return "unknown"
 
@@ -57,52 +128,57 @@ def _remote_signal_from_location(location_raw: str | None) -> str | None:
     if not location_raw:
         return None
     lower = location_raw.lower()
+
+    # Explicit remote in location title (e.g. "Remote Roles – CIS")
+    for phrase in EXPLICIT_REMOTE_PHRASES:
+        if phrase in lower:
+            return "remote"
+
     if "hybrid" in lower:
         return "hybrid"
     if "remote" not in lower:
         return None
     if ";" in location_raw:
         return "hybrid"
-    if "us-west remote" in lower and "," in location_raw:
-        return "hybrid"
     return "remote"
 
 
 def _remote_signal_from_description(desc: str | None) -> str | None:
-    """Extract remote/hybrid/onsite signal from job description text.
-
-    Looks for strong explicit signals first.
-    """
+    """Extract from description. Strong signals first."""
     if not desc:
         return None
 
     lower = desc.lower()
 
-    # Strong explicit signals
-    strong_remote = [
-        "fully remote", "100% remote", "completely remote",
-        "remote only", "work from anywhere", "wfa", "remote-first"
-    ]
-    if any(phrase in lower for phrase in strong_remote):
-        return "remote"
+    # Explicit remote trust first (Layer 1)
+    for phrase in EXPLICIT_REMOTE_PHRASES:
+        if phrase in lower:
+            return "remote"
 
-    if "hybrid" in lower or "flexible location" in lower or "remote/hybrid" in lower:
-        return "hybrid"
-
+    # Strong onsite (including visa-related)
     strong_onsite = [
         "on-site", "onsite", "in-office", "in office", "office-based",
-        "must be in", "located in our office", "work from office"
+        "must be in", "located in our office", "work from office",
+        "mandatory in-office", "days per week in the office"
     ]
     if any(phrase in lower for phrase in strong_onsite):
         return "onsite"
 
-    # Weaker but useful signals
-    if "remote" in lower and ("work from home" in lower or "wfh" in lower):
+    # Visa signals are strong onsite indicators when location is office
+    if any(phrase in lower for phrase in VISA_SPONSORSHIP_PHRASES):
+        # Only return onsite here if we also see office language; otherwise let caller decide
+        if any(c in lower for c in OFFICE_CITIES + ["office", "based in"]):
+            return "onsite"
+
+    # Hybrid
+    if "hybrid" in lower or "flexible location" in lower or "remote/hybrid" in lower:
+        return "hybrid"
+
+    # Weaker remote
+    if any(p in lower for p in ["fully remote", "100% remote", "work from anywhere"]):
         return "remote"
 
-    # If "remote" appears prominently and no strong onsite signal, lean remote
-    remote_mentions = lower.count("remote")
-    if remote_mentions >= 2 and "onsite" not in lower and "on-site" not in lower:
+    if "remote" in lower and ("work from home" in lower or "wfh" in lower):
         return "remote"
 
     return None
