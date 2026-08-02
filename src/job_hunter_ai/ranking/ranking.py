@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
+from job_hunter_ai.normalization.fields.remote import OFFICE_CITIES
 from job_hunter_ai.common.models import (
     CandidateProfile,
     CanonicalJob,
@@ -290,7 +291,6 @@ def compute_score_breakdown(
     req_weight = 0.10   # modest weight for requirements mismatch penalty
 
 
-    rec_w = weights.get("recency_fit", 0.0)
     total = (
         role_s * weights["role_fit"]
         + sen_s * weights["seniority_fit"]
@@ -342,8 +342,23 @@ def rank_jobs(
     weights = weights or DEFAULT_WEIGHTS
     ranked: list[RankedJob] = []
     for job in jobs:
-        # Hard gate for remote-preferring profiles: completely drop onsite roles
-        if profile.remote_preference == "remote" and (job.remote_mode or "").lower() == "onsite":
+        # Strict remote filter + fits-me drops (see code)
+        if getattr(profile, 'remote_preference', None) == "remote":
+            remote_mode = (job.remote_mode or "").lower()
+            if remote_mode in ("onsite", "hybrid"):
+                continue
+
+        # Phase 3 hard drops for office locs + bad role types (CEX/HR/P2P/Total Rewards)
+        loc = (getattr(job, "location_country", None) or "").lower()
+        if any(city in loc for city in OFFICE_CITIES):
+            continue
+        company = (getattr(job, "company_name", "") or "").lower()
+        title = ((job.title_normalized or "") + " " + company).lower()
+        # CEX companies (OKX etc) often surface ops/compliance/BD that do not fit Head of Ops/DAO/Protocol
+        if any(c in company for c in ["okx", "binance"]):
+            continue
+        bad_kws = ["p2p", "total rewards", "hr operations", "hr ", "customer service", "kyb", "affiliate", "compliance", "head of compliance"]
+        if any(kw in title for kw in bad_kws):
             continue
 
         breakdown = compute_score_breakdown(profile, job, weights)
