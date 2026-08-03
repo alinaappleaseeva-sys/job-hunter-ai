@@ -12,7 +12,7 @@ from job_hunter_ai.normalization.fields.enrichment import infer_role_family
 from job_hunter_ai.normalization.fields.enrichment import infer_seniority
 from job_hunter_ai.normalization.fields.location import ParsedLocation
 from job_hunter_ai.normalization.fields.location import parse_location_string
-from job_hunter_ai.normalization.fields.remote import normalize_remote_mode
+from job_hunter_ai.normalization.fields.remote import detect_remote_priority, normalize_remote_mode
 from job_hunter_ai.normalization.fields.title import normalize_title
 
 __all__ = [
@@ -24,6 +24,7 @@ __all__ = [
     "infer_role_family",
     "infer_seniority",
     "normalize_employment_type",
+    "detect_remote_priority",
     "normalize_remote_mode",
     "normalize_title",
     "parse_ashby_compensation",

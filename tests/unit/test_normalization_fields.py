@@ -277,3 +277,46 @@ class TestCompensation:
         parsed = parse_ashby_compensation(None)
         assert parsed.compensation_min is None
         assert parsed.compensation_max is None
+
+class TestDetectRemotePriority:
+    """Golden cases for Europe-preferring profile geo logic (Phase 3 refinement)."""
+
+    def test_pure_remote_no_geo(self):
+        prio, reason = detect_remote_priority("Remote", "Fully remote, work from anywhere")
+        assert prio == 1
+        assert "pure remote" in reason.lower()
+
+    def test_remote_us_europe_profile_downrank(self):
+        """Critical case: Remote-US listing + Europe form still gets strong penalty."""
+        prio, reason = detect_remote_priority("Remote-US", "We currently support remote from North America, South America, and Europe.")
+        assert prio == 5, "Remote-US must be treated as restricted"
+        assert "restricted" in reason.lower() or "us" in reason.lower()
+
+    def test_remote_emea_europe_high_priority(self):
+        prio, reason = detect_remote_priority("Remote - EMEA", "")
+        assert prio == 3
+        assert "europe" in reason.lower() or "emea" in reason.lower()
+
+    def test_remote_zurich_switzerland_top_tier(self):
+        prio, reason = detect_remote_priority("Remote – Zürich", "Switzerland")
+        assert prio == 2
+        assert "zurich" in reason.lower() or "switzerland" in reason.lower()
+
+    def test_safe_country_portugal(self):
+        prio, reason = detect_remote_priority("Remote, Lisbon, Portugal", "")
+        assert prio == 4
+        assert "safe" in reason.lower() or "portugal" in reason.lower() or "low work" in reason.lower()
+
+    def test_visa_sponsorship_plus_office_city(self):
+        """Visa + office city should be treated badly (falls to restricted or low)."""
+        prio, reason = detect_remote_priority("Singapore", "Visa sponsorship required, must be based in Singapore")
+        assert prio in (4, 5)  # at worst safe, preferably restricted
+
+    def test_remote_without_explicit_but_zurich_office(self):
+        """Plain "Remote" + Zurich in location should lean towards good because of Switzerland mention."""
+        prio, reason = detect_remote_priority("Zurich (Remote)", "")
+        assert prio in (2, 3), "Zurich mention should give strong Europe/Switzerland signal"
+
+    def test_restricted_singapore(self):
+        prio, reason = detect_remote_priority("Remote Singapore", "")
+        assert prio == 5

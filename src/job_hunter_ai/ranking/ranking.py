@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
-from job_hunter_ai.normalization.fields.remote import OFFICE_CITIES
+from job_hunter_ai.normalization.fields.remote import OFFICE_CITIES  # used only for hard office-city drops in rank_jobs
 from job_hunter_ai.common.models import (
     CandidateProfile,
     CanonicalJob,
