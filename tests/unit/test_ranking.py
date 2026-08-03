@@ -268,3 +268,74 @@ def test_phase2_head_ops_cos_gold():
         highly = [j["canonical_job_id"] for j in ex["jobs"] if j.get("relevance_label") == "highly_relevant"]
         overlap = set(top_ids) & set(highly)
         assert len(overlap) >= 1, f"Expected highly relevant CoS/Head Ops in top for {ex['example_id']}"
+
+
+# === Geo priority golden scoring tests (added for PR geo refinement) ===
+
+from job_hunter_ai.ranking.ranking import _score_location_remote_fit, DEFAULT_WEIGHTS
+from job_hunter_ai.profiles.alina import get_alina_profile
+from job_hunter_ai.common.models import CanonicalJob
+from datetime import datetime, timezone
+
+ALINA = get_alina_profile()
+
+def _mk_job(loc: str, remote_mode: str = "remote", desc: str = "") -> CanonicalJob:
+    return CanonicalJob(
+        canonical_job_id="test-geo",
+        primary_posting_id="test-geo",
+        company_name="TestCo",
+        company_domain=None,
+        title_normalized="Head of Operations",
+        role_family="operations",
+        seniority="head",
+        market="web3",
+        remote_mode=remote_mode,
+        employment_type=None,
+        location_country=loc,
+        location_region=None,
+        location_city=None,
+        compensation_min=140000,
+        compensation_max=None,
+        compensation_currency="USD",
+        canonical_posted_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        first_seen_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        last_seen_at=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        active_posting_count=1,
+        source_count=1,
+        ghost_score=None,
+        canonical_status="active",
+        merge_confidence=None,
+        merge_reasons=[],
+        description_text=desc,
+    )
+
+def test_geo_remote_us_europe_profile_gets_low_score():
+    """Remote-US + Europe profile → should be heavily downranked (0.35)."""
+    job = _mk_job("Remote-US", desc="We support North America, South America, and Europe.")
+    score, reasons = _score_location_remote_fit(ALINA, job)
+    assert score <= 0.40, f"Expected <=0.40 for US-only, got {score}"
+    assert any("restricted" in r.lower() or "us" in r.lower() for r in reasons)
+
+def test_geo_remote_emea_gets_high_score():
+    """Remote EMEA / Europe should get high score (~0.85+)."""
+    job = _mk_job("Remote - EMEA")
+    score, reasons = _score_location_remote_fit(ALINA, job)
+    assert score >= 0.80, f"Expected high score for EMEA, got {score}"
+
+def test_geo_pure_remote_gets_max():
+    job = _mk_job("Remote", desc="Fully remote, work from anywhere")
+    score, reasons = _score_location_remote_fit(ALINA, job)
+    assert score >= 0.95
+
+def test_geo_zurich_remote_high():
+    job = _mk_job("Remote – Zürich, Switzerland")
+    score, reasons = _score_location_remote_fit(ALINA, job)
+    assert score >= 0.90
+
+def test_geo_visa_office_city_should_be_penalized():
+    """Visa sponsorship + office city (e.g. Singapore) should not score high."""
+    job = _mk_job("Singapore", desc="Visa sponsorship required. Must be based in Singapore office.")
+    score, reasons = _score_location_remote_fit(ALINA, job)
+    assert score <= 0.50
+
+# Note: "Remote + Zurich office without explicit remote" is covered in detect_remote_priority tests.

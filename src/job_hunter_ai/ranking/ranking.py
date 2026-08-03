@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from job_hunter_ai.normalization.fields.requirements import extract_hard_requirements
-from job_hunter_ai.normalization.fields.remote import OFFICE_CITIES
+from job_hunter_ai.normalization.fields.remote import OFFICE_CITIES  # used only for hard office-city drops in rank_jobs
 from job_hunter_ai.common.models import (
     CandidateProfile,
     CanonicalJob,
@@ -143,8 +143,28 @@ def _score_location_remote_fit(profile: CandidateProfile, job: CanonicalJob) -> 
 
     if pref == "remote":
         if job_remote == "remote":
-            score = 1.0
-            reasons.append("exact remote match")
+            # New priority-based geo scoring (1 = best)
+            priority = 4
+            geo_reason = "remote (unclassified)"
+            try:
+                from job_hunter_ai.normalization.fields.remote import detect_remote_priority
+                priority, geo_reason = detect_remote_priority(
+                    job_loc,
+                    getattr(job, "description_text", None) or getattr(job, "description", None)
+                )
+            except Exception:
+                pass
+
+            score_map = {
+                1: 1.00,   # pure remote, no geo
+                2: 0.95,   # Zürich / Switzerland
+                3: 0.85,   # Europe / EMEA
+                4: 0.70,   # safe countries
+                5: 0.35,   # restricted (US, Singapore...)
+                0: 0.15,   # unknown / not really remote
+            }
+            score = score_map.get(priority, 0.15)
+            reasons.append(geo_reason)
         elif job_remote == "hybrid":
             score = 0.25
             reasons.append("hybrid when remote preferred")
@@ -162,9 +182,14 @@ def _score_location_remote_fit(profile: CandidateProfile, job: CanonicalJob) -> 
         score = 0.5
         reasons.append("location/remote partial match")
 
-    if profile.preferred_locations and any(loc.lower() in (job_loc or "").lower() for loc in profile.preferred_locations):
-        score = min(1.0, score + 0.1)
-        reasons.append("preferred location/country present")
+    # Optional small boost for explicit match on preferred Europe locations
+    # (but never push restricted above safe levels)
+    if (priority >= 4 and profile.preferred_locations and
+            any(loc.lower() in (job_loc or "").lower() for loc in profile.preferred_locations)):
+        # Only small boost for safe / unclassified, never for restricted
+        if priority != 5:
+            score = min(0.95, score + 0.05)
+            reasons.append("matches preferred Europe/safe location")
 
     return score, reasons
 
