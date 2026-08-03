@@ -27,19 +27,95 @@ EXPLICIT_REMOTE_PHRASES = [
     "fully remote", "100% remote", "work from anywhere", "remote-first",
     "remote role", "distributed team", "remote position"
 ]
+# === Geo priority for remote roles (Europe-preferring profile) ===
+# Priority (1 = best, 5 = worst)
 
-# Geo-restricted remote signals (for Europe-preferring profiles)
-US_ONLY_REMOTE_SIGNALS = [
-    "remote-us", "remote us", "us remote", "united states remote",
-    "remote (us only)", "remote us only", "must be based in the united states",
-    "us candidates only", "north america only", "united states · remote",
-    "support remote from north america"  # when no Europe mention
-]
+SAFE_REMOTE_REGIONS = {
+    # countries/cities where remote work is usually possible without Swiss work permit issues
+    "portugal", "lisbon", "estonia", "tallinn", "malta", "lithuania", "vilnius",
+    "latvia", "georgia", "tbilisi", "armenia", "yerevan", "cyprus", "uae", "dubai",
+    "abu dhabi", "bahrain", "serbia", "belgrade", "montenegro", "albania",
+}
 
-EUROPE_EMEA_SIGNALS = [
-    "remote – emea", "remote roles – cis", "emea", "europe",
-    "remote europe", "cis", "switzerland", "zurich"
-]
+RESTRICTED_REMOTE_REGIONS = {
+    "us", "usa", "united states", "america", "north america",
+    "singapore", "hong kong", "hongkong", "australia", "canada",
+    "uk", "united kingdom", "london",
+}
+
+EUROPE_CORE = {
+    "europe", "emea", "cis", "eu", "european union",
+    "switzerland", "zurich", "zürich", "geneva", "basel",
+    "germany", "berlin", "france", "paris", "netherlands", "amsterdam",
+    "spain", "barcelona", "madrid", "italy", "milan", "rome",
+    "austria", "vienna", "belgium", "brussels", "ireland", "dublin",
+    "sweden", "stockholm", "norway", "oslo", "denmark", "copenhagen",
+    "finland", "helsinki", "poland", "warsaw", "czech", "prague",
+}
+
+
+def detect_remote_priority(
+    location_raw: str | None,
+    description: str | None = None,
+) -> tuple[int, str]:
+    """
+    Returns (priority, reason)
+    Priority (higher = better):
+        1 = pure remote (no geo at all)
+        2 = Remote Zürich / Switzerland
+        3 = Remote Europe / EMEA / CIS
+        4 = Remote in safe countries (low visa friction)
+        5 = Restricted (US-only, Singapore, etc.)
+        0 = not remote / unknown
+    """
+    loc = (location_raw or "").lower().strip()
+    desc = (description or "").lower()
+    text = f"{loc} {desc}"
+
+    # --- Restricted first (worst) ---
+    if any(r in text for r in RESTRICTED_REMOTE_REGIONS):
+        # Rare exception: explicit "Remote Europe" wins over US mention
+        if any(e in text for e in ("remote europe", "remote-emea", "remote – emea", "emea remote")):
+            return 3, "remote Europe (despite restricted mention)"
+        return 5, "restricted remote (US / Singapore / visa-heavy region)"
+
+    # --- Priority 2: Zürich / Switzerland (your home base) ---
+    if any(x in text for x in ("zurich", "zürich", "switzerland", "swiss")):
+        if "remote" in text or "distributed" in text or "work from anywhere" in text:
+            return 2, "remote Zürich / Switzerland"
+
+    # --- Priority 3: Core Europe / EMEA ---
+    if any(e in text for e in EUROPE_CORE):
+        if "remote" in text or "distributed" in text:
+            return 3, "remote Europe / EMEA"
+
+    # --- Priority 1: Pure remote with no geo signals ---
+    pure_signals = (
+        "fully remote", "100% remote", "remote only", "remote-first",
+        "work from anywhere", "wfa", "distributed team", "remote role",
+        "remote position", "remote jobs", "remote opportunities"
+    )
+    has_geo = any(
+        geo in text for geo in (RESTRICTED_REMOTE_REGIONS | SAFE_REMOTE_REGIONS | EUROPE_CORE)
+    )
+    if any(s in text for s in pure_signals) and not has_geo:
+        return 1, "pure remote (no geo restriction)"
+
+    if loc in ("remote", "fully remote", "remote only") or loc.startswith("remote "):
+        if not has_geo:
+            return 1, "pure remote (location label only)"
+
+    # --- Priority 4: Safe countries ---
+    if any(s in text for s in SAFE_REMOTE_REGIONS) and "remote" in text:
+        return 4, "remote in safe country (low work permit friction)"
+
+    # Fallback for plain remote
+    if "remote" in text:
+        return 4, "remote (unclassified geo)"
+
+    return 0, "not remote / unknown"
+
+
 
 # Layer 3: Visa / work authorization signals — strong indicator of onsite requirement
 VISA_SPONSORSHIP_PHRASES = [
