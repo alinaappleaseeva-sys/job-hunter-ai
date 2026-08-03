@@ -143,8 +143,25 @@ def _score_location_remote_fit(profile: CandidateProfile, job: CanonicalJob) -> 
 
     if pref == "remote":
         if job_remote == "remote":
-            score = 1.0
-            reasons.append("exact remote match")
+            # Geo-aware scoring for Europe-preferring profiles (Zurich work permit)
+            try:
+                from job_hunter_ai.normalization.fields.remote import detect_remote_region
+                region = detect_remote_region(job_loc, getattr(job, "description_text", None) or getattr(job, "description", None))
+            except Exception:
+                region = "unknown"
+
+            europe_signals = ["europe", "emea", "switzerland", "zurich", "remote-europe"]
+            profile_prefers_europe = any(
+                any(sig in (loc or "").lower() for sig in europe_signals)
+                for loc in (getattr(profile, "preferred_locations", []) or [])
+            )
+
+            if region == "us-only" and profile_prefers_europe:
+                score = 0.35
+                reasons.append("US-restricted remote — weaker fit for Europe-based profile (e.g. Zurich)")
+            else:
+                score = 1.0
+                reasons.append("exact remote match")
         elif job_remote == "hybrid":
             score = 0.25
             reasons.append("hybrid when remote preferred")
@@ -162,7 +179,17 @@ def _score_location_remote_fit(profile: CandidateProfile, job: CanonicalJob) -> 
         score = 0.5
         reasons.append("location/remote partial match")
 
-    if profile.preferred_locations and any(loc.lower() in (job_loc or "").lower() for loc in profile.preferred_locations):
+    # Boost only if not a clear us-only remote mismatch
+    region = None
+    try:
+        from job_hunter_ai.normalization.fields.remote import detect_remote_region
+        region = detect_remote_region(job_loc, getattr(job, "description_text", None) or getattr(job, "description", None))
+    except Exception:
+        pass
+
+    if (profile.preferred_locations and 
+        any(loc.lower() in (job_loc or "").lower() for loc in profile.preferred_locations) and
+        not (region == "us-only" and any(sig in (loc or "").lower() for sig in ["europe", "emea", "switzerland", "zurich"] for loc in (profile.preferred_locations or [])))):
         score = min(1.0, score + 0.1)
         reasons.append("preferred location/country present")
 

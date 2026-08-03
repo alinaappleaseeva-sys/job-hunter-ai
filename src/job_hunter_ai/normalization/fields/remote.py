@@ -28,6 +28,19 @@ EXPLICIT_REMOTE_PHRASES = [
     "remote role", "distributed team", "remote position"
 ]
 
+# Geo-restricted remote signals (for Europe-preferring profiles)
+US_ONLY_REMOTE_SIGNALS = [
+    "remote-us", "remote us", "us remote", "united states remote",
+    "remote (us only)", "remote us only", "must be based in the united states",
+    "us candidates only", "north america only", "united states · remote",
+    "support remote from north america"  # when no Europe mention
+]
+
+EUROPE_EMEA_SIGNALS = [
+    "remote – emea", "remote roles – cis", "emea", "europe",
+    "remote europe", "cis", "switzerland", "zurich"
+]
+
 # Layer 3: Visa / work authorization signals — strong indicator of onsite requirement
 VISA_SPONSORSHIP_PHRASES = [
     "visa sponsorship", "eligible to work in", "work authorization required",
@@ -182,3 +195,41 @@ def _remote_signal_from_description(desc: str | None) -> str | None:
         return "remote"
 
     return None
+
+def detect_remote_region(location_raw: str | None, description: str | None = None) -> str:
+    """Detect geo restriction for remote roles.
+
+    Returns: "us-only" | "europe" | "global" | "unknown"
+
+    Priority to location label ("Remote-US" in the job posting).
+    Even if the application form mentions Europe, we downrank (weaker candidate for Europe-based profile).
+    """
+    if not location_raw and not description:
+        return "unknown"
+
+    loc = (location_raw or "").lower()
+    desc = (description or "").lower()
+    text = f"{loc} {desc}"
+
+    # Explicit location "Remote-US" is treated as us-restricted (even if form allows Europe)
+    if "remote-us" in loc or loc.strip() in ("us", "united states"):
+        return "us-only"
+
+    # Other US-only signals
+    for sig in US_ONLY_REMOTE_SIGNALS:
+        if sig in text:
+            if "remote-us" not in loc and any(e in text for e in EUROPE_EMEA_SIGNALS):
+                return "global"
+            return "us-only"
+
+    if any(e in text for e in EUROPE_EMEA_SIGNALS):
+        return "europe"
+
+    if ("united states" in text or " usa " in text) and "remote" in text:
+        if "remote-us" not in loc and not any(e in text for e in EUROPE_EMEA_SIGNALS + ["europe", "emea"]):
+            return "us-only"
+
+    if "remote" in text:
+        return "global"
+
+    return "unknown"

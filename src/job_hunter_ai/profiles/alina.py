@@ -38,7 +38,8 @@ def get_alina_profile() -> CandidateProfile:
             "ops manager",
         ],
         remote_preference="remote",
-        preferred_locations=["remote", "any"],
+        # Europe/EMEA preference (Zurich work permit). US-only remote should be downranked.
+        preferred_locations=["europe", "emea", "switzerland", "zurich", "remote-europe", "remote"],
         min_compensation=120000,
         compensation_currency="USD",
         preferred_markets=["web3", "defi", "dao", "crypto", "blockchain", "fintech", "security", "ai-web3"],
