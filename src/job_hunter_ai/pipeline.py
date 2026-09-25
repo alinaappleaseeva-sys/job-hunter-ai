@@ -226,7 +226,7 @@ def _fetch_with_retry(fetcher, name: str, max_retries: int = 2, backoff: float =
 
 
 def fetch_ats_wave(config: dict, limit_per: int = 15) -> list[CanonicalJob]:
-    """Phase 3: robust parallel fetch from Greenhouse/Lever/Ashby using config."""
+    """Phase 3: robust parallel fetch from Greenhouse/Lever/Ashby/Workable using config."""
     jobs: list[CanonicalJob] = []
     robustness = config.get("robustness", {})
     max_retries = robustness.get("max_retries", 2)
@@ -262,6 +262,15 @@ def fetch_ats_wave(config: dict, limit_per: int = 15) -> list[CanonicalJob]:
                 for rec in AshbyConnector(b).fetch(limit=limit_per).records
             ]
         tasks.append((f"ashby:{board}", functools.partial(_fetch_ashby, board)))
+
+    # Workable
+    for account in ats.get("workable", {}).get("accounts", []):
+        def _fetch_workable(a):
+            return [
+                _to_canonical(rec, f"workable:{a}")
+                for rec in WorkableConnector(a).fetch(limit=limit_per).records
+            ]
+        tasks.append((f"workable:{account}", functools.partial(_fetch_workable, account)))
 
     if not tasks:
         return jobs
