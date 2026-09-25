@@ -20,6 +20,8 @@ ats:
     - bitgo   # BitGo (rank 74)
     - blockchain   # Blockchain.com (rank 76)
     - okx   # OKX (rank 96)
+    # Verified 2026-09-25 (web3 DeFi wishlist check) — live boards with recent postings
+    - makina   # Makina (EU board; standard boards-api works)
     limit_per_board: 10
 
   lever:
@@ -69,9 +71,22 @@ ats:
     - gelato   # Gelato (rank 69)
     - ledger   # Ledger (rank 77)
     - protocol   # Protocol Labs (rank 83)
-    - maple   # Maple Finance (rank 85)
-    - compound   # Compound (rank 90)
+    # Removed 2026-09-25: `maple` is a different company (not Maple Finance),
+    # `compound` is Compound Planning (wealth management), not Compound Finance.
+    # Verified 2026-09-25 (web3 DeFi wishlist check) — live boards with recent postings
+    - ether.fi   # ether.fi
+    - symbiotic   # Symbiotic
+    - keyrock   # Keyrock
+    - starknetfoundation   # Starknet Foundation
+    - chronicle-labs   # Chronicle Labs
+    - steakhouse   # Steakhouse Financial
+    - lido.fi   # Lido (0 open on 2026-09-25 → empty-board error until new roles appear)
     limit_per_board: 8
+
+  workable:
+    accounts:
+    - boundless-networks-inc-1   # Boundless (RISC Zero)
+    limit_per_account: 8
 
 telegram:
   channels:
